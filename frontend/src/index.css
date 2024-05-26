@@ -1,0 +1,51 @@
+@font-face {
+    font-family: 'Coiny';
+    font-style: normal;
+    src: local('Coiny'), url(./fonts/Coiny.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'Comfortaa';
+    font-style: normal;
+    src: local('Comfortaa'), url(./fonts/Comfortaa-Regular.ttf) format('truetype');
+}
+
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+:root {
+    --header-height: 3.5rem;
+    --header-el-width: 20%;
+
+    --first-font: "Coiny", sans-serif;
+    --first-font-size: 0.8rem;
+    --first-color: #FFAB76;
+
+    --second-font: "Comfortaa", sans-serif;
+    --second-font-size: 1rem;
+    --second-color: #575454;
+
+
+
+
+
+    --z-tooltip: 10;
+    --z-fixed: 100;
+}
+
+body {
+
+}
+
+ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+
