@@ -1,21 +1,17 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { useMediaQuery } from "react-responsive";
 import { FiShoppingCart } from "react-icons/fi";
 import { IoChevronBackOutline, IoMenu } from "react-icons/io5";
 import logo from "../../static/media/logo.png"
 import "./Navbar.css";
 
-const Navbar = () => {
+const Navbar = ({ isMobile }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-    const isMobile = useMediaQuery({ maxWidth: "800px" });
-
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
-    const countCartItems = 0;
+    const countCartItems = 1;
 
     const iconSize = 28;
 
@@ -24,6 +20,7 @@ const Navbar = () => {
     }
 
     const menuItems = [
+        // {id: "main", name: "Главная", to: "/"},
         {id: "catalog", name: "Каталог", to: "/catalog"},
         {id: "looks", name: "Образы", to: "/looks"},
         {id: "sales", name: "Скидки", to: "/sales"},
@@ -68,7 +65,9 @@ const Navbar = () => {
                             <h1>BABYROOM</h1>
                         </NavLink>
                         <NavLink to="/cart" className="nav__cart">
-                            <FiShoppingCart size={iconSize} />
+                            <span badge={countCartItems}>
+                                <FiShoppingCart size={iconSize}/>
+                            </span>
                         </NavLink>
                     </nav>
                 </header>
@@ -81,7 +80,9 @@ const Navbar = () => {
                         </NavLink>
                         {renderNavList()}
                         <NavLink to="/cart" className="nav__cart">
-                            <FiShoppingCart size={iconSize} />
+                            <span badge={countCartItems}>
+                                <FiShoppingCart size={iconSize} />
+                            </span>
                         </NavLink>
                     </nav>
                 </header>

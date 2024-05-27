@@ -1,18 +1,17 @@
 import React from "react";
 import Navbar from "../components/Navbar/Navbar";
-import PromoSection from "../components/Promosection/PromoSection";
 import {useMediaQuery} from "react-responsive";
 
-const Home = () => {
+const Looks = () => {
 
     const isMobile = useMediaQuery({ maxWidth: "800px" });
 
     return (
         <>
             <Navbar isMobile={isMobile} />
-            <PromoSection isMobile={isMobile} />
+            <h1 style={{ textAlign: "center" }}>Looks page</h1>
         </>
     );
 }
 
-export default Home;
+export default Looks;

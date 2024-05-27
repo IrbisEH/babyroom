@@ -29,12 +29,30 @@
     --second-font-size: 1rem;
     --second-color: #575454;
 
-
-
-
-
     --z-tooltip: 10;
     --z-fixed: 100;
+}
+
+[badge]:after {
+    width: 15px;
+    height: 15px;
+    font-family: var(--second-font);
+    background: var(--first-color);
+    border-radius: 20px;
+    color: var(--second-color);
+    content: attr(badge);
+    font-size: 13px;
+    margin-top: -10px;
+    min-width: 20px;
+    padding: 2px;
+    position: absolute;
+    text-align: center;
+}
+
+[badge^="-"]:after,
+[badge="0"]:after,
+[badge=""]:after {
+    display: none;
 }
 
 body {
