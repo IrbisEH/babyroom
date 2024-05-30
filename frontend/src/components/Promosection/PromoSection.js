@@ -6,7 +6,8 @@ import bannerImg3 from "../../static/media/banner_img_3.png"
 
 
 
-const MaxiBanner = ({ src, alt, title, text, btn_text }) => {
+const Banner = ({ src, alt, title, text, btn_text }) => {
+    // для управления стиля кнопки добавлять или удаляьть классы
     return (
         <article className="maxi_banner">
             <div className="maxi_banner__wrapper">
@@ -23,35 +24,29 @@ const MaxiBanner = ({ src, alt, title, text, btn_text }) => {
     );
 }
 
-const MiniBanner = ({src, alt, title, text, btn_text}) => {
-    return (
-        <article className="mini_banner">
-            <div className="mini_banner__wrapper">
-                <img src={src} alt={alt}/>
-                <div className="mini_banner__text_wrapper">
-                    <h1>{title}</h1>
-                    <p>{text}</p>
-                    {btn_text ? (
-                        <button>{btn_text}</button>
-                    ) : null}
-                </div>
-            </div>
-        </article>
-    );
-}
-
 const DesktopPromoSection = (PromoParams) => {
+    const promoParams = PromoParams[0];
     return (
-        <section className="desktop_promo_section">
-            <div className="desktop_promo_section__wrapper">
-                <div className="desktop_promo__left_side">
-                    <MaxiBanner {...PromoParams[0]} />
-                </div>
-                <div className="desktop_promo__right_side">
-                    <MiniBanner {...PromoParams[1]} />
-                    <MiniBanner {...PromoParams[2]} />
+        <section className="promo_section">
+            <div className="banner__wrapper">
+                <img src={promoParams.src} alt={promoParams.alt} />
+                <div className={"banner__text_wrapper"}>
+                    <h1>{promoParams.title}</h1>
+                    <p>{promoParams.text}</p>
+                    <button>{promoParams.btn_text}</button>
                 </div>
             </div>
+
+
+            {/*<div className="desktop_promo_section__wrapper">*/}
+            {/*    <div className="desktop_promo__left_side">*/}
+            {/*        /!*<Banner {...PromoParams[0]} />*!/*/}
+            {/*    </div>*/}
+            {/*    <div className="desktop_promo__right_side">*/}
+            {/*        /!*<Banner {...PromoParams[1]} />*!/*/}
+            {/*        /!*<Banner {...PromoParams[2]} />*!/*/}
+            {/*    </div>*/}
+            {/*</div>*/}
         </section>
     )
 }

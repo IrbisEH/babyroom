@@ -28,15 +28,15 @@ const Navbar = ({ isMobile }) => {
     ]
 
     const renderNavList = () => {
-        const navClassName = isMobile ? "nav__list_col" : "nav__list";
+        const navClassName = isMobile ? "nav__menu_list_mob" : "nav__menu_list";
         return (
             <ul className={navClassName}>
                 {menuItems.map(item => (
-                    <li key={generateKey(item.id)} className="nav__item">
+                    <li key={generateKey(item.id)} className="nav__menu_item">
                         <NavLink
                             to={item.to}
-                            className="nav__link"
-                            onClick={toggleMenu}
+                            className="nav__menu_link"
+                            onClick={isMobile ? toggleMenu : null}
                         >
                             {item.name}
                         </NavLink>
@@ -78,7 +78,9 @@ const Navbar = ({ isMobile }) => {
                             <img src={logo} alt="logo"/>
                             <h1>BABYROOM</h1>
                         </NavLink>
-                        {renderNavList()}
+                        <div className="nav__menu">
+                            {renderNavList()}
+                        </div>
                         <NavLink to="/cart" className="nav__cart">
                             <span badge={countCartItems}>
                                 <FiShoppingCart size={iconSize} />
