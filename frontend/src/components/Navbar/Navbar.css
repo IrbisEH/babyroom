@@ -6,7 +6,6 @@ header {
 .nav {
     height: 100%;
     margin-inline: auto;
-    /*background-color: var(--orange-color);*/
     display: flex;
     flex-direction: row;
     align-items: center;

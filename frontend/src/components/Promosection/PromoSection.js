@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import "./PromoSection.css";
 import bannerImg1 from "../../static/media/banner_img_1.png"
 import bannerImg2 from "../../static/media/banner_img_2.png"
@@ -6,47 +7,41 @@ import bannerImg3 from "../../static/media/banner_img_3.png"
 
 
 
-const Banner = ({ src, alt, title, text, btn_text }) => {
-    // для управления стиля кнопки добавлять или удаляьть классы
+const Banner = ({ src, alt, title, text, btn_text, banner_type, path_to }) => {
     return (
-        <article className="maxi_banner">
-            <div className="maxi_banner__wrapper">
-                <img src={src} alt={alt}/>
-                <div className="maxi_banner__text_wrapper">
-                    <h1>{title}</h1>
-                    <p>{text}</p>
-                    {btn_text ? (
-                        <button>{btn_text}</button>
-                    ) : null}
-                </div>
+        <>
+            <img src={src} alt={alt}/>
+            <div className={banner_type ? "banner__text_wrapper mini" : "banner__text_wrapper"}>
+                <h1>{title}</h1>
+                <p>{text}</p>
+                {btn_text && path_to ? (
+                    <NavLink className="link" to={path_to}>
+                        {banner_type ? (
+                            <p>{btn_text + " >"}</p>
+                        ) : (
+                            <button>{btn_text}</button>
+                        )}
+                    </NavLink>
+                ) : null}
             </div>
-        </article>
+        </>
     );
 }
 
 const DesktopPromoSection = (PromoParams) => {
-    const promoParams = PromoParams[0];
     return (
         <section className="promo_section">
-            <div className="banner__wrapper">
-                <img src={promoParams.src} alt={promoParams.alt} />
-                <div className={"banner__text_wrapper"}>
-                    <h1>{promoParams.title}</h1>
-                    <p>{promoParams.text}</p>
-                    <button>{promoParams.btn_text}</button>
+            <div className="banner__left_side">
+                <Banner {...PromoParams[0]} />
+            </div>
+            <div className="banner__right_side">
+                <div className="banner_right_top_side">
+                    <Banner {...PromoParams[1]} />
+                </div>
+                <div className="banner_right_bottom_side">
+                    <Banner {...PromoParams[2]} />
                 </div>
             </div>
-
-
-            {/*<div className="desktop_promo_section__wrapper">*/}
-            {/*    <div className="desktop_promo__left_side">*/}
-            {/*        /!*<Banner {...PromoParams[0]} />*!/*/}
-            {/*    </div>*/}
-            {/*    <div className="desktop_promo__right_side">*/}
-            {/*        /!*<Banner {...PromoParams[1]} />*!/*/}
-            {/*        /!*<Banner {...PromoParams[2]} />*!/*/}
-            {/*    </div>*/}
-            {/*</div>*/}
         </section>
     )
 }
@@ -59,19 +54,24 @@ const PromoSection = ({isMobile}) => {
             src: bannerImg1, alt: "promo_img_1",
             title: "Все, что нужно для вашего ребенка",
             text: "Гармония стиля и качества. Наши модели не только выглядят потрясающе, но и обеспечивают высочайший уровень комфорта для активной жизни вашего малыша.",
-            btn_text: "В каталог"
+            btn_text: "В каталог",
+            path_to: "/catalog"
         },
         {
             src: bannerImg2, alt: "promo_img_2",
             title: "одежда из хлопка",
             text: "Безопасно для здоровья малыша",
-            btn_text: null
+            btn_text: null,
+            // btn_text: "В каталог",
+            banner_type: "mini"
         },
         {
             src: bannerImg3, alt: "promo_img_3",
             title: "Baby",
             text: "Новый образ",
-            btn_text: "В каталог"
+            btn_text: "В каталог",
+            banner_type: "mini",
+            path_to: "/catalog"
         }
     ]
 
