@@ -1,0 +1,27 @@
+.section_title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section_title__text_wrapper {
+    width: 40vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section_title__text_wrapper h1 {
+    color: var(--orange-color);
+    font-size: var(--title-font-size);
+    font-family: var(--first-font);
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.section_title__text_wrapper p {
+    color: var(--grey-color);
+    font-size: var(--subtitle-font-size);
+    font-family: var(--second-font);
+    text-align: center;
+}

@@ -5,8 +5,6 @@ import bannerImg1 from "../../static/media/banner_img_1.png"
 import bannerImg2 from "../../static/media/banner_img_2.png"
 import bannerImg3 from "../../static/media/banner_img_3.png"
 
-
-
 const Banner = ({ src, alt, title, text, btn_text, banner_type, path_to }) => {
     return (
         <>
