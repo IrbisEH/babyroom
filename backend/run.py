@@ -1,3 +1,4 @@
+from datetime import timedelta
 from flask import Flask, request, jsonify
 from flask_jwt_extended import (
     JWTManager, jwt_required, get_jwt_identity, create_access_token
@@ -23,12 +24,13 @@ def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
     if username in users and users[username] == password:
-        access_token = create_access_token(identity=username)
+        expires = timedelta(days=30)
+        access_token = create_access_token(identity=username, expires_delta=expires)
         return jsonify(access_token=access_token), 200
     else:
         return jsonify({"message": "Wrong username or password"}), 401
 
-@app.route("/api/protected", methods=["GET"])
+@app.route("/api/check_jwt", methods=["GET"])
 @jwt_required()
 def protected():
     current_user = get_jwt_identity()
