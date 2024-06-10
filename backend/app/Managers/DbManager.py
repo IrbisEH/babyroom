@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from ..Models import Base
 from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 
@@ -40,3 +41,10 @@ class DbManager:
         except Exception as e:
             print(e)
             self.log_manager.error('Connect to DB failed.')
+
+    def create_tables(self):
+        try:
+            Base.metadata.create_all(self.engine)
+            self.log_manager.info(f'Tables created.')
+        except Exception as e:
+            self.log_manager.error(e)

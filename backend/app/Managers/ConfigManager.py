@@ -23,6 +23,8 @@ class AppConfig:
     db_pass = None
     db_name = None
 
+    user_expire = None
+
 class ConfigManager:
     def __init__(self, root_path):
         self.paths = AppPaths(root_path)
@@ -37,3 +39,5 @@ class ConfigManager:
         self.app_config.db_user = str(os.getenv("DB_USER", ""))
         self.app_config.db_pass = str(os.getenv("DB_PASS", ""))
         self.app_config.db_name = str(os.getenv("DB_NAME", "test_school"))
+
+        self.app_config.user_expire = int(os.getenv("USER_EXPIRE", 30))
