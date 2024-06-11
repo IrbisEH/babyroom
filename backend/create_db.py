@@ -4,6 +4,7 @@ from app.Managers.LogManager import LogManager
 from app.Managers.DbManager import DbManager
 from app.Models import Base
 from app.Models.UserModel import UserModel
+from app.Models.ProductModel import ProductModel
 
 
 DIR = os.path.dirname(__file__)

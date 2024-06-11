@@ -193,3 +193,20 @@ a {
     --grey-color: #575454;
 }
 
+.admin_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin_header h1 {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 1.5em;
+}
+
+.admin_header_toolbar button {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 0.8em;
+}
+

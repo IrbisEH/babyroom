@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
 import "./LoginForm.css";
 import { useNavigate } from 'react-router-dom';
 
-const LoginForm = () => {
+const LoginForm = ({ Session }) => {
 
     const navigate = useNavigate();
 
@@ -12,22 +11,13 @@ const LoginForm = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
-        try
-        {
-            const response = await axios.post("http://192.168.1.72:5000/api/login", {
-                username,
-                password
+        Session.Login(username, password)
+            .then((response) => {
+                if(response)
+                {
+                    navigate("/admin")
+                }
             });
-
-            localStorage.setItem("token", response.data.access_token);
-            navigate("/admin");
-        }
-        catch (error)
-        {
-            // TODO: раскрасить поля инпута, показать что пароль не верен
-            console.error('Login failed', error)
-        }
     }
 
     return (

@@ -1,50 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import AdminProductsTable from "../components/AdminProductsTable/AdminProductsTable";
 
-const AdminPage = () => {
+const AdminPage = ({ Session }) => {
 
     const navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-    const LogOut = () => {
-        localStorage.removeItem("token");
-        setIsAuthenticated(false);
-        navigate("/login");
-    }
 
     useEffect(() => {
-        const jwt = localStorage.getItem("token");
-
-        if(jwt)
-        {
-            const headers = {
-            'Authorization': `Bearer ${jwt}`
-        };
-
-            axios.get("http://192.168.1.72:5000/api/check_jwt", { headers })
-                .then(response => {
-                    console.log(response)
-                    setIsAuthenticated(true);
-                })
-                .catch(error => {
-                    console.log(error)
-                    localStorage.removeItem("token");
+        Session.CheckToken()
+            .then(response => {
+                if(!response)
+                {
                     navigate("/login");
-                });
-        }
-        else
-        {
-            navigate("/login");
-        }
-    }, [navigate]);
+                }
+            });
+    });
+
+    const Logout = () => {
+        Session.Logout();
+        navigate("/login")
+    }
 
     return (
         <>
-            <header className="admin_page_header">
-                <h1>Admin Page</h1>
-                <button className="admin_page_log_button" onClick={LogOut}>Выход</button>
+            <header className="admin_header">
+                <h1>BABYROOM ADMIN</h1>
+                <div className="admin_header_toolbar">
+                    <button onClick={Logout}>Выход</button>
+                </div>
             </header>
+            <section className="products">
+                <>
+                    <AdminProductsTable />
+                </>
+            </section>
         </>
     );
 }

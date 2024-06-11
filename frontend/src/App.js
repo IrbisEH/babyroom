@@ -10,8 +10,12 @@ import Cart from "./pages/Cart";
 import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
 
+import SessionManager from "./SessionManager";
 
 const App = () => {
+
+    const Session = new SessionManager();
+
     return (
         <BrowserRouter>
             <Routes>
@@ -21,8 +25,8 @@ const App = () => {
                 <Route path={"/sales"} element={<Sales />} />
                 <Route path={"/info"} element={<Info />} />
                 <Route path={"/cart"} element={<Cart />} />
-                <Route path={"/login"} element={<LoginPage />} />
-                <Route path={"/admin"} element={<AdminPage />} />
+                <Route path={"/login"} element={<LoginPage Session={Session} />} />
+                <Route path={"/admin"} element={<AdminPage Session={Session} />} />
             </Routes>
         </BrowserRouter>
     );
