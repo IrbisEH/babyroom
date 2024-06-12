@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./LoginForm.css";
 import { useNavigate } from 'react-router-dom';
 
-const LoginForm = ({ Session }) => {
+const LoginForm = ({ Session, setIsLoggedIn }) => {
 
     const navigate = useNavigate();
 
@@ -11,13 +11,18 @@ const LoginForm = ({ Session }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        Session.Login(username, password)
-            .then((response) => {
-                if(response)
-                {
-                    navigate("/admin")
-                }
-            });
+
+        Session.SendRequest({
+            method: "post",
+            target: "login",
+            data: {username, password}
+        }).then(result => {
+            Session.Login(result.data.username, result.data.token)
+            setIsLoggedIn(true);
+            navigate("/admin")
+        }).catch(error => {
+            console.error(error)
+        });
     }
 
     return (

@@ -1,11 +1,17 @@
-import React from "react";
-import "./AdminProductsTable.css"
+import React, { useState } from "react";
+import DataTable from 'react-data-table-component';
+import CreateProductCategoryFormModal from "../CreateProductCategoryModal/CreateProductCategoryFormModal"
 
-const ConvertPropsNameDic = {
-    title: "Название",
-    subtitle: "Мини описание",
-    description: "Описание",
-    price: "Цена"
+const ProductCategoryModel = function(Params)
+{
+	let model = {};
+
+	model.id = Params && Params.id ? Params.id : "";
+	model.name = Params && Params.name ? Params.name : "";
+	model.description = Params && Params.description ? Params.description : "";
+	model.units = Params && Params.units ? Params.units : "";
+
+	return model;
 }
 
 const ProductModel = function(Params)
@@ -13,6 +19,7 @@ const ProductModel = function(Params)
     let model = {};
 
     model.id = Params && Params.id ? Params.id : "";
+    model.category_id = Params && Params.category_id ? Params.category_id : "";
     model.enable = Params
     model.title = Params && Params.title ? Params.title : "";
     model.subtitle = Params && Params.subtitle ? Params.subtitle : "";
@@ -21,14 +28,57 @@ const ProductModel = function(Params)
     model.price = Params && Params.price ? Params.price : "";
 }
 
-const AdminProductsTable = () => {
+const ProductCategoryColumns = [
+	{
+		name: "Название",
+		selector: row => row.name,
+	},
+	{
+		name: "Описание",
+		selector: row => row.description,
+	},
+	{
+		name: "Размеры",
+		selector: row => row.units,
+	},
+
+];
+
+const data = [
+
+]
+
+const AdminProductsTable = ({ Session }) => {
+	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	const handleOpenModal = () => {
+		setIsModalOpen(true)
+	}
+
+	const handleCloseModal = () => {
+		setIsModalOpen(false)
+	}
+
     return (
-        <div className="table_header">
-            {Object.keys(ConvertPropsNameDic).map((key) => (
-                <div key={key} id={key} className="header_cell">{ConvertPropsNameDic[key]}</div>
-            ))}
-        </div>
-    )
+		<>
+			<h1>категории товаров</h1>
+			<div style={{display: "flex", gap: "1em"}}>
+				<button onClick={handleOpenModal}>
+					Добавить
+				</button>
+			</div>
+			<DataTable
+				columns={ProductCategoryColumns}
+				data={data}
+				pagination
+			/>
+			<CreateProductCategoryFormModal
+				Session={Session}
+				isOpen={isModalOpen}
+				onClose={handleCloseModal}
+			/>
+		</>
+	)
 }
 
 export default AdminProductsTable;

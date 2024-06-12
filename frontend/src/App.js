@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import Home from "./pages/Home";
@@ -14,7 +14,26 @@ import SessionManager from "./SessionManager";
 
 const App = () => {
 
+    debugger
+
     const Session = new SessionManager();
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        if(Session.token)
+        {
+            Session.SendRequest({
+                method: "get",
+                target: "check_jwt",
+            }).then(result => {
+                Session.Login(result.data.username, Session.token);
+                setIsLoggedIn(true);
+            }).catch(error => {
+                Session.Logout()
+            });
+        }
+    });
 
     return (
         <BrowserRouter>
@@ -25,8 +44,8 @@ const App = () => {
                 <Route path={"/sales"} element={<Sales />} />
                 <Route path={"/info"} element={<Info />} />
                 <Route path={"/cart"} element={<Cart />} />
-                <Route path={"/login"} element={<LoginPage Session={Session} />} />
-                <Route path={"/admin"} element={<AdminPage Session={Session} />} />
+                <Route path={"/login"} element={<LoginPage Session={Session} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
+                <Route path={"/admin"} element={<AdminPage Session={Session} isLoggedIn={isLoggedIn} />} />
             </Routes>
         </BrowserRouter>
     );
