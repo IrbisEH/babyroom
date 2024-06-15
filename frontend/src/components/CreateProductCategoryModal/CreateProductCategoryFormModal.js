@@ -38,15 +38,8 @@ const CreateProductCategoryFormModal = ({ apiManager, isOpen, onClose }) => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        // Session.SendRequest({
-        //     method: "post",
-        //     target: "create_product_category",
-        //     data: formState
-        // }).then(result => {
-        //     console.log(result)
-        // }).catch(error => {
-        //     console.error(error)
-        // });
+        
+
 
         setFormState(initialFromData);
         onClose();
@@ -75,7 +68,7 @@ const CreateProductCategoryFormModal = ({ apiManager, isOpen, onClose }) => {
                     >
                     </input>
                 </div>
-                <div className="form-row">
+                <div className="form-row-textarea">
                     <label htmlFor="units">Размеры</label>
                     <textarea
                         id="units"
@@ -87,7 +80,7 @@ const CreateProductCategoryFormModal = ({ apiManager, isOpen, onClose }) => {
                     </textarea>
                 </div>
                 <div className="form-row">
-                    <button type="submit">Submit</button>
+                    <button type="submit">Добавить</button>
                 </div>
             </form>
         </Modal>

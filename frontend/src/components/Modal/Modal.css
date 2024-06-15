@@ -3,17 +3,52 @@
 }
 
 .modal {
-    /*max-width: 20rem;*/
     padding: 2rem;
     border: 0;
     border-radius: 0.5rem;
     position: relative;
     box-shadow: hsl(0 0% 0% / 10%) 0 0 0.5rem 0.25rem;
+    font-family: var(--second-font), serif;
 }
 
-.modal__close_btn {
-    font-size: 0.75rem;
+.modal__wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal .form-row {
+    height: 2.5rem;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+
+.modal .form-row-textarea {
+    height: 20rem;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+
+.modal .form-row label {
+    width: 6.5rem;
+}
+
+.modal .form-row-textarea label {
+    width: 6.5rem;
+}
+
+.modal .form-row input {
+    width: 14rem;}
+
+.modal .form-row-textarea textarea {
+    width: 14rem;
+    resize: none;
+    overflow: auto;
+}
+
+.modal__close_icon {
     position: absolute;
-    top: 0.25rem;
-    right: 0.25rem;
+    top: 0.5rem;
+    right: 0.5rem;
 }

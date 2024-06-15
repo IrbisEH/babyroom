@@ -69,8 +69,6 @@ def login():
 
     return jsonify(result.to_dict()), result.status
 
-
-# TODO: Проверить Expire
 @app.route("/api/check_jwt", methods=["GET"])
 @jwt_required()
 def check_jwt():
