@@ -48,7 +48,7 @@ const data = [
 
 ]
 
-const AdminProductsTable = ({ Session }) => {
+const AdminProductsTable = ({ apiManager }) => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const handleOpenModal = () => {
@@ -73,7 +73,7 @@ const AdminProductsTable = ({ Session }) => {
 				pagination
 			/>
 			<CreateProductCategoryFormModal
-				Session={Session}
+				apiManager={apiManager}
 				isOpen={isModalOpen}
 				onClose={handleCloseModal}
 			/>

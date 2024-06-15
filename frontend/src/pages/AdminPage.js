@@ -3,19 +3,20 @@ import { useNavigate } from "react-router-dom";
 import AdminProductsTable from "../components/AdminProductsTable/AdminProductsTable";
 
 
-const AdminPage = ({ Session, isLoggedIn }) => {
+const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
 
     const navigate = useNavigate();
 
     useEffect(() => {
         if(!isLoggedIn)
             navigate("/login");
-
     });
 
     const Logout = () => {
-        Session.Logout();
-        navigate("/login")
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        apiManager.RemoveToken();
+        setIsLoggedIn(false);
     }
 
     return (
@@ -29,7 +30,7 @@ const AdminPage = ({ Session, isLoggedIn }) => {
                         </div>
                     </header>
                     <section className="products">
-                        <AdminProductsTable Session={Session}/>
+                        <AdminProductsTable apiManager={apiManager}/>
                     </section>
                 </>
             )}

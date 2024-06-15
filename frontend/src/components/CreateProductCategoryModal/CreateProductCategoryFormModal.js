@@ -8,7 +8,7 @@ const initialFromData = {
     units: ""
 }
 
-const CreateProductCategoryFormModal = ({ Session, isOpen, onClose }) => {
+const CreateProductCategoryFormModal = ({ apiManager, isOpen, onClose }) => {
     const [formState, setFormState] = useState(initialFromData);
 
     const handleInputChange = (event) => {
@@ -38,15 +38,15 @@ const CreateProductCategoryFormModal = ({ Session, isOpen, onClose }) => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        Session.SendRequest({
-            method: "post",
-            target: "create_product_category",
-            data: formState
-        }).then(result => {
-            console.log(result)
-        }).catch(error => {
-            console.error(error)
-        });
+        // Session.SendRequest({
+        //     method: "post",
+        //     target: "create_product_category",
+        //     data: formState
+        // }).then(result => {
+        //     console.log(result)
+        // }).catch(error => {
+        //     console.error(error)
+        // });
 
         setFormState(initialFromData);
         onClose();

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginForm from "../components/LoginForm/LoginForm";
 
-const LoginPage = ({ Session, isLoggedIn, setIsLoggedIn }) => {
+const LoginPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -12,7 +12,7 @@ const LoginPage = ({ Session, isLoggedIn, setIsLoggedIn }) => {
 
     return (
         <>
-            {!isLoggedIn && (<LoginForm Session={Session} setIsLoggedIn={setIsLoggedIn} />)}
+            {!isLoggedIn && (<LoginForm apiManager={apiManager} setIsLoggedIn={setIsLoggedIn} />)}
         </>
     );
 }

@@ -5,3 +5,9 @@ from app.Managers.DbManager import DbManager
 from app.Managers.ResultManager import GetOk, GetError
 from app.Models.UserModel import UserModel
 
+
+DIR = os.path.dirname(os.path.abspath(__file__))
+
+config = ConfigManager(DIR)
+log = LogManager(config)
+db = DbManager(config, log)

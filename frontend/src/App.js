@@ -10,30 +10,34 @@ import Cart from "./pages/Cart";
 import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
 
-import SessionManager from "./SessionManager";
+import ApiManager from "./ApiManager";
 
 const App = () => {
-
-    debugger
-
-    const Session = new SessionManager();
+    let apiManager = new ApiManager();
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        if(Session.token)
+        let token = localStorage.getItem("token");
+        if(token)
         {
-            Session.SendRequest({
-                method: "get",
-                target: "check_jwt",
-            }).then(result => {
-                Session.Login(result.data.username, Session.token);
+            apiManager.SetToken(token);
+
+            apiManager.SendRequest({
+                method: "GET",
+                endpoint: "/check_jwt",
+            })
+            .then(result => {
+                localStorage.setItem("username", result.data.username);
                 setIsLoggedIn(true);
-            }).catch(error => {
-                Session.Logout()
-            });
+            })
+            .catch(error => {
+                apiManager.RemoveToken()
+                localStorage.removeItem("token");
+                localStorage.removeItem("username");
+            })
         }
-    });
+    },[]);
 
     return (
         <BrowserRouter>
@@ -44,8 +48,8 @@ const App = () => {
                 <Route path={"/sales"} element={<Sales />} />
                 <Route path={"/info"} element={<Info />} />
                 <Route path={"/cart"} element={<Cart />} />
-                <Route path={"/login"} element={<LoginPage Session={Session} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
-                <Route path={"/admin"} element={<AdminPage Session={Session} isLoggedIn={isLoggedIn} />} />
+                <Route path={"/login"} element={<LoginPage apiManager={apiManager} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
+                <Route path={"/admin"} element={<AdminPage apiManager={apiManager} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
             </Routes>
         </BrowserRouter>
     );

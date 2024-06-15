@@ -40,4 +40,5 @@ class ConfigManager:
         self.app_config.db_pass = str(os.getenv("DB_PASS", ""))
         self.app_config.db_name = str(os.getenv("DB_NAME", "test_school"))
 
+        self.app_config.jwt_secret_code = os.getenv("JWT_SECRET_KEY", "secret_code")
         self.app_config.user_expire = int(os.getenv("USER_EXPIRE", 30))

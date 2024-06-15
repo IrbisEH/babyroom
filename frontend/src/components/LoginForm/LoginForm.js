@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./LoginForm.css";
 import { useNavigate } from 'react-router-dom';
 
-const LoginForm = ({ Session, setIsLoggedIn }) => {
+const LoginForm = ({ apiManager, setIsLoggedIn }) => {
 
     const navigate = useNavigate();
 
@@ -12,17 +12,25 @@ const LoginForm = ({ Session, setIsLoggedIn }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        Session.SendRequest({
-            method: "post",
-            target: "login",
-            data: {username, password}
-        }).then(result => {
-            Session.Login(result.data.username, result.data.token)
+        apiManager.SendRequest({
+            method: "POST",
+            endpoint: "/login",
+            data: {
+                username:username,
+                password:password
+            }
+        })
+        .then(result => {
+            localStorage.setItem("token", result.data.token);
+            localStorage.setItem("username", result.data.username);
+            apiManager.SetToken(result.data.token);
             setIsLoggedIn(true);
-            navigate("/admin")
-        }).catch(error => {
+            navigate("/admin");
+        })
+        .catch(error => {
             console.error(error)
         });
+
     }
 
     return (
