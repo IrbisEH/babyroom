@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import './CreateProductCategoryFormModal.css';
+import './ProductCategoryFormModal.css';
 import Modal from '../Modal/Modal';
 
-const initialFromData = {
-    name: "",
-    description: "",
-    units: ""
+export const FormProductCategoryModel = (Params) =>
+{
+	let model = {};
+
+	model.name = Params && Params.name ? Params.name : "";
+	model.description = Params && Params.description ? Params.description : "";
+	model.units = Params && Params.units ? Params.units.join("\n") : "";
+
+	return model;
 }
 
-const CreateProductCategoryFormModal = ({ apiManager, isOpen, onClose }) => {
-    const [formState, setFormState] = useState(initialFromData);
 
+export const ProductCategoryFormModal = ({ apiManager, isOpen, onClose, formState, setFormState, setTableData, submitBtnName }) => {
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setFormState((prevFormData) => ({
@@ -38,10 +42,21 @@ const CreateProductCategoryFormModal = ({ apiManager, isOpen, onClose }) => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        
+        apiManager.SendRequest({
+            method: "POST",
+            endpoint: "/product_category",
+            data: formState
+        })
+        .then(result => {
+            if(result.data)
+            {
+                result.data.units = JSON.parse(result.data.units);
+                setTableData(prevData => [result.data].concat(prevData));
+                setFormState(FormProductCategoryModel());
+            }
+        })
+        .catch(error => {console.log(error)})
 
-
-        setFormState(initialFromData);
         onClose();
     };
 
@@ -80,11 +95,9 @@ const CreateProductCategoryFormModal = ({ apiManager, isOpen, onClose }) => {
                     </textarea>
                 </div>
                 <div className="form-row">
-                    <button type="submit">Добавить</button>
+                    <button type="submit">{submitBtnName}</button>
                 </div>
             </form>
         </Modal>
     );
 }
-
-export default CreateProductCategoryFormModal;

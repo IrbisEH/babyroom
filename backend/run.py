@@ -1,23 +1,22 @@
 import os
-import json
 
 import app.Exceptions as Exceptions
 
 from datetime import timedelta
 
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify
 from flask_jwt_extended import (
     JWTManager, jwt_required, get_jwt_identity, create_access_token
 )
+
 from flask_cors import CORS
 
 from app.Managers.ConfigManager import ConfigManager
 from app.Managers.LogManager import LogManager
 from app.Managers.DbManager import DbManager
+from app.Managers.ProductCategoryManager import ProductCategoryManager
 from app.Models.UserModel import UserModel
-from app.Models.ProductCategoryModel import ProductCategoryModel
-
-from app.Result import Result
+from app.Models.ResultModel import Result
 
 DIR = os.path.dirname(__file__)
 
@@ -28,8 +27,16 @@ db = DbManager(config, log)
 app = Flask(__name__)
 cors = CORS(app)
 
-app.config["JWT_SECRET_KEY"] = "secret-code"
+app.config["JWT_SECRET_KEY"] = config.app_config.jwt_secret_code
 jwt = JWTManager(app)
+
+@app.before_request
+def before_request():
+    headers = {'Access-Control-Allow-Origin': '*',
+               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+               'Access-Control-Allow-Headers': 'Content-Type'}
+    if request.method.lower() == 'options':
+        return jsonify(headers), 200
 
 @app.route("/api/login", methods=['POST'])
 def login():
@@ -92,30 +99,39 @@ def check_jwt():
 
     return jsonify(result.to_dict()), result.status
 
-# @app.route("/api/create_product_category", methods=["POST"])
-# @jwt_required()
-# def create_product_category():
-#     result = GetError()
-#     try:
-#         data = request.get_json()
-#
-#         if data["units"] and len(data["units"]) > 0:
-#             units_list = data["units"].split("\n")
-#             print(units_list)
-#             units_list = list(filter(lambda x: len(x) > 0, units_list))
-#             data["units"] = json.dumps(units_list)
-#
-#         category = ProductCategoryModel(**data)
-#         db.session.add(category)
-#         db.session.commit()
-#
-#         result = GetOk(category.to_dict())
-#     except Exception as e:
-#         error_msg = e.args[0]
-#         log.error(error_msg)
-#         result = GetError(error_msg=error_msg)
-#
-#     return jsonify(result), 200
+@app.route("/api/product_category", methods=["POST", "GET", "PATCH", "DELETE"])
+@jwt_required()
+def create_product_category():
+    result = Result()
+    manager = ProductCategoryManager(config, log, db)
+
+    try:
+        if request.method == "POST":
+            data = request.get_json()
+            result = manager.add_new_product_category(data)
+        elif request.method == "GET":
+            result = manager.get_product_category_list()
+        elif request.method == "PATCH":
+            pass
+        elif request.method == "DELETE":
+            data = request.get_json()
+            if data["product_category_id"]:
+                result = manager.delete_product_category(data["product_category_id"])
+            else:
+                raise Exceptions.InvalidCredentialsException("Product category id not found")
+        else:
+            pass
+
+    except Exceptions.InvalidCredentialsException as e:
+        msg = str(e)
+        log.error(msg)
+        result = Result(msg=msg, status=401)
+    except Exception as e:
+        msg = str(e)
+        log.error(msg)
+        result = Result(msg=msg, status=400)
+
+    return jsonify(result.to_dict()), result.status
 
 
 if __name__ == "__main__":

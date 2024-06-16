@@ -1,0 +1,77 @@
+import json
+import traceback
+
+from ..Models.ProductCategoryModel import ProductCategoryModel
+from ..Models.ResultModel import Result
+
+
+class ProductCategoryManager:
+    def __init__(self, config, log, db):
+        self.config = config
+        self.log = log
+        self.db = db
+
+    def add_new_product_category(self, data):
+        result = Result()
+        try:
+
+            if data["units"] and len(data["units"]) > 0:
+                units_list = data["units"].split("\n")
+                units_list = list(filter(lambda x: len(x) > 0, units_list))
+                data["units"] = json.dumps(units_list)
+                print(json.loads(data["units"]))
+
+            category = ProductCategoryModel(**data)
+
+            self.db.session.add(category)
+            self.db.session.commit()
+
+            self.log.info(f"Added new product category id: {category.id} name: {category.name}")
+
+            result.data = category.to_dict()
+
+        except Exception as e:
+            msg = str(e)
+            self.log.error(msg)
+            result = Result(msg=msg, status=401)
+
+        return result
+
+    def get_product_category(self, category_id):
+        pass
+
+    def change_product_category(self, data):
+        pass
+
+    def delete_product_category(self, product_category_id):
+        result = Result()
+        try:
+            product_category = self.db.session.query(ProductCategoryModel).get(product_category_id)
+
+            if product_category:
+                self.db.session.delete(product_category)
+                self.db.session.commit()
+            else:
+                raise Exception("Product category does not exist")
+
+        except Exception as e:
+            msg = str(e)
+            self.log.error(msg)
+            result = Result(msg=msg, status=401)
+
+        return result
+
+    def get_product_category_list(self):
+        result = Result()
+
+        try:
+            data = self.db.session.query(ProductCategoryModel).all()
+            result.data = [item.to_dict() for item in data]
+        except Exception as e:
+            msg = str(e)
+            self.log.error(msg)
+            result = Result(msg=msg, status=401)
+
+        return result
+
+

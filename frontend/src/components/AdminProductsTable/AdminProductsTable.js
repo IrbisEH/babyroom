@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from 'react-data-table-component';
-import CreateProductCategoryFormModal from "../CreateProductCategoryModal/CreateProductCategoryFormModal"
+import { ProductCategoryFormModal, FormProductCategoryModel } from "../ProductCategoryFormModal/ProductCategoryFormModal"
+import { FaRegTrashCan } from "react-icons/fa6";
+import { FaRegEdit } from "react-icons/fa";
 
 const ProductCategoryModel = function(Params)
 {
@@ -9,7 +11,15 @@ const ProductCategoryModel = function(Params)
 	model.id = Params && Params.id ? Params.id : "";
 	model.name = Params && Params.name ? Params.name : "";
 	model.description = Params && Params.description ? Params.description : "";
-	model.units = Params && Params.units ? Params.units : "";
+
+	try
+	{
+		model.units = JSON.parse(Params.units);
+	}
+	catch(e)
+	{
+		model.units = "";
+	}
 
 	return model;
 }
@@ -28,36 +38,114 @@ const ProductModel = function(Params)
     model.price = Params && Params.price ? Params.price : "";
 }
 
-const ProductCategoryColumns = [
-	{
-		name: "Название",
-		selector: row => row.name,
-	},
-	{
-		name: "Описание",
-		selector: row => row.description,
-	},
-	{
-		name: "Размеры",
-		selector: row => row.units,
-	},
-
-];
-
-const data = [
-
-]
-
 const AdminProductsTable = ({ apiManager }) => {
+
+	const [submitBtnName, setSubmitBtnName] = useState("Добавить");
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [formState, setFormState] = useState(FormProductCategoryModel());
+	const [tableData, setTableData] = useState([]);
+
+	const productCategoriesColumns = [
+		{
+			id: "id",
+			name: "id",
+			selector: row => row.id,
+			width: "100px",
+		},
+		{
+			id: "name",
+			name: "Название",
+			selector: row => row.name,
+			width: "200px",
+		},
+		{
+			id: "description",
+			name: "Описание",
+			selector: row => row.description,
+		},
+		{
+			id: "units",
+			name: "Размеры",
+			selector: row => (
+				<div>
+					{row.units && row.units.length > 0 ? (
+						row.units.map((item, i) => (
+							<div key={`unit_${i}`}>{item}</div>
+						))
+					) : (
+						<div>-</div>
+					)}
+				</div>
+			),
+		},
+		{
+			id: "edit",
+			cell: row => (
+				<div onClick={(event) => handleEditIconClick(event, row)}>
+					<FaRegEdit size={16}/>
+				</div>
+			),
+			button: "true",
+			width: "50px",
+		},
+		{
+			id: "trash",
+			cell: row => (
+				<div onClick={(event) => handleTrashIconClick(event, row)}>
+					<FaRegTrashCan size={16}/>
+				</div>
+			),
+			button: "true",
+			width: "50px",
+		}
+	];
+
+	const handleEditIconClick = (event, row) => {
+		if(row && row.id)
+		{
+			setSubmitBtnName("Применить");
+			setFormState(FormProductCategoryModel(row));
+			setIsModalOpen(true);
+		}
+	}
+
+	const handleTrashIconClick = (event, row) => {
+		if(row && row.id)
+		{
+			apiManager.SendRequest({
+				method: "DELETE",
+				endpoint: "/product_category",
+				data: {product_category_id: row.id}
+			})
+			.then(result => setTableData(prevState => prevState.filter(item => item.id !== row.id)))
+			.catch(error => console.log(error))
+		}
+	}
 
 	const handleOpenModal = () => {
-		setIsModalOpen(true)
+		setSubmitBtnName("Добавить");
+		setFormState(FormProductCategoryModel());
+		setIsModalOpen(true);
 	}
 
 	const handleCloseModal = () => {
 		setIsModalOpen(false)
 	}
+
+	useEffect(() => {
+		apiManager.SendRequest({
+			method: "GET",
+			endpoint: "/product_category",
+		})
+		.then(response => {
+			if(response.data)
+			{
+				let data = response.data.map(item => ProductCategoryModel(item));
+                setTableData(prevData => data.concat(prevData));
+			}
+		})
+		.catch(error => console.log(error));
+	}, []);
 
     return (
 		<>
@@ -68,14 +156,18 @@ const AdminProductsTable = ({ apiManager }) => {
 				</button>
 			</div>
 			<DataTable
-				columns={ProductCategoryColumns}
-				data={data}
+				columns={productCategoriesColumns}
+				data={tableData}
 				pagination
 			/>
-			<CreateProductCategoryFormModal
+			<ProductCategoryFormModal
 				apiManager={apiManager}
 				isOpen={isModalOpen}
 				onClose={handleCloseModal}
+				formState={formState}
+				setFormState={setFormState}
+				setTableData={setTableData}
+				submitBtnName={submitBtnName}
 			/>
 		</>
 	)
