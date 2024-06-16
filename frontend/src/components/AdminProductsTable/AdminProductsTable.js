@@ -3,6 +3,9 @@ import DataTable from 'react-data-table-component';
 import { ProductCategoryFormModal, FormProductCategoryModel } from "../ProductCategoryFormModal/ProductCategoryFormModal"
 import { FaRegTrashCan } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
+import { IoMdAddCircleOutline } from "react-icons/io";
+
+import "./AdminProductsTable.css";
 
 const ProductCategoryModel = function(Params)
 {
@@ -149,11 +152,9 @@ const AdminProductsTable = ({ apiManager }) => {
 
     return (
 		<>
-			<h1>категории товаров</h1>
-			<div style={{display: "flex", gap: "1em"}}>
-				<button onClick={handleOpenModal}>
-					Добавить
-				</button>
+			<div className="table_toolbar">
+				<h1>категории товаров</h1>
+				<IoMdAddCircleOutline onClick={handleOpenModal} size={20}/>
 			</div>
 			<DataTable
 				columns={productCategoriesColumns}

@@ -108,7 +108,11 @@ def create_product_category():
     try:
         if request.method == "POST":
             data = request.get_json()
-            result = manager.add_new_product_category(data)
+            if "id" in data and data["id"] and int(data["id"]) > 0:
+                result = manager.update_product_category(data)
+            else:
+                del data["id"]
+                result = manager.create_product_category(data)
         elif request.method == "GET":
             result = manager.get_product_category_list()
         elif request.method == "PATCH":
@@ -138,6 +142,6 @@ if __name__ == "__main__":
     app.run(
         debug=True,
         host="127.0.0.1",
-        port=5000
+        port=5001
     )
 

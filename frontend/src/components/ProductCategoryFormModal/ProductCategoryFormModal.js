@@ -6,6 +6,7 @@ export const FormProductCategoryModel = (Params) =>
 {
 	let model = {};
 
+    model.id = Params && Params.id ? Params.id : "";
 	model.name = Params && Params.name ? Params.name : "";
 	model.description = Params && Params.description ? Params.description : "";
 	model.units = Params && Params.units ? Params.units.join("\n") : "";
@@ -50,8 +51,19 @@ export const ProductCategoryFormModal = ({ apiManager, isOpen, onClose, formStat
         .then(result => {
             if(result.data)
             {
-                result.data.units = JSON.parse(result.data.units);
-                setTableData(prevData => [result.data].concat(prevData));
+                result.data.units = result.data.units ? JSON.parse(result.data.units) : "";
+                setTableData(prevData => {
+                    const updatedIndex = prevData.findIndex(item => item.id === result.data.id);
+                    if (updatedIndex !== -1) {
+                        return [
+                            ...prevData.slice(0, updatedIndex),
+                            result.data,
+                            ...prevData.slice(updatedIndex + 1)
+                        ];
+                    } else {
+                        return [result.data, ...prevData];
+                    }
+                });
                 setFormState(FormProductCategoryModel());
             }
         })

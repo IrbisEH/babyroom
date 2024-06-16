@@ -11,7 +11,7 @@ class ProductCategoryManager:
         self.log = log
         self.db = db
 
-    def add_new_product_category(self, data):
+    def create_product_category(self, data):
         result = Result()
         try:
 
@@ -37,8 +37,44 @@ class ProductCategoryManager:
 
         return result
 
+    def update_product_category(self, data):
+        result = Result()
+        try:
+
+            if data["units"] and len(data["units"]) > 0:
+                units_list = data["units"].split("\n")
+                units_list = list(filter(lambda x: len(x) > 0, units_list))
+                data["units"] = json.dumps(units_list)
+                print(json.loads(data["units"]))
+
+            category = ProductCategoryModel(**data)
+
+            self.db.session.query(ProductCategoryModel).filter_by(id=data["id"]).update(data)
+
+            self.db.session.commit()
+
+            self.log.info(f"Update new product category id: {category.id} name: {category.name}")
+
+            result.data = category.to_dict()
+
+        except Exception as e:
+            msg = str(e)
+            self.log.error(msg)
+            result = Result(msg=msg, status=401)
+
+        return result
+
     def get_product_category(self, category_id):
-        pass
+        result = Result()
+        try:
+            category = self.db.session.query(ProductCategoryModel).get(category_id)
+
+        except Exception as e:
+            msg = str(e)
+            self.log.error(msg)
+            result = Result(msg=msg, status=401)
+
+        return result
 
     def change_product_category(self, data):
         pass

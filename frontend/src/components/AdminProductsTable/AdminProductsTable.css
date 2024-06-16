@@ -1,13 +1,6 @@
-.table {
+.table_toolbar {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    width: 80vw;
-}
-
-.cell {
-    /*width: 100px;*/
-    height: 55px;
-    border: 1px solid lightgray;
-    text-align: center;
+    align-items: center;
+    gap: 1.5em;
 }
