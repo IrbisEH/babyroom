@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import AdminTable from "../components/AdminTable/AdminTable";
 import ProductCategoryModel from "../Models/ProductCategoryModel"
+import ProductModel from "../Models/ProductModel"
 
 
 
@@ -23,16 +24,26 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
     }
 
     const [productCategoryData, setProductCategoryData] = useState([]);
+    const [productData, setProductData] = useState([]);
 
-    const productCategory = new ProductCategoryModel({
+    const productCategoryModel = new ProductCategoryModel({
         apiManager: apiManager,
         tableData: productCategoryData,
         tableDataSetter: setProductCategoryData
     });
 
+    const productModel = new ProductModel({
+        apiManager: apiManager,
+        tableData: productData,
+        tableDataSetter: setProductData
+    })
+
     useEffect(() => {
         if(isLoggedIn)
-            productCategory.GetData();
+        {
+            productCategoryModel.GetData();
+            productModel.GetData();
+        }
     }, []);
 
     return (
@@ -45,14 +56,17 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
                             <button onClick={Logout}>Выход</button>
                         </div>
                     </header>
-                    <section className="table">
-                        <AdminTable
-                            tableName={productCategory.tableName}
-                            columnsConfig={productCategory.columnsConfig}
-                            tableData={productCategory.tableData}
+                    <AdminTable
+                        tableName={productCategoryModel.tableName}
+                        columnsConfig={productCategoryModel.columnsConfig}
+                        tableData={productCategoryModel.tableData}
 
-                        />
-                    </section>
+                    />
+                    <AdminTable
+                        tableName={productModel.tableName}
+                        columnsConfig={productModel.columnsConfig}
+                        tableData={productModel.tableData}
+                    />
                 </>
             )}
         </>

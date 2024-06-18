@@ -2,14 +2,11 @@ import React, { useRef, useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import "./Modal.css";
 
-const Modal = ({ isOpen, hasCloseBtn = true, onClose, children }) => {
+const Modal = ({ isOpen, children }) => {
     const [isModalOpen, setModalOpen] = useState(isOpen);
     const modalRef = useRef(null);
 
     const handleClose = () => {
-        if(onClose) {
-            onClose();
-        }
         setModalOpen(false);
     };
 
@@ -42,9 +39,7 @@ const Modal = ({ isOpen, hasCloseBtn = true, onClose, children }) => {
     return (
       <dialog ref={modalRef} onKeyDown={handleKeyDown} className="modal">
           <div className="modal__wrapper">
-            {hasCloseBtn && (
               <IoClose className="modal__close_icon" onClick={handleClose} size={20} />
-            )}
           {children}
           </div>
       </dialog>
