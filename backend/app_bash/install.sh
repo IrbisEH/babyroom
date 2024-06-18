@@ -12,6 +12,13 @@ BIND_ADDRESS="0.0.0.0"
 APP_PATH="/var/www/html/babyroom"
 STATIC_DIR="/static"
 
+sudo apt update
+sudo apt upgrade
+sudo apt install net-tools
+
+# установка сервера
+sudo apt install nginx
+
 # RENEW APP DIR
 if [ -d $APP_PATH ]; then
   sudo rm -rf $APP_PATH

@@ -1,10 +1,13 @@
-import React, { useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
-import AdminProductsTable from "../components/AdminProductsTable/AdminProductsTable";
+import AdminTable from "../components/AdminTable/AdminTable";
+import ProductCategoryModel from "../Models/ProductCategoryModel"
 
+
+
+// const AdminTable = ({ apiManager, columnsConfig, tableData, setTableData, tableName }) => {
 
 const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -19,6 +22,19 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
         setIsLoggedIn(false);
     }
 
+    const [productCategoryData, setProductCategoryData] = useState([]);
+
+    const productCategory = new ProductCategoryModel({
+        apiManager: apiManager,
+        tableData: productCategoryData,
+        tableDataSetter: setProductCategoryData
+    });
+
+    useEffect(() => {
+        if(isLoggedIn)
+            productCategory.GetData();
+    }, []);
+
     return (
         <>
             {isLoggedIn && (
@@ -29,8 +45,13 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
                             <button onClick={Logout}>Выход</button>
                         </div>
                     </header>
-                    <section className="products">
-                        <AdminProductsTable apiManager={apiManager}/>
+                    <section className="table">
+                        <AdminTable
+                            tableName={productCategory.tableName}
+                            columnsConfig={productCategory.columnsConfig}
+                            tableData={productCategory.tableData}
+
+                        />
                     </section>
                 </>
             )}
