@@ -14,13 +14,6 @@ class ProductCategoryManager:
     def create_product_category(self, data):
         result = Result()
         try:
-            #
-            # if data["units"] and len(data["units"]) > 0:
-            #     units_list = data["units"].split("\n")
-            #     units_list = list(filter(lambda x: len(x) > 0, units_list))
-            #     data["units"] = json.dumps(units_list)
-            #     print(json.loads(data["units"]))
-
             data["units"] = json.dumps(data["units"])
 
             category = ProductCategoryModel(**data)
@@ -33,6 +26,7 @@ class ProductCategoryManager:
             result.data = category.to_dict()
 
         except Exception as e:
+            self.db.session.rollback()
             msg = str(e)
             self.log.error(msg)
             result = Result(msg=msg, status=401)
@@ -42,12 +36,7 @@ class ProductCategoryManager:
     def update_product_category(self, data):
         result = Result()
         try:
-
-            if data["units"] and len(data["units"]) > 0:
-                units_list = data["units"].split("\n")
-                units_list = list(filter(lambda x: len(x) > 0, units_list))
-                data["units"] = json.dumps(units_list)
-                print(json.loads(data["units"]))
+            data["units"] = json.dumps(data["units"])
 
             category = ProductCategoryModel(**data)
 
@@ -60,6 +49,7 @@ class ProductCategoryManager:
             result.data = category.to_dict()
 
         except Exception as e:
+            self.db.session.rollback()
             msg = str(e)
             self.log.error(msg)
             result = Result(msg=msg, status=401)
@@ -81,10 +71,10 @@ class ProductCategoryManager:
     def change_product_category(self, data):
         pass
 
-    def delete_product_category(self, product_category_id):
+    def delete_product_category(self, category_id):
         result = Result()
         try:
-            product_category = self.db.session.query(ProductCategoryModel).get(product_category_id)
+            product_category = self.db.session.query(ProductCategoryModel).get(category_id)
 
             if product_category:
                 self.db.session.delete(product_category)
@@ -92,7 +82,10 @@ class ProductCategoryManager:
             else:
                 raise Exception("Product category does not exist")
 
+            result.data = category_id
+
         except Exception as e:
+            self.db.session.rollback()
             msg = str(e)
             self.log.error(msg)
             result = Result(msg=msg, status=401)

@@ -43,7 +43,19 @@ const TableForm = ({ Id, isFormOpen, setIsFormOpen, formConfig, formState, setFo
 					{formConfig.map(item => (
 						<div key={Id + item.id} className="table_form__row">
 							<label htmlFor={item.id}>{item.label}</label>
-							{
+							{item.type === "select" ? (
+								<select
+									id={item.id}
+									name={item.id}
+									// value={item.default}
+									onChange={handleInputChange}
+									required={item.required}
+								>
+									{item.options.map((option) => (
+										<option key={Id +  "Option" + option.id} value={option.id}>{option.name}</option>
+									))}
+								</select>
+							) : (
 								<item.type
 									id={item.id}
 									name={item.id}
@@ -51,11 +63,11 @@ const TableForm = ({ Id, isFormOpen, setIsFormOpen, formConfig, formState, setFo
 									onChange={handleInputChange}
 									required={item.required}
 								/>
-							}
+							)}
 						</div>
 					))}
 					<div className="form-row">
-						<button key={Id + "SubmitBtn"} type="submit">{formType.btnText}</button>
+						<button key={Id + "SubmitBtn"} type="submit">{formType && formType.btnText ? formType.btnText : ""}</button>
 					</div>
 				</form>
 			</div>
@@ -69,14 +81,10 @@ const AdminTable = ({ Manager, TableData, TableDataSetter }) => {
 
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [formState, setFormState] = useState(Manager.GetFormModel());
-	const [formType, setFormType] = useState(FormSubmitBtnTypes.add);
-
-	if(false)
-	{
-		setFormType(FormSubmitBtnTypes.edit);
-	}
+	const [formType, setFormType] = useState(null);
 
 	const handleAddBtnClick = (event) => {
+		setFormType(FormSubmitBtnTypes.add)
 		setIsFormOpen(true);
 	}
 
@@ -84,25 +92,19 @@ const AdminTable = ({ Manager, TableData, TableDataSetter }) => {
 		event.preventDefault();
 
 		let model = Manager.GetModel(formState);
-
-		if(formType.type === "add")
-		{
-			Manager.Save(model)
-		}
-		else if(formType.type === "edit")
-		{
-
-		}
-
+		Manager.Save(model)
 		setIsFormOpen(false);
 	}
 
 	const handleEditBtnClick = (event, row) => {
-		console.log("Edit")
+		setFormState(Manager.GetFormModel(row));
+		setFormType(FormSubmitBtnTypes.edit);
+		setIsFormOpen(true);
 	}
 
 	const handleDeleteBtnClick = (event, row) => {
-		console.log("Delete")
+		let model = Manager.GetModel(row);
+		Manager.Delete(model);
 	}
 
 	useEffect(() => {

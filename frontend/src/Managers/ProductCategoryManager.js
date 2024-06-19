@@ -41,7 +41,7 @@ class ProductCategoryManager {
 							<div>-</div>
 						)}
 					</div>
-				),
+				)
 			},
 			{
 				id: "edit",
@@ -81,6 +81,7 @@ class ProductCategoryManager {
 		this.GetFormModel = (Params) => {
 			let model = {};
 
+			model.id = Params && Params.id ? Params.id : "";
 			model.name = Params && Params.name ? Params.name : "";
 			model.description = Params && Params.description ? Params.description : "";
 			model.units = Params && Params.units ? Params.units.join("\n") : "";
@@ -104,6 +105,7 @@ class ProductCategoryManager {
 		};
 
 		this.Save = (Model) => {
+			console.log(Model);
 			this.apiManager.SendRequest({
 				method: "POST",
 				endpoint: "/product_category",
@@ -113,7 +115,14 @@ class ProductCategoryManager {
 				if(response.data)
 				{
 					let model = this.GetModel(response.data);
-					this.tableDataSetter(prevData => prevData.concat([model]));
+					this.tableDataSetter(prevData => {
+						let findIdx = prevData.findIndex(item => item.id === model.id);
+						if (findIdx === -1) {
+							return [...prevData, model];
+						} else {
+							return [...prevData.slice(0, findIdx), model, ...prevData.slice(findIdx + 1)];
+						}
+					});
 				}
 			})
 			.catch(error => {console.log(error)})
@@ -128,8 +137,9 @@ class ProductCategoryManager {
 			.then(response => {
 				if(response.data)
 				{
-					let data = response.data.map(item => this.GetModel(item));
-					this.tableDataSetter(prevData => data.concat(prevData));
+					this.tableDataSetter(prevData => {
+						return prevData.filter(item => item.id !== response.data);
+					})
 				}
 			})
 			.catch(error => {console.log(error)})

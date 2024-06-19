@@ -5,6 +5,7 @@ class ProductManagers {
 		this.apiManager = Params.apiManager;
 		this.tableData = Params.tableData;
 		this.tableDataSetter = Params.tableDataSetter;
+		this.productCategories = Params.productCategoriesData;
 
 		this.columnsConfig = [
 			{
@@ -16,7 +17,12 @@ class ProductManagers {
 			{
 				id: "category_id",
 				name: "Категория",
-				selector: row => row.category_id,
+				selector: row => {
+					if(row.category_id)
+					{
+						console.log(this.productCategories);
+					}
+				},
 				width: "200px",
 			},
 			{
@@ -42,7 +48,9 @@ class ProductManagers {
 		];
 
 		this.formConfig = [
-			{id:"title", label:"Название", type:"input", required:true}
+			{id:"category_id", label:"Категория", type:"select", options:this.productCategories, default:"", required:true},
+			{id:"title", label:"Название", type:"input", required:true},
+			// {id:"enable", label:"Доступен", type:"checkbox", required:false}
 		]
 
 		this.GetModel = (Params) => {
@@ -61,11 +69,11 @@ class ProductManagers {
 		};
 
 		this.GetFormModel = (Params) => {
+
 			return {}
 		}
 
 		this.GetData = () => {
-			console.log("get Products")
 			// this.apiManager.SendRequest({
 			// 	method: "GET",
 			// 	endpoint: "/product_category",

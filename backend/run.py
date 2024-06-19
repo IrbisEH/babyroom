@@ -121,8 +121,8 @@ def handle_product_category():
             pass
         elif request.method == "DELETE":
             data = request.get_json()
-            if data["product_category_id"]:
-                result = manager.delete_product_category(data["product_category_id"])
+            if data["id"]:
+                result = manager.delete_product_category(data["id"])
             else:
                 raise Exceptions.InvalidCredentialsException("Product category id not found")
         else:

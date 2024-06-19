@@ -35,8 +35,9 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
     const productManager = new ProductManager({
         apiManager: apiManager,
         tableData: productData,
-        tableDataSetter: setProductData
-    })
+        tableDataSetter: setProductData,
+        productCategoriesData: productCategoryData
+    });
 
     useEffect(() => {
         if(isLoggedIn)
