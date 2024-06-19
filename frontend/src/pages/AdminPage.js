@@ -57,15 +57,15 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
                         </div>
                     </header>
                     <AdminTable
-                        tableName={productCategoryModel.tableName}
-                        columnsConfig={productCategoryModel.columnsConfig}
-                        tableData={productCategoryModel.tableData}
+                        model={productCategoryModel}
+                        tableData={productCategoryData}
+                        tableDataSetter={setProductCategoryData}
 
                     />
                     <AdminTable
-                        tableName={productModel.tableName}
-                        columnsConfig={productModel.columnsConfig}
-                        tableData={productModel.tableData}
+                        model={productModel}
+                        tableData={productData}
+                        tableDataSetter={setProductData}
                     />
                 </>
             )}

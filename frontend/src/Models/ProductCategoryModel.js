@@ -2,6 +2,8 @@ import React, {useEffect} from "react";
 
 class ProductCategoryModel {
 	constructor(Params) {
+		this.Id = Params && Params.Id ? Params.Id : "ProductCategory"
+
 		this.tableName = "Категории товаров";
 
 		this.apiManager = Params.apiManager;
@@ -41,27 +43,25 @@ class ProductCategoryModel {
 					</div>
 				),
 			},
-			// {
-			// 	id: "edit",
-			// 	cell: row => (
-			// 		<div onClick={(event) => handleEditIconClick(event, row)}>
-			// 			<FaRegEdit size={16}/>
-			// 		</div>
-			// 	),
-			// 	button: "true",
-			// 	width: "50px",
-			// },
-			// {
-			// 	id: "trash",
-			// 	cell: row => (
-			// 		<div onClick={(event) => handleTrashIconClick(event, row)}>
-			// 			<FaRegTrashCan size={16}/>
-			// 		</div>
-			// 	),
-			// 	button: "true",
-			// 	width: "50px",
-			// }
+			{
+				id: "edit",
+				type:"icon",
+				button: "true",
+				width: "50px",
+			},
+			{
+				id: "trash",
+				type: "icon",
+				button: "true",
+				width: "50px",
+			}
 		];
+
+		this.formConfig = [
+			{id:"name", label:"Название", type:"input", required:true},
+			{id:"description", label:"Описание", type:"input", required:false},
+			{id:"units", label:"Размеры", type:"textarea", required:false},
+		]
 
 		this.GetModel = (Params) => {
 			let model = {};
