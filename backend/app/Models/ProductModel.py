@@ -17,4 +17,4 @@ class ProductModel(Base):
     img_path: Mapped[str] = Column(String(2048))
     price: Mapped[float] = Column(Float, nullable=False)
 
-    category: Mapped[ProductCategoryModel] = relationship('ProductCategoryModel', backref='products')
+    category: Mapped[ProductCategoryModel] = relationship('ProductCategoryManager', backref='products')

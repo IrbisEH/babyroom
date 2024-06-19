@@ -10,7 +10,7 @@ import Cart from "./pages/Cart";
 import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
 
-import ApiManager from "./ApiManager";
+import ApiManager from "./Managers/ApiManager";
 
 const App = () => {
     let apiManager = new ApiManager();
@@ -37,7 +37,7 @@ const App = () => {
                 localStorage.removeItem("username");
             })
         }
-    },[]);
+    },[]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <BrowserRouter>

@@ -1,6 +1,6 @@
-import React, {useEffect} from "react";
+import React from "react";
 
-class ProductCategoryModel {
+class ProductCategoryManager {
 	constructor(Params) {
 		this.Id = Params && Params.Id ? Params.Id : "ProductCategory"
 
@@ -46,13 +46,11 @@ class ProductCategoryModel {
 			{
 				id: "edit",
 				type:"icon",
-				button: "true",
 				width: "50px",
 			},
 			{
 				id: "trash",
 				type: "icon",
-				button: "true",
 				width: "50px",
 			}
 		];
@@ -69,20 +67,28 @@ class ProductCategoryModel {
 			model.id = Params && Params.id ? Params.id : "";
 			model.name = Params && Params.name ? Params.name : "";
 			model.description = Params && Params.description ? Params.description : "";
+			model.units = Params && Params.units ? Params.units : [];
 
-			try
+			if(typeof model.units === "string")
 			{
-				model.units = JSON.parse(Params.units);
-			}
-			catch(e)
-			{
-				model.units = "";
+				model.units = model.units.split("\n");
+				model.units = model.units.filter(item => item.length > 0);
 			}
 
 			return model;
 		};
 
-		this.GetData = () => {
+		this.GetFormModel = (Params) => {
+			let model = {};
+
+			model.name = Params && Params.name ? Params.name : "";
+			model.description = Params && Params.description ? Params.description : "";
+			model.units = Params && Params.units ? Params.units.join("\n") : "";
+
+			return model;
+		}
+
+		this.Get = () => {
 			this.apiManager.SendRequest({
 				method: "GET",
 				endpoint: "/product_category",
@@ -96,7 +102,39 @@ class ProductCategoryModel {
 				})
 			.catch(error => console.log(error));
 		};
+
+		this.Save = (Model) => {
+			this.apiManager.SendRequest({
+				method: "POST",
+				endpoint: "/product_category",
+				data: Model
+			})
+			.then(response => {
+				if(response.data)
+				{
+					let model = this.GetModel(response.data);
+					this.tableDataSetter(prevData => prevData.concat([model]));
+				}
+			})
+			.catch(error => {console.log(error)})
+		}
+
+		this.Delete = (Model) => {
+			this.apiManager.SendRequest({
+				method: "DELETE",
+				endpoint: "/product_category",
+				data: Model
+			})
+			.then(response => {
+				if(response.data)
+				{
+					let data = response.data.map(item => this.GetModel(item));
+					this.tableDataSetter(prevData => data.concat(prevData));
+				}
+			})
+			.catch(error => {console.log(error)})
+		}
 	}
 }
 
-export default ProductCategoryModel;
+export default ProductCategoryManager;

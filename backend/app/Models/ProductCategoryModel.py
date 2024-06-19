@@ -1,3 +1,5 @@
+import json
+
 from . import Base
 from sqlalchemy import String, Column, Integer, Text, Float
 from sqlalchemy.orm import Mapped
@@ -17,5 +19,5 @@ class ProductCategoryModel(Base):
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "units": self.units,
+            "units": json.loads(self.units) if self.units else [],
         }

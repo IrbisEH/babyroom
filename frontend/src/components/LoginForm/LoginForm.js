@@ -30,7 +30,6 @@ const LoginForm = ({ apiManager, setIsLoggedIn }) => {
         .catch(error => {
             console.error(error)
         });
-
     }
 
     return (

@@ -26,7 +26,7 @@ db = DbManager(config, log)
 
 app = Flask(__name__)
 cors = CORS(app)
-
+print("work")
 app.config["JWT_SECRET_KEY"] = config.app_config.jwt_secret_code
 jwt = JWTManager(app)
 
@@ -101,13 +101,15 @@ def check_jwt():
 
 @app.route("/api/product_category", methods=["POST", "GET", "PATCH", "DELETE"])
 @jwt_required()
-def create_product_category():
+def handle_product_category():
     result = Result()
     manager = ProductCategoryManager(config, log, db)
 
     try:
         if request.method == "POST":
             data = request.get_json()
+            print(data)
+            print(type(data["units"]))
             if "id" in data and data["id"] and int(data["id"]) > 0:
                 result = manager.update_product_category(data)
             else:

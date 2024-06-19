@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import AdminTable from "../components/AdminTable/AdminTable";
-import ProductCategoryModel from "../Models/ProductCategoryModel"
-import ProductModel from "../Models/ProductModel"
+import ProductCategoryManager from "../Managers/ProductCategoryManager"
+import ProductManager from "../Managers/ProductManagers"
 
 
 
@@ -26,13 +26,13 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
     const [productCategoryData, setProductCategoryData] = useState([]);
     const [productData, setProductData] = useState([]);
 
-    const productCategoryModel = new ProductCategoryModel({
+    const productCategoryManager = new ProductCategoryManager({
         apiManager: apiManager,
         tableData: productCategoryData,
         tableDataSetter: setProductCategoryData
     });
 
-    const productModel = new ProductModel({
+    const productManager = new ProductManager({
         apiManager: apiManager,
         tableData: productData,
         tableDataSetter: setProductData
@@ -41,10 +41,10 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
     useEffect(() => {
         if(isLoggedIn)
         {
-            productCategoryModel.GetData();
-            productModel.GetData();
+            productCategoryManager.Get();
+            productManager.GetData();
         }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <>
@@ -57,15 +57,15 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
                         </div>
                     </header>
                     <AdminTable
-                        model={productCategoryModel}
-                        tableData={productCategoryData}
-                        tableDataSetter={setProductCategoryData}
+                        Manager={productCategoryManager}
+                        TableData={productCategoryData}
+                        TableDataSetter={setProductCategoryData}
 
                     />
                     <AdminTable
-                        model={productModel}
-                        tableData={productData}
-                        tableDataSetter={setProductData}
+                        Manager={productManager}
+                        TableData={productData}
+                        TableDataSetter={setProductData}
                     />
                 </>
             )}

@@ -14,12 +14,14 @@ class ProductCategoryManager:
     def create_product_category(self, data):
         result = Result()
         try:
+            #
+            # if data["units"] and len(data["units"]) > 0:
+            #     units_list = data["units"].split("\n")
+            #     units_list = list(filter(lambda x: len(x) > 0, units_list))
+            #     data["units"] = json.dumps(units_list)
+            #     print(json.loads(data["units"]))
 
-            if data["units"] and len(data["units"]) > 0:
-                units_list = data["units"].split("\n")
-                units_list = list(filter(lambda x: len(x) > 0, units_list))
-                data["units"] = json.dumps(units_list)
-                print(json.loads(data["units"]))
+            data["units"] = json.dumps(data["units"])
 
             category = ProductCategoryModel(**data)
 

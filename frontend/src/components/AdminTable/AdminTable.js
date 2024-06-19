@@ -5,20 +5,30 @@ import { FaRegEdit } from "react-icons/fa";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 
-
 import "./AdminTable.css"
-import {FormProductCategoryModel} from "../ProductCategoryFormModal/ProductCategoryFormModal";
-
 
 const FormSubmitBtnTypes = {
 	add: {type:"add", btnText:"Добавить"},
 	edit: {type:"edit", btnText:"Редактировать"}
 }
 
-const TableForm = ({ parentId, isFormOpen, setIsFormOpen, formConfig, formState, formType, handleApplyFormBtnClick }) => {
-	const Id = formConfig && formConfig.Id ? parentId + formConfig.Id : parentId + "TableForm";
+const TableForm = ({ Id, isFormOpen, setIsFormOpen, formConfig, formState, setFormState, formType, handleApplyFormBtnClick }) => {
+
 	const formRef = useRef(null);
 
+	const handleKeyDown = (event) => {
+		if(event.key === "Escape") {
+			setIsFormOpen(false);
+        }
+	}
+
+	const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setFormState((prevFormData) => ({
+            ...prevFormData,
+            [name]: value
+        }));
+    }
 
 	useEffect(() => {
 		const form = formRef.current;
@@ -26,26 +36,26 @@ const TableForm = ({ parentId, isFormOpen, setIsFormOpen, formConfig, formState,
 	}, [isFormOpen]);
 
 	return (
-		<dialog ref={formRef} onKeyDown={() => console.log("key")}>
+		<dialog ref={formRef} onKeyDown={handleKeyDown}>
 			<div className="table_form__wrapper">
 				<IoClose className="table_form__close_icon" onClick={() => setIsFormOpen(false)} size={20}/>
-				<form onSubmit={() => console.log("submit")}>
+				<form onSubmit={handleApplyFormBtnClick}>
 					{formConfig.map(item => (
 						<div key={Id + item.id} className="table_form__row">
 							<label htmlFor={item.id}>{item.label}</label>
 							{
 								<item.type
 									id={item.id}
-									name={item.label}
+									name={item.id}
 									value={formState[item.id]}
-									onChange={(e) => (console.log(e))}
+									onChange={handleInputChange}
 									required={item.required}
 								/>
 							}
 						</div>
 					))}
 					<div className="form-row">
-						<button type="submit" onClick={handleApplyFormBtnClick}>{formType.btnText}</button>
+						<button key={Id + "SubmitBtn"} type="submit">{formType.btnText}</button>
 					</div>
 				</form>
 			</div>
@@ -53,27 +63,38 @@ const TableForm = ({ parentId, isFormOpen, setIsFormOpen, formConfig, formState,
 	);
 }
 
-const AdminTable = ({ model, tableData, tableDataSetter }) => {
+const AdminTable = ({ Manager, TableData, TableDataSetter }) => {
 
-	const Id = "AdminTable";
+	const Id = Manager.Id ? Manager.Id : "AdminTable";
 
 	const [isFormOpen, setIsFormOpen] = useState(false);
-	const [formState, setFormState] = useState([]);
+	const [formState, setFormState] = useState(Manager.GetFormModel());
 	const [formType, setFormType] = useState(FormSubmitBtnTypes.add);
+
+	if(false)
+	{
+		setFormType(FormSubmitBtnTypes.edit);
+	}
 
 	const handleAddBtnClick = (event) => {
 		setIsFormOpen(true);
 	}
 
 	const handleApplyFormBtnClick = (event) => {
+		event.preventDefault();
+
+		let model = Manager.GetModel(formState);
+
 		if(formType.type === "add")
 		{
-			console.log("ApplyBtnClick Add")
+			Manager.Save(model)
 		}
 		else if(formType.type === "edit")
 		{
 
 		}
+
+		setIsFormOpen(false);
 	}
 
 	const handleEditBtnClick = (event, row) => {
@@ -84,79 +105,54 @@ const AdminTable = ({ model, tableData, tableDataSetter }) => {
 		console.log("Delete")
 	}
 
-	// const handleEditIconClick = (event, row) => {
-	// 	if(row && row.id)
-	// 	{
-	// 		setSubmitBtnName("Применить");
-	// 		setFormState(FormProductCategoryModel(row));
-	// 		setIsFormOpen(true);
-	// 	}
-	// }
-    //
-	// const handleTrashIconClick = (event, row) => {
-	// 	if(row && row.id)
-	// 	{
-	// 		apiManager.SendRequest({
-	// 			method: "DELETE",
-	// 			endpoint: "/product_category",
-	// 			data: {product_category_id: row.id}
-	// 		})
-	// 		.then(result => setTableData(prevState => prevState.filter(item => item.id !== row.id)))
-	// 		.catch(error => console.log(error))
-	// 	}
-	// }
-    //
-	// const handleOpenModal = () => {
-	// 	setSubmitBtnName("Добавить");
-	// 	setFormState(FormProductCategoryModel());
-	// 	setIsModalOpen(true);
-	// }
-    //
-	// const handleCloseModal = () => {
-	// 	setIsModalOpen(false)
-	// }
+	useEffect(() => {
+		if(!isFormOpen)
+			setFormState(Manager.GetFormModel());
+	}, [isFormOpen, Manager]);
 
-	model.columnsConfig.map(item => {
-		if(item.type === "icon" && item.button)
+	const columns = Manager.columnsConfig.map(item => {
+		if(item.type === "icon")
 		{
-			switch(item.id)
+			if(item.id === "edit")
 			{
-				case "edit":
-					item.cell = row => (
-						<div onClick={(event) => handleEditBtnClick(event, row)}>
-							<FaRegEdit className="table__btn" size={16}/>
-						</div>
-					)
-					break;
-				case "trash":
-					item.cell = row => (
-						<div onClick={(event) => handleDeleteBtnClick(event, row)}>
-							<FaRegTrashCan className="table__btn"  size={16}/>
-						</div>
-					)
-					break;
+				item.cell = row => (
+					<div onClick={(event) => handleEditBtnClick(event, row)}>
+						<FaRegEdit className="table__btn" size={16}/>
+					</div>
+				)
+			}
+
+			if(item.id === "trash")
+			{
+				item.cell = row => (
+					<div onClick={(event) => handleDeleteBtnClick(event, row)}>
+						<FaRegTrashCan className="table__btn"  size={16}/>
+					</div>
+				)
 			}
 		}
+		return item;
 	});
 
     return (
 		<section className="table">
 			<div className="table__toolbar">
-				<h1>{model.tableName}</h1>
-				{model.formConfig && <IoMdAddCircleOutline className="table__btn"  onClick={handleAddBtnClick} size={20}/>}
+				<h1>{Manager.tableName}</h1>
+				{Manager.formConfig && <IoMdAddCircleOutline className="table__btn"  onClick={handleAddBtnClick} size={20}/>}
 			</div>
 			<DataTable
-				columns={model.columnsConfig}
-				data={tableData}
+				columns={columns}
+				data={TableData}
 				pagination
 			/>
-			{model.formConfig && (
+			{Manager.formConfig && (
 				<TableForm
-					parentId={Id}
+					Id={Id + "TableForm"}
 					isFormOpen={isFormOpen}
 					setIsFormOpen={setIsFormOpen}
-					formConfig={model.formConfig}
+					formConfig={Manager.formConfig}
 					formState={formState}
+					setFormState={setFormState}
 					formType={formType}
 					handleApplyFormBtnClick={handleApplyFormBtnClick}
 				/>

@@ -1,6 +1,4 @@
-import React, {useEffect} from "react";
-
-class ProductModel {
+class ProductManagers {
 	constructor(Params) {
 		this.tableName = "Товары";
 
@@ -62,6 +60,10 @@ class ProductModel {
 			return model;
 		};
 
+		this.GetFormModel = (Params) => {
+			return {}
+		}
+
 		this.GetData = () => {
 			console.log("get Products")
 			// this.apiManager.SendRequest({
@@ -80,4 +82,4 @@ class ProductModel {
 	}
 }
 
-export default ProductModel;
+export default ProductManagers;
