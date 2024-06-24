@@ -3,9 +3,10 @@ from app.Managers.ConfigManager import ConfigManager
 from app.Managers.LogManager import LogManager
 from app.Managers.DbManager import DbManager
 from app.Models import Base
-from app.Models.UserModel import UserModel
-from app.Models.ProductModel import ProductModel
 
+from app.Models.TagModel import TagModel
+from app.Models.ProductModel import ProductModel
+from app.Models.UserModel import UserModel
 
 DIR = os.path.dirname(__file__)
 
@@ -20,6 +21,11 @@ def create_db():
     except Exception as e:
         log.error(e)
 
+def check_tables():
+    defined_tables = Base.metadata.tables.keys()
+    print(defined_tables)
+
 
 if __name__ == '__main__':
     create_db()
+    # check_tables()

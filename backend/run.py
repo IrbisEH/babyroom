@@ -16,7 +16,7 @@ from app.Managers.LogManager import LogManager
 from app.Managers.DbManager import DbManager
 from app.Managers.ProductCategoryManager import ProductCategoryManager
 from app.Models.UserModel import UserModel
-from app.Models.ResultModel import Result
+from backend.app.Managers.ResultModel import Result
 
 DIR = os.path.dirname(__file__)
 

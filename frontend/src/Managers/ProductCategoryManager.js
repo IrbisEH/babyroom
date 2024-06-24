@@ -56,8 +56,8 @@ class ProductCategoryManager {
 		];
 
 		this.formConfig = [
-			{id:"name", label:"Название", type:"input", required:true},
-			{id:"description", label:"Описание", type:"input", required:false},
+			{id:"name", label:"Название", type:"text", required:true},
+			{id:"description", label:"Описание", type:"text", required:false},
 			{id:"units", label:"Размеры", type:"textarea", required:false},
 		]
 

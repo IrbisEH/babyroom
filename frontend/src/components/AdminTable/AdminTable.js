@@ -4,6 +4,7 @@ import { FaRegTrashCan } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
+import Form from "../Form/Form"
 
 import "./AdminTable.css"
 
@@ -39,37 +40,12 @@ const TableForm = ({ Id, isFormOpen, setIsFormOpen, formConfig, formState, setFo
 		<dialog ref={formRef} onKeyDown={handleKeyDown}>
 			<div className="table_form__wrapper">
 				<IoClose className="table_form__close_icon" onClick={() => setIsFormOpen(false)} size={20}/>
-				<form onSubmit={handleApplyFormBtnClick}>
-					{formConfig.map(item => (
-						<div key={Id + item.id} className="table_form__row">
-							<label htmlFor={item.id}>{item.label}</label>
-							{item.type === "select" ? (
-								<select
-									id={item.id}
-									name={item.id}
-									// value={item.default}
-									onChange={handleInputChange}
-									required={item.required}
-								>
-									{item.options.map((option) => (
-										<option key={Id +  "Option" + option.id} value={option.id}>{option.name}</option>
-									))}
-								</select>
-							) : (
-								<item.type
-									id={item.id}
-									name={item.id}
-									value={formState[item.id]}
-									onChange={handleInputChange}
-									required={item.required}
-								/>
-							)}
-						</div>
-					))}
-					<div className="form-row">
-						<button key={Id + "SubmitBtn"} type="submit">{formType && formType.btnText ? formType.btnText : ""}</button>
-					</div>
-				</form>
+				<Form parentId={Id}
+					  formConfig={formConfig}
+					  formType={formType}
+					  formState={formState}
+					  handleInputChange={handleInputChange}
+					  handleApplyFormBtnClick={handleApplyFormBtnClick}  />
 			</div>
 		</dialog>
 	);

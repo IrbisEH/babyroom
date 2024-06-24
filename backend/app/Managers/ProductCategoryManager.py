@@ -1,8 +1,7 @@
 import json
-import traceback
 
-from ..Models.ProductCategoryModel import ProductCategoryModel
-from ..Models.ResultModel import Result
+from ..Models.CategoryModel import CategoryModel
+from backend.app.Managers.ResultModel import Result
 
 
 class ProductCategoryManager:
@@ -16,7 +15,7 @@ class ProductCategoryManager:
         try:
             data["units"] = json.dumps(data["units"])
 
-            category = ProductCategoryModel(**data)
+            category = CategoryModel(**data)
 
             self.db.session.add(category)
             self.db.session.commit()
@@ -38,9 +37,9 @@ class ProductCategoryManager:
         try:
             data["units"] = json.dumps(data["units"])
 
-            category = ProductCategoryModel(**data)
+            category = CategoryModel(**data)
 
-            self.db.session.query(ProductCategoryModel).filter_by(id=data["id"]).update(data)
+            self.db.session.query(CategoryModel).filter_by(id=data["id"]).update(data)
 
             self.db.session.commit()
 
@@ -59,7 +58,7 @@ class ProductCategoryManager:
     def get_product_category(self, category_id):
         result = Result()
         try:
-            category = self.db.session.query(ProductCategoryModel).get(category_id)
+            category = self.db.session.query(CategoryModel).get(category_id)
 
         except Exception as e:
             msg = str(e)
@@ -74,7 +73,7 @@ class ProductCategoryManager:
     def delete_product_category(self, category_id):
         result = Result()
         try:
-            product_category = self.db.session.query(ProductCategoryModel).get(category_id)
+            product_category = self.db.session.query(CategoryModel).get(category_id)
 
             if product_category:
                 self.db.session.delete(product_category)
@@ -96,7 +95,7 @@ class ProductCategoryManager:
         result = Result()
 
         try:
-            data = self.db.session.query(ProductCategoryModel).all()
+            data = self.db.session.query(CategoryModel).all()
             result.data = [item.to_dict() for item in data]
         except Exception as e:
             msg = str(e)

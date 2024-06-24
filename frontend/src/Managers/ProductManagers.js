@@ -48,9 +48,9 @@ class ProductManagers {
 		];
 
 		this.formConfig = [
-			{id:"category_id", label:"Категория", type:"select", options:this.productCategories, default:"", required:true},
-			{id:"title", label:"Название", type:"input", required:true},
-			// {id:"enable", label:"Доступен", type:"checkbox", required:false}
+			{id:"category_id", label:"Категория", type:"select", options:this.productCategories, default:"", with_empty:true, required:true},
+			{id:"title", label:"Название", type:"text", required:true},
+			{id:"enable", label:"Доступен", type:"checkbox", required:false}
 		]
 
 		this.GetModel = (Params) => {
