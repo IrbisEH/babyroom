@@ -1,16 +1,30 @@
 import json
 
 from ..Models.CategoryModel import CategoryModel
-from backend.app.Managers.ResultModel import Result
+from .ResultModel import Result
 
 
-class ProductCategoryManager:
+class CategoriesManager:
     def __init__(self, config, log, db):
         self.config = config
         self.log = log
         self.db = db
 
-    def create_product_category(self, data):
+    def get(self, params=None):
+        #TODO: Метод должен принимать фильтр
+        result = Result()
+
+        try:
+            data = self.db.session.query(CategoryModel).all()
+            result.data = [item.to_dict() for item in data]
+        except Exception as e:
+            msg = str(e)
+            self.log.error(msg)
+            result = Result(msg=msg, status=401)
+
+        return result
+
+    def create(self, data):
         result = Result()
         try:
             data["units"] = json.dumps(data["units"])
@@ -32,7 +46,7 @@ class ProductCategoryManager:
 
         return result
 
-    def update_product_category(self, data):
+    def update(self, data):
         result = Result()
         try:
             data["units"] = json.dumps(data["units"])
@@ -55,22 +69,7 @@ class ProductCategoryManager:
 
         return result
 
-    def get_product_category(self, category_id):
-        result = Result()
-        try:
-            category = self.db.session.query(CategoryModel).get(category_id)
-
-        except Exception as e:
-            msg = str(e)
-            self.log.error(msg)
-            result = Result(msg=msg, status=401)
-
-        return result
-
-    def change_product_category(self, data):
-        pass
-
-    def delete_product_category(self, category_id):
+    def delete(self, category_id):
         result = Result()
         try:
             product_category = self.db.session.query(CategoryModel).get(category_id)
@@ -90,18 +89,3 @@ class ProductCategoryManager:
             result = Result(msg=msg, status=401)
 
         return result
-
-    def get_product_category_list(self):
-        result = Result()
-
-        try:
-            data = self.db.session.query(CategoryModel).all()
-            result.data = [item.to_dict() for item in data]
-        except Exception as e:
-            msg = str(e)
-            self.log.error(msg)
-            result = Result(msg=msg, status=401)
-
-        return result
-
-

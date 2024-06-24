@@ -1,12 +1,9 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import AdminTable from "../components/AdminTable/AdminTable";
-import ProductCategoryManager from "../Managers/ProductCategoryManager"
+import CategoriesManager from "../Managers/CategoriesManager"
 import ProductManager from "../Managers/ProductManagers"
 
-
-
-// const AdminTable = ({ apiManager, columnsConfig, tableData, setTableData, tableName }) => {
 
 const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
     const navigate = useNavigate();
@@ -23,27 +20,27 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
         setIsLoggedIn(false);
     }
 
-    const [productCategoryData, setProductCategoryData] = useState([]);
-    const [productData, setProductData] = useState([]);
+    const [categoriesData, setCategoriesData] = useState([]);
+    // const [productData, setProductData] = useState([]);
 
-    const productCategoryManager = new ProductCategoryManager({
+    const productCategoryManager = new CategoriesManager({
         apiManager: apiManager,
-        tableData: productCategoryData,
-        tableDataSetter: setProductCategoryData
+        data: categoriesData,
+        dataSetter: setCategoriesData
     });
 
-    const productManager = new ProductManager({
-        apiManager: apiManager,
-        tableData: productData,
-        tableDataSetter: setProductData,
-        productCategoriesData: productCategoryData
-    });
+    // const productManager = new ProductManager({
+    //     apiManager: apiManager,
+    //     tableData: productData,
+    //     tableDataSetter: setProductData,
+    //     productCategoriesData: productCategoryData
+    // });
 
     useEffect(() => {
         if(isLoggedIn)
         {
             productCategoryManager.Get();
-            productManager.GetData();
+            // productManager.GetData();
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -59,15 +56,12 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
                     </header>
                     <AdminTable
                         Manager={productCategoryManager}
-                        TableData={productCategoryData}
-                        TableDataSetter={setProductCategoryData}
-
                     />
-                    <AdminTable
-                        Manager={productManager}
-                        TableData={productData}
-                        TableDataSetter={setProductData}
-                    />
+                    {/*<AdminTable*/}
+                    {/*    Manager={productManager}*/}
+                    {/*    TableData={productData}*/}
+                    {/*    TableDataSetter={setProductData}*/}
+                    {/*/>*/}
                 </>
             )}
         </>

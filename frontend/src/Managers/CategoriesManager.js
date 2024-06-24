@@ -1,14 +1,14 @@
 import React from "react";
 
-class ProductCategoryManager {
+class CategoriesManager {
 	constructor(Params) {
-		this.Id = Params && Params.Id ? Params.Id : "ProductCategory"
+		this.Id = Params && Params.Id ? Params.Id : "Categories"
 
 		this.tableName = "Категории товаров";
 
 		this.apiManager = Params.apiManager;
-		this.tableData = Params.tableData;
-		this.tableDataSetter = Params.tableDataSetter;
+		this.data = Params.data;
+		this.dataSetter = Params.dataSetter;
 
 		this.columnsConfig = [
 			{
@@ -29,21 +29,6 @@ class ProductCategoryManager {
 				selector: row => row.description,
 			},
 			{
-				id: "units",
-				name: "Размеры",
-				selector: row => (
-					<div>
-						{row.units && row.units.length > 0 ? (
-							row.units.map((item, i) => (
-								<div key={`unit_${i}`}>{item}</div>
-							))
-						) : (
-							<div>-</div>
-						)}
-					</div>
-				)
-			},
-			{
 				id: "edit",
 				type:"icon",
 				width: "50px",
@@ -58,8 +43,7 @@ class ProductCategoryManager {
 		this.formConfig = [
 			{id:"name", label:"Название", type:"text", required:true},
 			{id:"description", label:"Описание", type:"text", required:false},
-			{id:"units", label:"Размеры", type:"textarea", required:false},
-		]
+		];
 
 		this.GetModel = (Params) => {
 			let model = {};
@@ -67,55 +51,40 @@ class ProductCategoryManager {
 			model.id = Params && Params.id ? Params.id : "";
 			model.name = Params && Params.name ? Params.name : "";
 			model.description = Params && Params.description ? Params.description : "";
-			model.units = Params && Params.units ? Params.units : [];
-
-			if(typeof model.units === "string")
-			{
-				model.units = model.units.split("\n");
-				model.units = model.units.filter(item => item.length > 0);
-			}
 
 			return model;
 		};
 
 		this.GetFormModel = (Params) => {
-			let model = {};
-
-			model.id = Params && Params.id ? Params.id : "";
-			model.name = Params && Params.name ? Params.name : "";
-			model.description = Params && Params.description ? Params.description : "";
-			model.units = Params && Params.units ? Params.units.join("\n") : "";
-
-			return model;
+			return this.GetModel(Params)
 		}
 
 		this.Get = () => {
 			this.apiManager.SendRequest({
 				method: "GET",
-				endpoint: "/product_category",
+				endpoint: "/categories",
 			})
 			.then(response => {
 				if(response.data)
 				{
 					let data = response.data.map(item => this.GetModel(item));
-					this.tableDataSetter(prevData => data.concat(prevData));
+					this.dataSetter(prevData => data.concat(prevData));
 				}
 				})
 			.catch(error => console.log(error));
 		};
 
 		this.Save = (Model) => {
-			console.log(Model);
 			this.apiManager.SendRequest({
 				method: "POST",
-				endpoint: "/product_category",
+				endpoint: "/categories",
 				data: Model
 			})
 			.then(response => {
 				if(response.data)
 				{
 					let model = this.GetModel(response.data);
-					this.tableDataSetter(prevData => {
+					this.dataSetter(prevData => {
 						let findIdx = prevData.findIndex(item => item.id === model.id);
 						if (findIdx === -1) {
 							return [...prevData, model];
@@ -131,13 +100,13 @@ class ProductCategoryManager {
 		this.Delete = (Model) => {
 			this.apiManager.SendRequest({
 				method: "DELETE",
-				endpoint: "/product_category",
+				endpoint: "/categories",
 				data: Model
 			})
 			.then(response => {
 				if(response.data)
 				{
-					this.tableDataSetter(prevData => {
+					this.dataSetter(prevData => {
 						return prevData.filter(item => item.id !== response.data);
 					})
 				}
@@ -147,4 +116,4 @@ class ProductCategoryManager {
 	}
 }
 
-export default ProductCategoryManager;
+export default CategoriesManager;

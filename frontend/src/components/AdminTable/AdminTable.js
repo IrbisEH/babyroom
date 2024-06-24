@@ -51,7 +51,7 @@ const TableForm = ({ Id, isFormOpen, setIsFormOpen, formConfig, formState, setFo
 	);
 }
 
-const AdminTable = ({ Manager, TableData, TableDataSetter }) => {
+const AdminTable = ({ Manager }) => {
 
 	const Id = Manager.Id ? Manager.Id : "AdminTable";
 
@@ -88,6 +88,7 @@ const AdminTable = ({ Manager, TableData, TableDataSetter }) => {
 			setFormState(Manager.GetFormModel());
 	}, [isFormOpen, Manager]);
 
+	// TODO: перенести в manager
 	const columns = Manager.columnsConfig.map(item => {
 		if(item.type === "icon")
 		{
@@ -120,7 +121,7 @@ const AdminTable = ({ Manager, TableData, TableDataSetter }) => {
 			</div>
 			<DataTable
 				columns={columns}
-				data={TableData}
+				data={Manager.data}
 				pagination
 			/>
 			{Manager.formConfig && (

@@ -14,9 +14,9 @@ from flask_cors import CORS
 from app.Managers.ConfigManager import ConfigManager
 from app.Managers.LogManager import LogManager
 from app.Managers.DbManager import DbManager
-from app.Managers.ProductCategoryManager import ProductCategoryManager
+from app.Managers.CategoriesManager import CategoriesManager
 from app.Models.UserModel import UserModel
-from backend.app.Managers.ResultModel import Result
+from app.Managers.ResultModel import Result
 
 DIR = os.path.dirname(__file__)
 
@@ -99,30 +99,28 @@ def check_jwt():
 
     return jsonify(result.to_dict()), result.status
 
-@app.route("/api/product_category", methods=["POST", "GET", "PATCH", "DELETE"])
+@app.route("/api/categories", methods=["POST", "GET", "PATCH", "DELETE"])
 @jwt_required()
-def handle_product_category():
+def handle_categories():
     result = Result()
-    manager = ProductCategoryManager(config, log, db)
+    manager = CategoriesManager(config, log, db)
 
     try:
-        if request.method == "POST":
+        if request.method == "GET":
+            result = manager.get()
+        elif request.method == "POST":
             data = request.get_json()
-            print(data)
-            print(type(data["units"]))
             if "id" in data and data["id"] and int(data["id"]) > 0:
-                result = manager.update_product_category(data)
+                result = manager.update(data)
             else:
                 del data["id"]
-                result = manager.create_product_category(data)
-        elif request.method == "GET":
-            result = manager.get_product_category_list()
+                result = manager.create(data)
         elif request.method == "PATCH":
             pass
         elif request.method == "DELETE":
             data = request.get_json()
             if data["id"]:
-                result = manager.delete_product_category(data["id"])
+                result = manager.delete(data["id"])
             else:
                 raise Exceptions.InvalidCredentialsException("Product category id not found")
         else:
