@@ -10,3 +10,11 @@ class UnitsModel(Base):
     name: Mapped[str] = Column(String(255), unique=True, nullable=False)
     description: Mapped[str] = Column(Text, nullable=True)
     units: Mapped[str] = Column(Text, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "units": self.units
+        }

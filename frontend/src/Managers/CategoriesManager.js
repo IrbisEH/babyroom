@@ -1,5 +1,3 @@
-import React from "react";
-
 class CategoriesManager {
 	constructor(Params) {
 		this.Id = Params && Params.Id ? Params.Id : "Categories"
@@ -27,16 +25,6 @@ class CategoriesManager {
 				id: "description",
 				name: "Описание",
 				selector: row => row.description,
-			},
-			{
-				id: "edit",
-				type:"icon",
-				width: "50px",
-			},
-			{
-				id: "trash",
-				type: "icon",
-				width: "50px",
 			}
 		];
 
@@ -48,7 +36,7 @@ class CategoriesManager {
 		this.GetModel = (Params) => {
 			let model = {};
 
-			model.id = Params && Params.id ? Params.id : "";
+			model.id = Params && Params.id ? Params.id : null;
 			model.name = Params && Params.name ? Params.name : "";
 			model.description = Params && Params.description ? Params.description : "";
 
@@ -84,13 +72,29 @@ class CategoriesManager {
 				if(response.data)
 				{
 					let model = this.GetModel(response.data);
+					this.dataSetter(prevData => [...prevData, model]);
+				}
+			})
+			.catch(error => {console.log(error)})
+		}
+
+		this.Update = (Model) => {
+			this.apiManager.SendRequest({
+				method: "PUT",
+				endpoint: "/categories",
+				data: Model
+			})
+			.then(response => {
+				if(response.data)
+				{
+					let model = this.GetModel(response.data);
 					this.dataSetter(prevData => {
-						let findIdx = prevData.findIndex(item => item.id === model.id);
-						if (findIdx === -1) {
-							return [...prevData, model];
-						} else {
-							return [...prevData.slice(0, findIdx), model, ...prevData.slice(findIdx + 1)];
-						}
+						return prevData.map(item => {
+							if (item.id === model.id) {
+								return model;
+							}
+							return item;
+						});
 					});
 				}
 			})
@@ -104,11 +108,12 @@ class CategoriesManager {
 				data: Model
 			})
 			.then(response => {
-				if(response.data)
+				if(response.status === 200)
 				{
+					console.log(response.data)
 					this.dataSetter(prevData => {
-						return prevData.filter(item => item.id !== response.data);
-					})
+						return prevData.filter(item => item.id !== Model.id);
+					});
 				}
 			})
 			.catch(error => {console.log(error)})

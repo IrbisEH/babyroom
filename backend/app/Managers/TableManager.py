@@ -1,21 +1,17 @@
-import json
-
-from ..Models.CategoryModel import CategoryModel
 from .ResultModel import Result
 
-
-class CategoriesManager:
-    def __init__(self, config, log, db):
+class TableManager:
+    def __init__(self, config, log, db, model):
         self.config = config
         self.log = log
         self.db = db
+        self.model = model
 
     def get(self, params=None):
         #TODO: Метод должен принимать фильтр
         result = Result()
-
         try:
-            data = self.db.session.query(CategoryModel).all()
+            data = self.db.session.query(self.model).all()
             result.data = [item.to_dict() for item in data]
         except Exception as e:
             msg = str(e)
@@ -27,16 +23,11 @@ class CategoriesManager:
     def create(self, data):
         result = Result()
         try:
-            data["units"] = json.dumps(data["units"])
-
-            category = CategoryModel(**data)
-
-            self.db.session.add(category)
+            model = self.model(**data)
+            self.db.session.add(model)
             self.db.session.commit()
-
-            self.log.info(f"Added new product category id: {category.id} name: {category.name}")
-
-            result.data = category.to_dict()
+            self.log.info(f"Add new entry. Table: {model.__tablename__}")
+            result.data = model.to_dict()
 
         except Exception as e:
             self.db.session.rollback()
@@ -49,17 +40,14 @@ class CategoriesManager:
     def update(self, data):
         result = Result()
         try:
-            data["units"] = json.dumps(data["units"])
-
-            category = CategoryModel(**data)
-
-            self.db.session.query(CategoryModel).filter_by(id=data["id"]).update(data)
-
-            self.db.session.commit()
-
-            self.log.info(f"Update new product category id: {category.id} name: {category.name}")
-
-            result.data = category.to_dict()
+            if "id" in data:
+                model = self.model(**data)
+                self.db.session.query(self.model).filter_by(id=data["id"]).update(data)
+                self.db.session.commit()
+                self.log.info(f"Update entry. Table: {model.__tablename__}")
+                result.data = model.to_dict()
+            else:
+                raise Exception("Missing entry id")
 
         except Exception as e:
             self.db.session.rollback()
@@ -69,18 +57,15 @@ class CategoriesManager:
 
         return result
 
-    def delete(self, category_id):
+    def delete(self, data):
         result = Result()
         try:
-            product_category = self.db.session.query(CategoryModel).get(category_id)
-
-            if product_category:
-                self.db.session.delete(product_category)
+            if "id" in data:
+                model = self.db.session.query(self.model).get(data["id"])
+                self.db.session.delete(model)
                 self.db.session.commit()
             else:
-                raise Exception("Product category does not exist")
-
-            result.data = category_id
+                raise Exception("Missing entry id")
 
         except Exception as e:
             self.db.session.rollback()

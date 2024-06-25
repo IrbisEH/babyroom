@@ -14,7 +14,8 @@ from flask_cors import CORS
 from app.Managers.ConfigManager import ConfigManager
 from app.Managers.LogManager import LogManager
 from app.Managers.DbManager import DbManager
-from app.Managers.CategoriesManager import CategoriesManager
+from app.Managers.UnitsManager import UnitsManager
+from app.Managers.CategoryManager import CategoryManager
 from app.Models.UserModel import UserModel
 from app.Managers.ResultModel import Result
 
@@ -99,30 +100,55 @@ def check_jwt():
 
     return jsonify(result.to_dict()), result.status
 
-@app.route("/api/categories", methods=["POST", "GET", "PATCH", "DELETE"])
+@app.route("/api/categories", methods=["POST", "GET", "PUT", "DELETE"])
 @jwt_required()
 def handle_categories():
     result = Result()
-    manager = CategoriesManager(config, log, db)
-
+    manager = CategoryManager(config, log, db)
     try:
         if request.method == "GET":
             result = manager.get()
         elif request.method == "POST":
             data = request.get_json()
-            if "id" in data and data["id"] and int(data["id"]) > 0:
-                result = manager.update(data)
-            else:
-                del data["id"]
-                result = manager.create(data)
-        elif request.method == "PATCH":
-            pass
+            result = manager.create(data)
+        elif request.method == "PUT":
+            data = request.get_json()
+            result = manager.update(data)
         elif request.method == "DELETE":
             data = request.get_json()
-            if data["id"]:
-                result = manager.delete(data["id"])
-            else:
-                raise Exceptions.InvalidCredentialsException("Product category id not found")
+            manager.delete(data)
+        else:
+            pass
+
+    except Exceptions.InvalidCredentialsException as e:
+        msg = str(e)
+        log.error(msg)
+        result = Result(msg=msg, status=401)
+    except Exception as e:
+        msg = str(e)
+        log.error(msg)
+        result = Result(msg=msg, status=400)
+
+    return jsonify(result.to_dict()), result.status
+
+
+@app.route("/api/units", methods=["POST", "GET", "PUT", "DELETE"])
+@jwt_required()
+def handle_units():
+    result = Result()
+    manager = UnitsManager(config, log, db)
+    try:
+        if request.method == "GET":
+            result = manager.get()
+        elif request.method == "POST":
+            data = request.get_json()
+            result = manager.create(data)
+        elif request.method == "PUT":
+            data = request.get_json()
+            result = manager.update(data)
+        elif request.method == "DELETE":
+            data = request.get_json()
+            manager.delete(data)
         else:
             pass
 

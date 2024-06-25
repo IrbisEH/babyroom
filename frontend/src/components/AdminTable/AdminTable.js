@@ -68,8 +68,20 @@ const AdminTable = ({ Manager }) => {
 		event.preventDefault();
 
 		let model = Manager.GetModel(formState);
-		Manager.Save(model)
+
+		switch (formType.type)
+		{
+			case FormSubmitBtnTypes.edit.type:
+				Manager.Update(model);
+				break;
+			case FormSubmitBtnTypes.add.type:
+				Manager.Save(model);
+				break;
+			default:
+				break;
+		}
 		setIsFormOpen(false);
+		setFormState(Manager.GetFormModel());
 	}
 
 	const handleEditBtnClick = (event, row) => {
@@ -88,30 +100,32 @@ const AdminTable = ({ Manager }) => {
 			setFormState(Manager.GetFormModel());
 	}, [isFormOpen, Manager]);
 
-	// TODO: перенести в manager
-	const columns = Manager.columnsConfig.map(item => {
-		if(item.type === "icon")
-		{
-			if(item.id === "edit")
-			{
-				item.cell = row => (
-					<div onClick={(event) => handleEditBtnClick(event, row)}>
-						<FaRegEdit className="table__btn" size={16}/>
-					</div>
-				)
-			}
 
-			if(item.id === "trash")
-			{
-				item.cell = row => (
-					<div onClick={(event) => handleDeleteBtnClick(event, row)}>
-						<FaRegTrashCan className="table__btn"  size={16}/>
-					</div>
-				)
-			}
+	// TODO: перенести в manager ??
+	let controlColumns = [
+		{
+			id: "edit",
+			type:"icon",
+			width: "50px",
+			cell: row => (
+				<div onClick={(event) => handleEditBtnClick(event, row)}>
+					<FaRegEdit className="table__btn" size={16}/>
+				</div>
+			)
+		},
+		{
+			id: "trash",
+			type: "icon",
+			width: "50px",
+			cell: row => (
+				<div onClick={(event) => handleDeleteBtnClick(event, row)}>
+					<FaRegTrashCan className="table__btn"  size={16}/>
+				</div>
+			)
 		}
-		return item;
-	});
+	]
+
+	const columns = Manager.columnsConfig.concat(controlColumns);
 
     return (
 		<section className="table">
