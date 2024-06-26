@@ -1,9 +1,9 @@
 import React from "react";
+import Switch from 'react-switch';
 
-const Form = ({ parentId=null, formConfig, formType, formState, handleInputChange, handleApplyFormBtnClick }) => {
-    const Id = parentId ? parentId + "Form" : "Form"
 
-    const inputs = formConfig.map(item => {
+const Form = ({ Id=null, formConfig, formType, formState, handleInputChange, handleChecked, handleApplyFormBtnClick }) => {
+    const inputs = formConfig.map((item, elIdx) => {
         let inputEl;
 
         switch (item.type)
@@ -11,10 +11,11 @@ const Form = ({ parentId=null, formConfig, formType, formState, handleInputChang
             case "text":
                 inputEl = (
                     <input
+                        key={Id + item.id + elIdx}
                         id={item.id}
                         name={item.id}
                         value={formState[item.id]}
-                        onChange={handleInputChange}
+                        onChange={(e) => handleInputChange(item.id, e.target.value)}
                         required={item.required}>
                     </input>
                 )
@@ -22,10 +23,11 @@ const Form = ({ parentId=null, formConfig, formType, formState, handleInputChang
             case "textarea":
                 inputEl = (
                     <textarea
+                        key={Id + item.id + elIdx}
                         id={item.id}
                         name={item.id}
                         value={formState[item.id]}
-                        onChange={handleInputChange}
+                        onChange={(e) => handleInputChange(item.id, e.target.value)}
                         required={item.required}>
                     </textarea>
                 )
@@ -33,42 +35,45 @@ const Form = ({ parentId=null, formConfig, formType, formState, handleInputChang
             case "select":
                 inputEl = (
                     <select
+                        key={Id + item.id + elIdx}
                         id={item.id}
                         name={item.id}
-                        onChange={handleInputChange}
+                        onChange={(e) => handleInputChange(item.id, e.target.value)}
                         required={item.required}
                     >
                         {item.with_empty && (
-                          <option value=""></option>
+                          <option key={Id + "OptionEmpty"} value=""></option>
                         )}
-                        {item.options.map((option) => (
-                          <option key={Id + "Option" + option.id} value={option.id}>{option.name}</option>
+                        {item.options.map((option, idx) => (
+                          <option key={Id + "Option" + idx + option.id} value={option.id}>{option.name}</option>
                         ))}
                     </select>
                 )
                 break
-            case "checkbox":
-                inputEl = (
-                    <input
-                        type="checkbox"
-                        id={item.id}
-                        name={item.id}
-                        checked={formState[item.id]}
-                        onChange={handleInputChange}
-                        required={item.required}
-                    />
-                );
-                break;
+            // case "checkbox":
+            //     inputEl = (
+            //         <input
+            //             key={Id + item.id + elIdx}
+            //             type="checkbox"
+            //             id={item.id}
+            //             name={item.id}
+            //             checked={formState[item.id]}
+            //             onChange={handleInputChange}
+            //             required={item.required}
+            //         />
+            //     );
+            //     break;
             case "toggle":
                 inputEl = (
-                    <input
-                        type="checkbox"
+                    <Switch
+                        key={Id + item.id + elIdx}
                         id={item.id}
                         name={item.id}
-                        checked={formState[item.id]}
-                        onChange={handleInputChange}
-                        className="toggle-switch"
+                        checked={formState[item.id] || false}
+                        onChange={(checked) => handleChecked(item.id, checked)}
                         required={item.required}
+                        height={18}
+                        width={35}
                     />
                 );
                 break;
@@ -76,7 +81,7 @@ const Form = ({ parentId=null, formConfig, formType, formState, handleInputChang
                 inputEl = null;
         }
         return (
-            <div key={Id + item.id} className="form__row">
+            <div key={Id + item.id + elIdx} className="form__row">
                 <label htmlFor={item.id}>{item.label}</label>
                 {inputEl}
             </div>

@@ -2,8 +2,11 @@ import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import AdminTable from "../components/AdminTable/AdminTable";
 import UnitsManager from "../Managers/UnitsManager";
-import CategoriesManager from "../Managers/CategoriesManager"
+import PromotionManager from "../Managers/PromotionManager";
+import TagManager from "../Managers/TagManager";
+import CategoryManager from "../Managers/CategoryManager"
 import ProductManager from "../Managers/ProductManagers"
+import tagManager from "../Managers/TagManager";
 
 
 const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
@@ -22,8 +25,10 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
     }
 
     const [unitsData, setUnitsData] = useState([]);
-    const [categoriesData, setCategoriesData] = useState([]);
-    // const [productData, setProductData] = useState([]);
+    const [promoData, setPromoData] = useState([]);
+    const [tagData, setTagData] = useState([]);
+    const [categoryData, setCategoryData] = useState([]);
+    const [productData, setProductData] = useState([]);
 
     const unitsManager = new UnitsManager({
         apiManager: apiManager,
@@ -31,25 +36,42 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
         dataSetter: setUnitsData
     });
 
-    const productCategoryManager = new CategoriesManager({
+    const promotionManager = new PromotionManager({
         apiManager: apiManager,
-        data: categoriesData,
-        dataSetter: setCategoriesData
+        data: promoData,
+        dataSetter: setPromoData
     });
 
-    // const productManager = new ProductManager({
-    //     apiManager: apiManager,
-    //     tableData: productData,
-    //     tableDataSetter: setProductData,
-    //     productCategoriesData: productCategoryData
-    // });
+    const tagManager = new TagManager({
+        apiManager: apiManager,
+        data: tagData,
+        dataSetter: setTagData
+    });
+
+    const categoryManager = new CategoryManager({
+        apiManager: apiManager,
+        data: categoryData,
+        dataSetter: setCategoryData
+    });
+
+    const productManager = new ProductManager({
+        apiManager: apiManager,
+        tableData: productData,
+        tableDataSetter: setProductData,
+        unitsData: unitsData,
+        promoData: promoData,
+        tagData: tagData,
+        categoryData: categoryData
+    });
 
     useEffect(() => {
         if(isLoggedIn)
         {
             unitsManager.Get();
-            // productCategoryManager.Get();
-            // productManager.GetData();
+            promotionManager.Get();
+            tagManager.Get();
+            categoryManager.Get();
+            productManager.Get();
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -67,13 +89,17 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
                         Manager={unitsManager}
                     />
                     <AdminTable
-                        Manager={productCategoryManager}
+                        Manager={promotionManager}
                     />
-                    {/*<AdminTable*/}
-                    {/*    Manager={productManager}*/}
-                    {/*    TableData={productData}*/}
-                    {/*    TableDataSetter={setProductData}*/}
-                    {/*/>*/}
+                    <AdminTable
+                        Manager={tagManager}
+                    />
+                    <AdminTable
+                        Manager={categoryManager}
+                    />
+                    <AdminTable
+                        Manager={productManager}
+                    />
                 </>
             )}
         </>

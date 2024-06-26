@@ -1,4 +1,4 @@
-class CategoriesManager {
+class CategoryManager {
 	constructor(Params) {
 		this.Id = Params && Params.Id ? Params.Id : "Categories"
 
@@ -50,7 +50,7 @@ class CategoriesManager {
 		this.Get = () => {
 			this.apiManager.SendRequest({
 				method: "GET",
-				endpoint: "/categories",
+				endpoint: "/category",
 			})
 			.then(response => {
 				if(response.data)
@@ -65,7 +65,7 @@ class CategoriesManager {
 		this.Save = (Model) => {
 			this.apiManager.SendRequest({
 				method: "POST",
-				endpoint: "/categories",
+				endpoint: "/category",
 				data: Model
 			})
 			.then(response => {
@@ -81,7 +81,7 @@ class CategoriesManager {
 		this.Update = (Model) => {
 			this.apiManager.SendRequest({
 				method: "PUT",
-				endpoint: "/categories",
+				endpoint: "/category",
 				data: Model
 			})
 			.then(response => {
@@ -104,7 +104,7 @@ class CategoriesManager {
 		this.Delete = (Model) => {
 			this.apiManager.SendRequest({
 				method: "DELETE",
-				endpoint: "/categories",
+				endpoint: "/category",
 				data: Model
 			})
 			.then(response => {
@@ -121,4 +121,4 @@ class CategoriesManager {
 	}
 }
 
-export default CategoriesManager;
+export default CategoryManager;

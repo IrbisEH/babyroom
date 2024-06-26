@@ -23,11 +23,17 @@ const TableForm = ({ Id, isFormOpen, setIsFormOpen, formConfig, formState, setFo
         }
 	}
 
-	const handleInputChange = (event) => {
-        const { name, value } = event.target;
+	const handleInputChange = (id, value) => {
         setFormState((prevFormData) => ({
             ...prevFormData,
-            [name]: value
+            [id]: value
+        }));
+    }
+
+	const handleChecked = (id, checked) => {
+        setFormState((prevFormData) => ({
+            ...prevFormData,
+            [id]: checked
         }));
     }
 
@@ -40,11 +46,12 @@ const TableForm = ({ Id, isFormOpen, setIsFormOpen, formConfig, formState, setFo
 		<dialog ref={formRef} onKeyDown={handleKeyDown}>
 			<div className="table_form__wrapper">
 				<IoClose className="table_form__close_icon" onClick={() => setIsFormOpen(false)} size={20}/>
-				<Form parentId={Id}
+				<Form Id={Id}
 					  formConfig={formConfig}
 					  formType={formType}
 					  formState={formState}
 					  handleInputChange={handleInputChange}
+					  handleChecked={handleChecked}
 					  handleApplyFormBtnClick={handleApplyFormBtnClick}  />
 			</div>
 		</dialog>

@@ -23,3 +23,17 @@ class ProductModel(Base):
     category: Mapped[CategoryModel] = relationship(CategoryModel, backref='products')
     unit: Mapped[UnitsModel] = relationship(UnitsModel, backref='products')
     promotion: Mapped[PromotionModel] = relationship(PromotionModel, backref='products')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "enable": self.enable,
+            "name": self.name,
+            "description": self.description,
+            "category_id": self.category_id,
+            "units_id": self.units_id,
+            "promotion_id": self.promotion_id,
+            "price": self.price,
+            "tags": self.tags,
+            "img": self.img
+        }

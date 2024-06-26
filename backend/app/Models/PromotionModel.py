@@ -8,3 +8,9 @@ class PromotionModel(Base):
 
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
     rule: Mapped[str] = Column(String(255), unique=True, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "rule": self.rule
+        }

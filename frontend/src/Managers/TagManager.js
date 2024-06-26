@@ -1,8 +1,8 @@
-class PromotionManager {
+class TagManager {
 	constructor(Params) {
-		this.Id = Params && Params.Id ? Params.Id : "Promotions"
+		this.Id = Params && Params.Id ? Params.Id : "Tags"
 
-		this.tableName = "Промо";
+		this.tableName = "Теги";
 
 		this.apiManager = Params.apiManager;
 		this.data = Params.data;
@@ -16,22 +16,22 @@ class PromotionManager {
 				width: "100px",
 			},
 			{
-				id: "rule",
-				name: "Правило",
-				selector: row => row.rule,
+				id: "name",
+				name: "Имя",
+				selector: row => row.name,
 				width: "200px",
 			}
 		];
 
 		this.formConfig = [
-			{id:"rule", label:"правило", type:"text", required:true}
+			{id:"name", label:"имя", type:"text", required:true}
 		];
 
 		this.GetModel = (Params) => {
 			let model = {};
 
 			model.id = Params && Params.id ? Params.id : null;
-			model.rule = Params && Params.rule ? Params.rule : "";
+			model.name = Params && Params.name ? Params.name : "";
 
 			return model;
 		};
@@ -43,7 +43,7 @@ class PromotionManager {
 		this.Get = () => {
 			this.apiManager.SendRequest({
 				method: "GET",
-				endpoint: "/promotion",
+				endpoint: "/tag",
 			})
 			.then(response => {
 				if(response.data)
@@ -58,7 +58,7 @@ class PromotionManager {
 		this.Save = (Model) => {
 			this.apiManager.SendRequest({
 				method: "POST",
-				endpoint: "/promotion",
+				endpoint: "/tag",
 				data: Model
 			})
 			.then(response => {
@@ -74,7 +74,7 @@ class PromotionManager {
 		this.Update = (Model) => {
 			this.apiManager.SendRequest({
 				method: "PUT",
-				endpoint: "/promotion",
+				endpoint: "/tag",
 				data: Model
 			})
 			.then(response => {
@@ -97,12 +97,13 @@ class PromotionManager {
 		this.Delete = (Model) => {
 			this.apiManager.SendRequest({
 				method: "DELETE",
-				endpoint: "/promotion",
+				endpoint: "/tag",
 				data: Model
 			})
 			.then(response => {
 				if(response.status === 200)
 				{
+					console.log(response.data)
 					this.dataSetter(prevData => {
 						return prevData.filter(item => item.id !== Model.id);
 					});
@@ -113,4 +114,4 @@ class PromotionManager {
 	}
 }
 
-export default PromotionManager;
+export default TagManager;

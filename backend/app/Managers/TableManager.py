@@ -1,10 +1,13 @@
+import os
+
 from .ResultModel import Result
+from .DbManager import DbManager
 
 class TableManager:
-    def __init__(self, config, log, db, model):
+    def __init__(self,config, log, model):
         self.config = config
         self.log = log
-        self.db = db
+        self.db = DbManager(config, log)
         self.model = model
 
     def get(self, params=None):

@@ -15,7 +15,10 @@ from app.Managers.ConfigManager import ConfigManager
 from app.Managers.LogManager import LogManager
 from app.Managers.DbManager import DbManager
 from app.Managers.UnitsManager import UnitsManager
+from app.Managers.PromotionManager import PromotionManager
+from app.Managers.TagManager import TagManager
 from app.Managers.CategoryManager import CategoryManager
+from app.Managers.ProductManager import ProductManager
 from app.Models.UserModel import UserModel
 from app.Managers.ResultModel import Result
 
@@ -100,22 +103,19 @@ def check_jwt():
 
     return jsonify(result.to_dict()), result.status
 
-@app.route("/api/categories", methods=["POST", "GET", "PUT", "DELETE"])
-@jwt_required()
-def handle_categories():
+def request_handler(manager, req):
     result = Result()
-    manager = CategoryManager(config, log, db)
     try:
-        if request.method == "GET":
+        if req.method == "GET":
             result = manager.get()
-        elif request.method == "POST":
-            data = request.get_json()
+        elif req.method == "POST":
+            data = req.get_json()
             result = manager.create(data)
-        elif request.method == "PUT":
-            data = request.get_json()
+        elif req.method == "PUT":
+            data = req.get_json()
             result = manager.update(data)
-        elif request.method == "DELETE":
-            data = request.get_json()
+        elif req.method == "DELETE":
+            data = req.get_json()
             manager.delete(data)
         else:
             pass
@@ -129,38 +129,41 @@ def handle_categories():
         log.error(msg)
         result = Result(msg=msg, status=400)
 
-    return jsonify(result.to_dict()), result.status
-
+    return result
 
 @app.route("/api/units", methods=["POST", "GET", "PUT", "DELETE"])
 @jwt_required()
 def handle_units():
-    result = Result()
-    manager = UnitsManager(config, log, db)
-    try:
-        if request.method == "GET":
-            result = manager.get()
-        elif request.method == "POST":
-            data = request.get_json()
-            result = manager.create(data)
-        elif request.method == "PUT":
-            data = request.get_json()
-            result = manager.update(data)
-        elif request.method == "DELETE":
-            data = request.get_json()
-            manager.delete(data)
-        else:
-            pass
+    manager = UnitsManager(config, log)
+    result = request_handler(manager, request)
+    return jsonify(result.to_dict()), result.status
 
-    except Exceptions.InvalidCredentialsException as e:
-        msg = str(e)
-        log.error(msg)
-        result = Result(msg=msg, status=401)
-    except Exception as e:
-        msg = str(e)
-        log.error(msg)
-        result = Result(msg=msg, status=400)
+@app.route("/api/promotion", methods=["POST", "GET", "PUT", "DELETE"])
+@jwt_required()
+def handle_promotion():
+    manager = PromotionManager(config, log)
+    result = request_handler(manager, request)
+    return jsonify(result.to_dict()), result.status
 
+@app.route("/api/tag", methods=["POST", "GET", "PUT", "DELETE"])
+@jwt_required()
+def handle_tag():
+    manager = TagManager(config, log)
+    result = request_handler(manager, request)
+    return jsonify(result.to_dict()), result.status
+
+@app.route("/api/category", methods=["POST", "GET", "PUT", "DELETE"])
+@jwt_required()
+def handle_category():
+    manager = CategoryManager(config, log)
+    result = request_handler(manager, request)
+    return jsonify(result.to_dict()), result.status
+
+@app.route("/api/product", methods=["POST", "GET", "PUT", "DELETE"])
+@jwt_required()
+def handle_product():
+    manager = ProductManager(config, log)
+    result = request_handler(manager, request)
     return jsonify(result.to_dict()), result.status
 
 
