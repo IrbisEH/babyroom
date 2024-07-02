@@ -3,6 +3,8 @@ import { FaRegTrashCan } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 import {IoClose} from "react-icons/io5";
 import Form from "../components/Form/Form";
+import CellTooltip from "../components/AdminTable/CellTooltip";
+
 
 class UnitsManager {
 	constructor(Params) {
@@ -36,23 +38,26 @@ class UnitsManager {
 			},
 			{
 				id: "description",
+				width: "200px",
 				name: "Описание",
 				selector: row => row.description,
 			},
 			{
 				id: "units",
 				name: "Размеры",
-				// cell: row => (
-					// <div>
-					// 	{row.units.split(";").map((item, index) => (
-					// 		<div key={this.Id + index}>{item}</div>
-					// 	))}
-					// </div>
-				// )
+				width: "100px",
+				cell: row => (
+					<CellTooltip tooltipEl={
+						<div>
+							{row.units.split(";").map((item, index) => (
+								<div key={this.Id + index}>{item}</div>
+							))}
+						</div>
+					} />
+				)
 			},
 			{
 				id: "edit",
-				type: "icon",
 				width: "50px",
 				cell: row => (
 					<div onClick={(event) => this.handleEditBtnClick && this.handleEditBtnClick(event, row)}>
@@ -62,7 +67,6 @@ class UnitsManager {
 			},
 			{
 				id: "trash",
-				type: "icon",
 				width: "50px",
 				cell: row => (
 					<div onClick={(event) => this.handleDeleteBtnClick && this.handleDeleteBtnClick(event, row)}>

@@ -36,42 +36,42 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
         dataSetter: setUnitsData
     });
 
-    const promotionManager = new PromotionManager({
-        apiManager: apiManager,
-        data: promoData,
-        dataSetter: setPromoData
-    });
-
-    const tagManager = new TagManager({
-        apiManager: apiManager,
-        data: tagData,
-        dataSetter: setTagData
-    });
-
-    const categoryManager = new CategoryManager({
-        apiManager: apiManager,
-        data: categoryData,
-        dataSetter: setCategoryData
-    });
-
-    const productManager = new ProductManager({
-        apiManager: apiManager,
-        tableData: productData,
-        tableDataSetter: setProductData,
-        unitsData: unitsData,
-        promoData: promoData,
-        tagData: tagData,
-        categoryData: categoryData
-    });
+    // const promotionManager = new PromotionManager({
+    //     apiManager: apiManager,
+    //     data: promoData,
+    //     dataSetter: setPromoData
+    // });
+    //
+    // const tagManager = new TagManager({
+    //     apiManager: apiManager,
+    //     data: tagData,
+    //     dataSetter: setTagData
+    // });
+    //
+    // const categoryManager = new CategoryManager({
+    //     apiManager: apiManager,
+    //     data: categoryData,
+    //     dataSetter: setCategoryData
+    // });
+    //
+    // const productManager = new ProductManager({
+    //     apiManager: apiManager,
+    //     tableData: productData,
+    //     tableDataSetter: setProductData,
+    //     unitsData: unitsData,
+    //     promoData: promoData,
+    //     tagData: tagData,
+    //     categoryData: categoryData
+    // });
 
     useEffect(() => {
         if(isLoggedIn)
         {
             unitsManager.Get();
-            promotionManager.Get();
-            tagManager.Get();
-            categoryManager.Get();
-            productManager.Get();
+            // promotionManager.Get();
+            // tagManager.Get();
+            // categoryManager.Get();
+            // productManager.Get();
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -88,18 +88,18 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
                     <AdminTable
                         Manager={unitsManager}
                     />
-                    <AdminTable
-                        Manager={promotionManager}
-                    />
-                    <AdminTable
-                        Manager={tagManager}
-                    />
-                    <AdminTable
-                        Manager={categoryManager}
-                    />
-                    <AdminTable
-                        Manager={productManager}
-                    />
+                    {/*<AdminTable*/}
+                    {/*    Manager={promotionManager}*/}
+                    {/*/>*/}
+                    {/*<AdminTable*/}
+                    {/*    Manager={tagManager}*/}
+                    {/*/>*/}
+                    {/*<AdminTable*/}
+                    {/*    Manager={categoryManager}*/}
+                    {/*/>*/}
+                    {/*<AdminTable*/}
+                    {/*    Manager={productManager}*/}
+                    {/*/>*/}
                 </>
             )}
         </>

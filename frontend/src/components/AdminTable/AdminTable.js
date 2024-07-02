@@ -66,6 +66,9 @@ const AdminTable = ({ Manager }) => {
 	const [formState, setFormState] = useState(Manager.GetFormModel());
 	const [formType, setFormType] = useState(null);
 
+	const [tooltipContent, setTooltipContent] = useState(null);
+    const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+
 	const handleAddBtnClick = (event) => {
 		setFormType(FormSubmitBtnTypes.add)
 		setIsFormOpen(true);
@@ -100,6 +103,14 @@ const AdminTable = ({ Manager }) => {
 	Manager.handleDeleteBtnClick = (event, row) => {
 		let model = Manager.GetModel(row);
 		Manager.Delete(model);
+	}
+
+	Manager.handleCellMouseEnter = (event, row) => {
+		console.log(row);
+	}
+
+	Manager.handleCellMouseLeave = (event, row) => {
+		console.log(row);
 	}
 
 	useEffect(() => {
