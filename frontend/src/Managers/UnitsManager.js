@@ -1,4 +1,8 @@
 import React from "react";
+import { FaRegTrashCan } from "react-icons/fa6";
+import { FaRegEdit } from "react-icons/fa";
+import {IoClose} from "react-icons/io5";
+import Form from "../components/Form/Form";
 
 class UnitsManager {
 	constructor(Params) {
@@ -12,6 +16,10 @@ class UnitsManager {
 		this.apiManager = Params.apiManager;
 		this.data = Params.data;
 		this.dataSetter = Params.dataSetter;
+
+		this.handleEditBtnClick = null;
+		this.handleDeleteBtnClick = null;
+		// this.handleOnMouse
 
 		this.columnsConfig = [
 			{
@@ -34,18 +42,33 @@ class UnitsManager {
 			{
 				id: "units",
 				name: "Размеры",
-				// selector: row => row.units.split(";").join("\n")
+				// cell: row => (
+					// <div>
+					// 	{row.units.split(";").map((item, index) => (
+					// 		<div key={this.Id + index}>{item}</div>
+					// 	))}
+					// </div>
+				// )
+			},
+			{
+				id: "edit",
+				type: "icon",
+				width: "50px",
 				cell: row => (
-					<div>
-						{row.units.split(";").map((item, index) => (
-							<div key={this.Id + index}>{item}</div>
-						))}
+					<div onClick={(event) => this.handleEditBtnClick && this.handleEditBtnClick(event, row)}>
+						<FaRegEdit className="table__btn" size={16}/>
 					</div>
 				)
-				// selector: row => {
-				// 	return row.units.split(";").join("\n");
-				// }
-
+			},
+			{
+				id: "trash",
+				type: "icon",
+				width: "50px",
+				cell: row => (
+					<div onClick={(event) => this.handleDeleteBtnClick && this.handleDeleteBtnClick(event, row)}>
+						<FaRegTrashCan className="table__btn"  size={16}/>
+					</div>
+				)
 			}
 		];
 

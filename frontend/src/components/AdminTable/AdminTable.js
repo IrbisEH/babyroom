@@ -91,13 +91,13 @@ const AdminTable = ({ Manager }) => {
 		setFormState(Manager.GetFormModel());
 	}
 
-	const handleEditBtnClick = (event, row) => {
+	Manager.handleEditBtnClick = (event, row) => {
 		setFormState(Manager.GetFormModel(row));
 		setFormType(FormSubmitBtnTypes.edit);
 		setIsFormOpen(true);
 	}
 
-	const handleDeleteBtnClick = (event, row) => {
+	Manager.handleDeleteBtnClick = (event, row) => {
 		let model = Manager.GetModel(row);
 		Manager.Delete(model);
 	}
@@ -108,40 +108,15 @@ const AdminTable = ({ Manager }) => {
 	}, [isFormOpen, Manager]);
 
 
-	// TODO: перенести в manager ??
-	let controlColumns = [
-		{
-			id: "edit",
-			type:"icon",
-			width: "50px",
-			cell: row => (
-				<div onClick={(event) => handleEditBtnClick(event, row)}>
-					<FaRegEdit className="table__btn" size={16}/>
-				</div>
-			)
-		},
-		{
-			id: "trash",
-			type: "icon",
-			width: "50px",
-			cell: row => (
-				<div onClick={(event) => handleDeleteBtnClick(event, row)}>
-					<FaRegTrashCan className="table__btn"  size={16}/>
-				</div>
-			)
-		}
-	]
-
-	const columns = Manager.columnsConfig.concat(controlColumns);
-
     return (
 		<section className="table">
 			<div className="table__toolbar">
 				<h1>{Manager.tableName}</h1>
-				{Manager.formConfig && <IoMdAddCircleOutline className="table__btn"  onClick={handleAddBtnClick} size={20}/>}
+				{Manager.formConfig &&
+					<IoMdAddCircleOutline className="table__btn" onClick={handleAddBtnClick} size={20}/>}
 			</div>
 			<DataTable
-				columns={columns}
+				columns={Manager.columnsConfig}
 				data={Manager.data}
 				pagination
 			/>
@@ -157,6 +132,10 @@ const AdminTable = ({ Manager }) => {
 					handleApplyFormBtnClick={handleApplyFormBtnClick}
 				/>
 			)}
+			<dialog>
+				<div className="table_modal">
+				</div>
+			</dialog>
 		</section>
 	)
 }

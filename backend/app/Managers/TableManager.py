@@ -4,7 +4,7 @@ from .ResultModel import Result
 from .DbManager import DbManager
 
 class TableManager:
-    def __init__(self,config, log, model):
+    def __init__(self, config, log, model):
         self.config = config
         self.log = log
         self.db = DbManager(config, log)

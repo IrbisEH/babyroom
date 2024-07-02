@@ -51,6 +51,7 @@ def login():
         if not username or not password:
             raise Exception("Missing username and password")
 
+        #TODO: инициализировать db отдельно
         user = db.session.query(UserModel).filter_by(username=username).first()
 
         if not user:
