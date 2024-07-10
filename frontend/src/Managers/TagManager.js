@@ -1,3 +1,7 @@
+import {FaRegEdit} from "react-icons/fa";
+import {FaRegTrashCan} from "react-icons/fa6";
+import React from "react";
+
 class TagManager {
 	constructor(Params) {
 		this.Id = Params && Params.Id ? Params.Id : "Tags"
@@ -7,6 +11,9 @@ class TagManager {
 		this.apiManager = Params.apiManager;
 		this.data = Params.data;
 		this.dataSetter = Params.dataSetter;
+
+		this.handleEditBtnClick = null;
+		this.handleDeleteBtnClick = null;
 
 		this.columnsConfig = [
 			{
@@ -19,7 +26,25 @@ class TagManager {
 				id: "name",
 				name: "Имя",
 				selector: row => row.name,
-				width: "200px",
+				grow: 1
+			},
+			{
+				id: "edit",
+				width: "50px",
+				cell: row => (
+					<div onClick={(event) => this.handleEditBtnClick && this.handleEditBtnClick(event, row)}>
+						<FaRegEdit className="table__btn" size={16}/>
+					</div>
+				)
+			},
+			{
+				id: "trash",
+				width: "50px",
+				cell: row => (
+					<div onClick={(event) => this.handleDeleteBtnClick && this.handleDeleteBtnClick(event, row)}>
+						<FaRegTrashCan className="table__btn"  size={16}/>
+					</div>
+				)
 			}
 		];
 

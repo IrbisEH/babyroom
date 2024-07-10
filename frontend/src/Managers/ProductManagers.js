@@ -109,6 +109,7 @@ class ProductManagers {
 			.then(response => {
 				if(response.data)
 				{
+					console.log(response.data);
 					let data = response.data.map(item => this.GetModel(item));
 					this.dataSetter(prevData => data.concat(prevData));
 				}
@@ -164,7 +165,6 @@ class ProductManagers {
 			.then(response => {
 				if(response.status === 200)
 				{
-					console.log(response.data)
 					this.dataSetter(prevData => {
 						return prevData.filter(item => item.id !== Model.id);
 					});

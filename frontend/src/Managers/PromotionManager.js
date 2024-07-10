@@ -1,3 +1,7 @@
+import {FaRegEdit} from "react-icons/fa";
+import {FaRegTrashCan} from "react-icons/fa6";
+import React from "react";
+
 class PromotionManager {
 	constructor(Params) {
 		this.Id = Params && Params.Id ? Params.Id : "Promotions"
@@ -7,6 +11,9 @@ class PromotionManager {
 		this.apiManager = Params.apiManager;
 		this.data = Params.data;
 		this.dataSetter = Params.dataSetter;
+
+		this.handleEditBtnClick = null;
+		this.handleDeleteBtnClick = null;
 
 		this.columnsConfig = [
 			{
@@ -19,7 +26,25 @@ class PromotionManager {
 				id: "rule",
 				name: "Правило",
 				selector: row => row.rule,
-				width: "200px",
+				grow: 1
+			},
+			{
+				id: "edit",
+				width: "50px",
+				cell: row => (
+					<div onClick={(event) => this.handleEditBtnClick && this.handleEditBtnClick(event, row)}>
+						<FaRegEdit className="table__btn" size={16}/>
+					</div>
+				)
+			},
+			{
+				id: "trash",
+				width: "50px",
+				cell: row => (
+					<div onClick={(event) => this.handleDeleteBtnClick && this.handleDeleteBtnClick(event, row)}>
+						<FaRegTrashCan className="table__btn"  size={16}/>
+					</div>
+				)
 			}
 		];
 
@@ -48,6 +73,7 @@ class PromotionManager {
 			.then(response => {
 				if(response.data)
 				{
+					console.log(response.data);
 					let data = response.data.map(item => this.GetModel(item));
 					this.dataSetter(prevData => data.concat(prevData));
 				}

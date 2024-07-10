@@ -21,7 +21,6 @@ class UnitsManager {
 
 		this.handleEditBtnClick = null;
 		this.handleDeleteBtnClick = null;
-		// this.handleOnMouse
 
 		this.columnsConfig = [
 			{
@@ -45,15 +44,9 @@ class UnitsManager {
 			{
 				id: "units",
 				name: "Размеры",
-				width: "100px",
+				grow: 1,
 				cell: row => (
-					<CellTooltip tooltipEl={
-						<div>
-							{row.units.split(";").map((item, index) => (
-								<div key={this.Id + index}>{item}</div>
-							))}
-						</div>
-					} />
+					<CellTooltip parentId={this.Id} tooltipEl={row.units.split(";")} />
 				)
 			},
 			{
