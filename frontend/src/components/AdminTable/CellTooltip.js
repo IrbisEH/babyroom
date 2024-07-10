@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { RxEyeOpen } from "react-icons/rx";
 import { RxEyeClosed } from "react-icons/rx";
 
-const CellTooltip = ({ parentId, tooltipEl }) => {
+const CellTooltip = ({ cellEls, tooltipEls }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({top: 0, left: 0});
-
-  const Id = parentId + "CellToolTip";
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -18,7 +16,7 @@ const CellTooltip = ({ parentId, tooltipEl }) => {
 
   const handleMouseMove = (event) => {
     setTooltipPosition({
-      top: event.clientY,
+      top: event.clientY - 60,
       left: event.clientX + 40,
     });
   };
@@ -31,10 +29,7 @@ const CellTooltip = ({ parentId, tooltipEl }) => {
             onMouseMove={handleMouseMove}
             style={{cursor: 'pointer'}}
         >
-          {tooltipEl.slice(0, 2).map((item, i) => (
-              <div key={Id + i}>{item}</div>
-          ))}
-        <div>...</div>
+          {cellEls}
         </div>
         {isHovered && (
             <div
@@ -50,9 +45,7 @@ const CellTooltip = ({ parentId, tooltipEl }) => {
                   zIndex: 1000,
                 }}
             >
-              {tooltipEl.map((item, i) => (
-                  <div key={Id + i}>{item}</div>
-              ))}
+              {tooltipEls}
             </div>
         )}
       </div>

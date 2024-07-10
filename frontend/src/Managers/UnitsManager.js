@@ -46,7 +46,20 @@ class UnitsManager {
 				name: "Размеры",
 				grow: 1,
 				cell: row => (
-					<CellTooltip parentId={this.Id} tooltipEl={row.units.split(";")} />
+					<CellTooltip
+						cellEls={
+							row.units.split(";").slice(0, 2)
+							.concat(["..."])
+							.map((item, i) => (
+							<div key={this.Id + "Cell" + i}>{item}</div>
+							))
+						}
+						tooltipEls={
+							row.units.split(";").map((item, i) => (
+								<div key={this.Id + "CellTooltip" + i}>{item}</div>
+							))
+						}
+					/>
 				)
 			},
 			{

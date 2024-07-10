@@ -6,6 +6,9 @@ const Form = ({ Id=null, formConfig, formType, formState, handleInputChange, han
     const inputs = formConfig.map((item, elIdx) => {
         let inputEl;
 
+        if(item.id === "category_id")
+            console.log(item)
+
         switch (item.type)
         {
             case "text":
@@ -39,6 +42,7 @@ const Form = ({ Id=null, formConfig, formType, formState, handleInputChange, han
                         id={item.id}
                         name={item.id}
                         onChange={(e) => handleInputChange(item.id, e.target.value)}
+                        value={formState[item.id]}
                         required={item.required}
                     >
                         {item.with_empty && (
@@ -69,7 +73,7 @@ const Form = ({ Id=null, formConfig, formType, formState, handleInputChange, han
                         key={Id + item.id + elIdx}
                         id={item.id}
                         name={item.id}
-                        checked={formState[item.id] || false}
+                        checked={Boolean(formState[item.id]) || false}
                         onChange={(checked) => handleChecked(item.id, checked)}
                         required={item.required}
                         height={18}

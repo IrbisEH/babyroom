@@ -1,6 +1,7 @@
 import {FaRegEdit} from "react-icons/fa";
 import {FaRegTrashCan} from "react-icons/fa6";
 import React from "react";
+import CellTooltip from "../components/AdminTable/CellTooltip";
 
 class CategoryManager {
 	constructor(Params) {
@@ -14,6 +15,8 @@ class CategoryManager {
 
 		this.handleEditBtnClick = null;
 		this.handleDeleteBtnClick = null;
+
+		this.categoriesData = null
 
 		this.columnsConfig = [
 			{
@@ -31,8 +34,17 @@ class CategoryManager {
 			{
 				id: "description",
 				name: "Описание",
-				selector: row => row.description,
-				grow: 1
+				grow: 1,
+				cell: row => (
+					<CellTooltip
+						cellEls={
+							<div>{row.description}</div>
+						}
+						tooltipEls={
+							<div>{row.description}</div>
+						}
+					/>
+				)
 			},
 			{
 				id: "edit",
@@ -136,7 +148,7 @@ class CategoryManager {
 			.then(response => {
 				if(response.status === 200)
 				{
-					console.log(response.data)
+					//TODO: ???
 					this.dataSetter(prevData => {
 						return prevData.filter(item => item.id !== Model.id);
 					});

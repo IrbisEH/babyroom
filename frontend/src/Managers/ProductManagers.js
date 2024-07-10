@@ -1,3 +1,9 @@
+import {FaRegEdit} from "react-icons/fa";
+import {FaRegTrashCan} from "react-icons/fa6";
+import React from "react";
+import Switch from 'react-switch';
+import CellTooltip from "../components/AdminTable/CellTooltip";
+
 class ProductManagers {
 	constructor(Params) {
 		this.Id = Params && Params.Id ? Params.Id : "Products"
@@ -5,13 +11,16 @@ class ProductManagers {
 		this.tableName = "Товары";
 
 		this.apiManager = Params.apiManager;
-		this.tableData = Params.tableData;
-		this.tableDataSetter = Params.tableDataSetter;
-		this.units = Params.unitsData;
-		this.promo = Params.promoData;
-		this.tags = Params.tagData;
-		this.categories = Params.categoryData;
+		this.data = Params.data;
+		this.dataSetter = Params.dataSetter;
 
+		this.unitsData = Params.unitsData;
+		this.promoData = Params.promoData;
+		this.tagData = Params.tagData;
+		this.categoryData = Params.categoryData;
+
+		this.handleEditBtnClick = null;
+		this.handleDeleteBtnClick = null;
 
 		this.columnsConfig = [
 			{
@@ -23,8 +32,19 @@ class ProductManagers {
 			{
 				id: "enable",
 				name: "Вкл/Выкл",
-				selector: row => row.enable,
-				width: "100px"
+				cell: row => (
+					<div>
+						<Switch
+							key={this.Id + row.id}
+							id={this.Id + row.id}
+							name={"product_enable"}
+							checked={Boolean(row.enable) || false}
+							onChange={(checked) => this.HandleEnableToggle(checked, row)}
+							height={18}
+							width={35}
+						/>
+					</div>
+				)
 			},
 			{
 				id: "name",
@@ -34,22 +54,49 @@ class ProductManagers {
 			{
 				id: "description",
 				name: "Описание",
-				selector: row => row.description,
+				cell: row => (
+					<CellTooltip
+						cellEls={
+							<div>{row.description}</div>
+						}
+						tooltipEls={
+							<div>{row.description}</div>
+						}
+					/>
+				)
 			},
 			{
 				id: "category_id",
 				name: "Категория",
-				selector: row => row.category_id,
+				selector: row => {
+					let find = this.categoryData.find(item => item.id === row.category_id);
+					return find && find.name ? find.name : null;
+				},
 			},
 			{
 				id: "units_id",
 				name: "Размеры",
-				selector: row => row.units_id,
+				cell: row => {
+					let find = this.unitsData.find(item => item.id === row.units_id);
+					return find && find.units && (
+						<CellTooltip
+							cellEls={find.name}
+							tooltipEls={
+								find.units.split(";").map((item, i) => (
+									<div key={this.Id + "CellTooltip" + i}>{item}</div>
+								))
+							}
+						/>
+					)
+				}
 			},
 			{
 				id: "promotion_id",
 				name: "Промо",
-				selector: row => row.promotion_id,
+				cell: row => {
+					let find = this.promoData.find(item => item.id === row.promotion_id);
+					return find && find.rule ? find.rule : null;
+				}
 			},
 			{
 				id: "price",
@@ -59,12 +106,38 @@ class ProductManagers {
 			{
 				id: "tags",
 				name: "теги",
-				selector: row => row.tags,
+				cell: row => {
+					let tags_ids = row.tags.split(';');
+					let tags_names = [];
+					tags_ids.forEach(tag_id => {
+						let find = this.tagData.find(item => parseInt(item.id) === parseInt(tag_id));
+						if(find && find.name)
+							tags_names.push(find.name)
+					});
+					return tags_names.map((name, idx) => <div key={this.Id + "TagCell" + idx}>{name}</div>)
+				}
 			},
 			{
-				id: "img",
-				name: "теги",
-				selector: row => row.img,
+				id: "product_card",
+				name: "карточка",
+			},
+			{
+				id: "edit",
+				width: "50px",
+				cell: row => (
+					<div onClick={(event) => this.handleEditBtnClick && this.handleEditBtnClick(event, row)}>
+						<FaRegEdit className="table__btn" size={16}/>
+					</div>
+				)
+			},
+			{
+				id: "trash",
+				width: "50px",
+				cell: row => (
+					<div onClick={(event) => this.handleDeleteBtnClick && this.handleDeleteBtnClick(event, row)}>
+						<FaRegTrashCan className="table__btn"  size={16}/>
+					</div>
+				)
 			}
 		];
 
@@ -72,12 +145,12 @@ class ProductManagers {
 			{id:"enable", label:"Вкл/Выкл", type:"toggle", required:false},
 			{id:"name", label:"Название", type:"text", required:true},
 			{id:"description", label:"Описание", type:"text", required:true},
-			{id:"category_id", label:"Категория", type:"select", options:this.categories, default:"", with_empty:true, required:false},
-			{id:"units_id", label:"Размеры", type:"select", options:this.units, default:"", with_empty:true, required:false},
-			{id:"promotion_id", label:"Промо", type:"select", options:this.promo, default:"", with_empty:true, required:false},
-			{id:"tags", label:"Теги", type:"select", options:this.tags, default:"", with_empty:true, required:false},
+			{id:"category_id", label:"Категория", type:"select", options:this.categoryData, default:"", with_empty:true, required:false},
+			{id:"units_id", label:"Размеры", type:"select", options:this.unitsData, default:"", with_empty:true, required:false},
+			{id:"promotion_id", label:"Промо", type:"select", options:this.promoData, default:"", with_empty:true, required:false},
+			{id:"tags", label:"Теги", type:"select", options:this.tagData, default:"", with_empty:true, required:false},
 			{id:"price", label:"Цена", type:"text", required:true},
-			{id:"img", label:"Изображение", type:"text", required:true},
+			// {id:"img", label:"Изображение", type:"text", required:true},
 		]
 
 		this.GetModel = (Params) => {
@@ -109,7 +182,6 @@ class ProductManagers {
 			.then(response => {
 				if(response.data)
 				{
-					console.log(response.data);
 					let data = response.data.map(item => this.GetModel(item));
 					this.dataSetter(prevData => data.concat(prevData));
 				}
@@ -171,6 +243,13 @@ class ProductManagers {
 				}
 			})
 			.catch(error => {console.log(error)})
+		}
+
+		this.HandleEnableToggle = (state, row) =>
+		{
+			let model = this.GetModel(row);
+			model.enable = state;
+			this.Update(model);
 		}
 	}
 }

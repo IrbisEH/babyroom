@@ -73,7 +73,6 @@ class PromotionManager {
 			.then(response => {
 				if(response.data)
 				{
-					console.log(response.data);
 					let data = response.data.map(item => this.GetModel(item));
 					this.dataSetter(prevData => data.concat(prevData));
 				}

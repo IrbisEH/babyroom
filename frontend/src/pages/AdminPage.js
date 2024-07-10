@@ -56,8 +56,8 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
 
     const productManager = new ProductManager({
         apiManager: apiManager,
-        tableData: productData,
-        tableDataSetter: setProductData,
+        data: productData,
+        dataSetter: setProductData,
         unitsData: unitsData,
         promoData: promoData,
         tagData: tagData,
