@@ -24,6 +24,7 @@ const TableForm = ({ Id, isFormOpen, setIsFormOpen, formConfig, formState, setFo
 	}
 
 	const handleInputChange = (id, value) => {
+		console.log(id, value)
         setFormState((prevFormData) => ({
             ...prevFormData,
             [id]: value
@@ -109,11 +110,6 @@ const AdminTable = ({ Manager }) => {
 			setFormState(Manager.GetFormModel());
 		}
 	}, [isFormOpen, Manager]);
-
-	useEffect(() => {
-		console.log(formState)
-	}, [formState])
-
 
     return (
 		<section className="table">

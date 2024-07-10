@@ -121,7 +121,7 @@ class UnitsManager {
 					this.dataSetter(prevData => data.concat(prevData));
 				}
 				})
-			.catch(error => console.log(error));
+			.catch(error => console.error(error));
 		};
 
 		this.Save = (Model) => {
@@ -137,7 +137,7 @@ class UnitsManager {
 					this.dataSetter(prevData => [...prevData, model]);
 				}
 			})
-			.catch(error => {console.log(error)})
+			.catch(error => {console.error(error)})
 		}
 
 		this.Update = (Model) => {
@@ -160,7 +160,7 @@ class UnitsManager {
 					});
 				}
 			})
-			.catch(error => {console.log(error)})
+			.catch(error => {console.error(error)})
 		}
 
 		this.Delete = (Model) => {
@@ -172,13 +172,12 @@ class UnitsManager {
 			.then(response => {
 				if(response.status === 200)
 				{
-					console.log(response.data)
 					this.dataSetter(prevData => {
 						return prevData.filter(item => item.id !== Model.id);
 					});
 				}
 			})
-			.catch(error => {console.log(error)})
+			.catch(error => {console.error(error)})
 		}
 	}
 }

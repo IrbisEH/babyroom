@@ -16,8 +16,8 @@ const CellTooltip = ({ cellEls, tooltipEls }) => {
 
   const handleMouseMove = (event) => {
     setTooltipPosition({
-      top: event.clientY - 60,
-      left: event.clientX + 40,
+      top: event.clientY - 65,
+      left: event.clientX + 45,
     });
   };
 

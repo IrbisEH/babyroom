@@ -97,7 +97,7 @@ class CategoryManager {
 					this.dataSetter(prevData => data.concat(prevData));
 				}
 				})
-			.catch(error => console.log(error));
+			.catch(error => console.error(error));
 		};
 
 		this.Save = (Model) => {
@@ -113,7 +113,7 @@ class CategoryManager {
 					this.dataSetter(prevData => [...prevData, model]);
 				}
 			})
-			.catch(error => {console.log(error)})
+			.catch(error => {console.error(error)})
 		}
 
 		this.Update = (Model) => {
@@ -136,7 +136,7 @@ class CategoryManager {
 					});
 				}
 			})
-			.catch(error => {console.log(error)})
+			.catch(error => {console.error(error)})
 		}
 
 		this.Delete = (Model) => {
@@ -154,7 +154,7 @@ class CategoryManager {
 					});
 				}
 			})
-			.catch(error => {console.log(error)})
+			.catch(error => {console.error(error)})
 		}
 	}
 }
