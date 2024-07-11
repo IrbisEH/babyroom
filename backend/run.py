@@ -111,9 +111,11 @@ def request_handler(manager, req):
             result = manager.get()
         elif req.method == "POST":
             data = req.get_json()
+            print(request.files)
             result = manager.create(data)
         elif req.method == "PUT":
             data = req.get_json()
+            print(request.files)
             result = manager.update(data)
         elif req.method == "DELETE":
             data = req.get_json()

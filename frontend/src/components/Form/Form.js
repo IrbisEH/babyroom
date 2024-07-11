@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Switch from 'react-switch';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
@@ -91,6 +91,18 @@ const Form = ({ Id=null, formConfig, formType, formState, handleInputChange, han
                         width={35}
                     />
                 );
+                break;
+            case "upload_file":
+                inputEl = (
+                    <input
+                        id="image"
+                        type="file"
+                        name="image"
+                        accept="image/png, image/jpg"
+                        multiple
+                        onChange={(e) => handleInputChange(item.id, e.target.files)}
+                    />
+                )
                 break;
             default:
                 inputEl = null;

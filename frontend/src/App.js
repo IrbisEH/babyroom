@@ -11,6 +11,7 @@ import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
 
 import ApiManager from "./Managers/ApiManager";
+import TestPage from "./pages/TestPage";
 
 const App = () => {
     let apiManager = new ApiManager();
@@ -50,6 +51,7 @@ const App = () => {
                 <Route path={"/cart"} element={<Cart />} />
                 <Route path={"/login"} element={<LoginPage apiManager={apiManager} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
                 <Route path={"/admin"} element={<AdminPage apiManager={apiManager} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
+                <Route path={"/test"} element={<TestPage />} />
             </Routes>
         </BrowserRouter>
     );

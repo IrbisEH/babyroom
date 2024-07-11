@@ -24,7 +24,7 @@ const TableForm = ({ Id, isFormOpen, setIsFormOpen, formConfig, formState, setFo
 	}
 
 	const handleInputChange = (id, value) => {
-		console.log(id, value)
+		console.log(value)
         setFormState((prevFormData) => ({
             ...prevFormData,
             [id]: value

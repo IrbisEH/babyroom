@@ -157,7 +157,8 @@ class ProductManagers {
 			// {id:"promotion_id", label:"Промо", type:"select", options:this.promoData, with_empty:true, required:false},
 			{id:"tags", label:"Теги", type:"multiselect", options:this.tagData, required:false},
 			{id:"price", label:"Цена", type:"text", required:true},
-			// {id:"img", label:"Изображение", type:"text", required:true},
+			// {id:"img", label:"Изображения", type:"upload_file", required:true},
+			{id:"upload_img", label:"Изображения", type:"upload_file", required:true},
 		]
 
 		this.GetModel = (Params) => {
@@ -173,6 +174,7 @@ class ProductManagers {
 			model.price = Params && Params.price ? Params.price : null;
 			model.tags = Params && Params.tags ? Params.tags : null;
 			model.img = Params && Params.img ? Params.img : null;
+			model.upload_img = Params && Params.upload_img ? Params.upload_img : [];
 
 			return model;
 		};
@@ -213,7 +215,8 @@ class ProductManagers {
 		}
 
 		this.Update = (Model) => {
-			console.log(Model);
+			let upload_files = Model.upload_img.length ? Model.upload_img : null;
+			delete Model.upload_img;
 			this.apiManager.SendRequest({
 				method: "PUT",
 				endpoint: "/product",
@@ -223,6 +226,19 @@ class ProductManagers {
 				if(response.data)
 				{
 					let model = this.GetModel(response.data);
+
+					if(upload_files && upload_files.length)
+					{
+						let formData = new FormData();
+						for (let i = 0; i < upload_files.length; i++)
+						{
+							formData.append('images', upload_files[i]);
+						}
+						formData.append('type', "product")
+						formData.append('id', model.id)
+					}
+
+
 					this.dataSetter(prevData => {
 						return prevData.map(item => {
 							if (item.id === model.id) {
@@ -249,6 +265,18 @@ class ProductManagers {
 						return prevData.filter(item => item.id !== Model.id);
 					});
 				}
+			})
+			.catch(error => {console.error(error)})
+		}
+
+		this.UploadFiles = (data) => {
+			this.apiManager.SendRequest({
+				method: "POST",
+				endpoint: "/upload_file",
+				data: data
+			})
+			.then(response => {
+				return true;
 			})
 			.catch(error => {console.error(error)})
 		}
