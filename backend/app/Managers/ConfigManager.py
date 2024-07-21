@@ -8,8 +8,11 @@ load_dotenv()
 class AppPaths:
     def __init__(self,  root_path):
         self.root_dir = root_path
-        self.logs_dir = Path(self.root_dir, "logs")
-        self.log_file = Path(self.logs_dir, "app.log")
+        self.logs = Path(self.root_dir, "logs")
+
+        self.storage = Path(self.root_dir, "storage")
+        self.img_storage = Path(self.storage, "images")
+        self.product_img_storage = Path(self.img_storage, "products")
 
 
 class AppConfig:
@@ -42,3 +45,10 @@ class ConfigManager:
 
         self.app_config.jwt_secret_code = os.getenv("JWT_SECRET_KEY", "secret_code")
         self.app_config.user_expire = int(os.getenv("USER_EXPIRE", 30))
+
+        self.create_paths()
+
+    def create_paths(self):
+        for path in vars(self.paths).values():
+            os.makedirs(path, exist_ok=True)
+            os.chmod(path, 0o777)

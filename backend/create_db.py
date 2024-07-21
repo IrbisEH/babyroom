@@ -2,11 +2,11 @@ import os
 from app.Managers.ConfigManager import ConfigManager
 from app.Managers.LogManager import LogManager
 from app.Managers.DbManager import DbManager
-from app.Models import Base
+from app.DbModels import Base
 
-from app.Models.TagModel import TagModel
-from app.Models.ProductModel import ProductModel
-from app.Models.UserModel import UserModel
+from app.DbModels.TagModel import TagModel
+from app.DbModels.ProductModel import ProductModel
+from app.DbModels.UserModel import UserModel
 
 DIR = os.path.dirname(__file__)
 

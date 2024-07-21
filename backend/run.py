@@ -19,8 +19,8 @@ from app.Managers.PromotionManager import PromotionManager
 from app.Managers.TagManager import TagManager
 from app.Managers.CategoryManager import CategoryManager
 from app.Managers.ProductManager import ProductManager
-from app.Models.UserModel import UserModel
-from app.Managers.ResultModel import Result
+from app.DbModels.UserModel import UserModel
+from app.AppModels.ResultModel import Result
 
 DIR = os.path.dirname(__file__)
 
@@ -30,7 +30,7 @@ db = DbManager(config, log)
 
 app = Flask(__name__)
 cors = CORS(app)
-print("work")
+
 app.config["JWT_SECRET_KEY"] = config.app_config.jwt_secret_code
 jwt = JWTManager(app)
 
@@ -110,12 +110,21 @@ def request_handler(manager, req):
         if req.method == "GET":
             result = manager.get()
         elif req.method == "POST":
-            data = req.get_json()
-            print(request.files)
-            result = manager.create(data)
+            data = request.form.to_dict() if request.form else {}
+
+            for key, value in data.items():
+                if value == "null" or value == "":
+                    data[key] = None
+
+            files = [file for key in request.files for file in request.files.getlist(key)]
+
+            result = manager.update(data, files) if "id" in data else manager.create(data, files)
         elif req.method == "PUT":
             data = req.get_json()
-            print(request.files)
+
+            for key, value in data.items():
+                if value == "null" or value == "":
+                    data[key] = None
             result = manager.update(data)
         elif req.method == "DELETE":
             data = req.get_json()
@@ -133,6 +142,7 @@ def request_handler(manager, req):
         result = Result(msg=msg, status=400)
 
     return result
+
 
 @app.route("/api/units", methods=["POST", "GET", "PUT", "DELETE"])
 @jwt_required()

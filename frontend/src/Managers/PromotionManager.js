@@ -17,6 +17,15 @@ class PromotionManager {
 
 		this.columnsConfig = [
 			{
+				id: "edit",
+				width: "50px",
+				cell: row => (
+					<div onClick={(event) => this.handleEditBtnClick && this.handleEditBtnClick(event, row)}>
+						<FaRegEdit className="table__btn" size={16}/>
+					</div>
+				)
+			},
+			{
 				id: "id",
 				name: "id",
 				selector: row => row.id,
@@ -27,15 +36,6 @@ class PromotionManager {
 				name: "Правило",
 				selector: row => row.rule,
 				grow: 1
-			},
-			{
-				id: "edit",
-				width: "50px",
-				cell: row => (
-					<div onClick={(event) => this.handleEditBtnClick && this.handleEditBtnClick(event, row)}>
-						<FaRegEdit className="table__btn" size={16}/>
-					</div>
-				)
 			},
 			{
 				id: "trash",
@@ -55,8 +55,8 @@ class PromotionManager {
 		this.GetModel = (Params) => {
 			let model = {};
 
-			model.id = Params && Params.id ? Params.id : null;
-			model.rule = Params && Params.rule ? Params.rule : "";
+			model.id = Params && Params.id ? parseInt(Params.id) : null;
+			model.rule = Params && Params.rule ? Params.rule : null;
 
 			return model;
 		};
@@ -71,49 +71,32 @@ class PromotionManager {
 				endpoint: "/promotion",
 			})
 			.then(response => {
-				if(response.data)
-				{
-					let data = response.data.map(item => this.GetModel(item));
-					this.dataSetter(prevData => data.concat(prevData));
-				}
+					if(response.data)
+					{
+						let data = response.data.map(item => this.GetModel(item));
+						this.dataSetter(prevData => data.concat(prevData));
+					}
 				})
 			.catch(error => console.error(error));
 		};
 
-		this.Save = (Model) => {
+		this.Save = (Data) => {
 			this.apiManager.SendRequest({
 				method: "POST",
 				endpoint: "/promotion",
-				data: Model
+				data: Data
 			})
 			.then(response => {
 				if(response.data)
 				{
 					let model = this.GetModel(response.data);
-					this.dataSetter(prevData => [...prevData, model]);
-				}
-			})
-			.catch(error => {console.error(error)})
-		}
+					let state = [...this.data];
+					let findIdx = this.data.findIndex(item => item.id === model.id)
 
-		this.Update = (Model) => {
-			this.apiManager.SendRequest({
-				method: "PUT",
-				endpoint: "/promotion",
-				data: Model
-			})
-			.then(response => {
-				if(response.data)
-				{
-					let model = this.GetModel(response.data);
-					this.dataSetter(prevData => {
-						return prevData.map(item => {
-							if (item.id === model.id) {
-								return model;
-							}
-							return item;
-						});
-					});
+					if(findIdx > -1)
+						state.splice(findIdx, 1);
+
+					this.dataSetter(state.concat(model));
 				}
 			})
 			.catch(error => {console.error(error)})

@@ -1,129 +1,272 @@
-import React, { useState } from "react";
-import Switch from 'react-switch';
-import Select from 'react-select';
-import makeAnimated from 'react-select/animated';
+import React, { useState, useId, useEffect } from "react";
+import { IoIosClose } from "react-icons/io";
+import Select from "react-select";
+import Switch from "react-switch";
 
+const ExistsImages = ({ formState, setFormState }) => {
+    const [existImageElement, setExistImageElement] = useState({});
 
-const Form = ({ Id=null, formConfig, formType, formState, handleInputChange, handleChecked, handleApplyFormBtnClick }) => {
-    const inputs = formConfig.map((item, elIdx) => {
-        let inputEl;
-        let options;
-        let defaultValue;
+    const deleteElement = (key, filename) => {
+        setExistImageElement(prevState => {
+            const newState = { ...prevState };
+            delete newState[key];
+            return newState;
+        });
+        setFormState(prevState => {
+            const newState = { ...prevState };
+            newState.images = newState.images.filter(item => item !== filename);
+            return newState;
+        })
+    };
 
-        switch (item.type)
-        {
-            case "text":
-                inputEl = (
-                    <input
-                        key={Id + item.id + elIdx}
-                        id={item.id}
-                        name={item.id}
-                        value={formState[item.id] || ""}
-                        onChange={(e) => handleInputChange(item.id, e.target.value)}
-                        required={item.required}>
-                    </input>
-                )
-                break
-            case "textarea":
-                inputEl = (
-                    <textarea
-                        key={Id + item.id + elIdx}
-                        id={item.id}
-                        name={item.id}
-                        value={formState[item.id] || ""}
-                        onChange={(e) => handleInputChange(item.id, e.target.value)}
-                        required={item.required}>
-                    </textarea>
-                )
-                break
-            case "select":
-                options = item.options.map(option => ({value: option.id, label: option.name}));
-                if(formState[item.id] !== undefined && formState[item.id] !== null)
-                {
-                  options.forEach(opt => {
-                      if(opt.value === formState[item.id])
-                          defaultValue = opt;
-                  });
-                }
-                inputEl = (
-                    <Select
-                        value={defaultValue}
-                        options={options}
-                        onChange={(selectedItem) => handleInputChange(item.id, selectedItem.value)}
-                    />
-                )
-                break
-            case "multiselect":
-                options = item.options.map(option => ({value: option.id, label: option.name}));
-                defaultValue = [];
-                if(formState[item.id] !== undefined && formState[item.id] !== null)
-                {
-                    let selected_ids = formState[item.id].split(";").map(item => parseInt(item));
-                    options.forEach(opt => {
-                        let idx = selected_ids.indexOf(opt.value);
-                        if(idx > -1)
-                        {
-                            defaultValue.push(opt);
-                        }
-                    });
-                }
-
-                inputEl = (
-                    <Select
-                        value={defaultValue}
-                        options={options}
-                        onChange={(selectedItem) => handleInputChange(
-                            item.id, selectedItem.map(item => item.value).join(";"))}
-                        isMulti
-                    />
-                )
-                break;
-            case "switch":
-                inputEl = (
-                    <Switch
-                        key={Id + item.id + elIdx}
-                        id={item.id}
-                        name={item.id}
-                        checked={Boolean(formState[item.id]) || false}
-                        onChange={(checked) => handleChecked(item.id, checked)}
-                        required={item.required}
-                        height={18}
-                        width={35}
-                    />
-                );
-                break;
-            case "upload_file":
-                inputEl = (
-                    <input
-                        id="image"
-                        type="file"
-                        name="image"
-                        accept="image/png, image/jpg"
-                        multiple
-                        onChange={(e) => handleInputChange(item.id, e.target.files)}
-                    />
-                )
-                break;
-            default:
-                inputEl = null;
-        }
-        return (
-            <div key={Id + item.id + elIdx} className="form__row">
-                <label htmlFor={item.id}>{item.label}</label>
-                {inputEl}
-            </div>
-        )
-
-    });
+    useEffect(() => {
+        console.log(formState)
+        const initialImages = formState.images.reduce((acc, filename, index) => {
+            acc[`file_${index}`] = filename;
+            return acc;
+        }, {});
+        setExistImageElement(initialImages);
+    }, [formState]);
 
     return (
-        <form onSubmit={handleApplyFormBtnClick}>
-            {inputs}
-            <div className="form-row">
-                <button key={Id + "SubmitBtn"}
-                        type="submit">{formType && formType.btnText ? formType.btnText : ""}
-                </button>
+        <>
+            {Object.entries(existImageElement).map(([key, filename]) => (
+                <div key={key} style={{ display: "flex", flexDirection: "row" }}>
+                    <span>{`...${filename.slice(-30)}`}</span>
+                    <IoIosClose size={30} onClick={() => deleteElement(key, filename)} />
+                </div>
+            ))}
+        </>
+    )
+}
+
+const UploadImages = ({ addFilesState, setAddFilesState }) => {
+
+    const [elementCount, setElementCount] = useState(1);
+    const [uploadElements, setUploadElements] = useState({});
+
+    const getElement = (key) => {
+        return (
+            <div key={key} style={{display: "flex", flexDirection: "row"}}>
+                <input type="file" name="file" onChange={(event) => handleAddFile(key, event.target.files[0])} />
+                <IoIosClose size={30} onClick={() => deleteElement(key)} />
             </div>
+        )
+    }
+
+    const addElement = () => {
+        setElementCount(prevCount => prevCount + 1);
+
+        let newKey = "file_" + elementCount;
+
+        setUploadElements({
+            ...uploadElements,
+            [newKey]: getElement(newKey),
+        });
+    }
+
+    const deleteElement = (key) => {
+        setUploadElements(prevState => {
+            const state = {...prevState};
+            delete state[key];
+            return state;
+        });
+        setAddFilesState(prevState => {
+            const state = {...prevState};
+            delete state[key];
+            return state;
+        })
+    }
+
+    const handleAddFile = (key, file) => {
+        setAddFilesState(prevState => ({
+            ...prevState,
+            [key]: file
+        }));
+    };
+
+    useEffect(() => {
+        if(!Object.keys(addFilesState).length > 0){
+            setUploadElements({})
+        }
+    }, [addFilesState]);
+
+    return (
+        <>
+            {Object.values(uploadElements)}
+            {
+                Object.values(uploadElements).length < 3 &&
+                (<button type="button" onClick={() => addElement()}>Добавить изображение</button>)
+            }
+        </>
+    )
+}
+
+const GetFormElements = ( Style, formConfig, formState, setFormState, handleChange, addFilesState, setAddFilesState) => {
+    return formConfig.map((item, index) => {
+        switch(item.type)
+        {
+            case "text":
+                return (
+                    <div key={"form" + index} style={{display:"flex", rowDirection:"row", justifyContent:"space-between"}}>
+                        <label htmlFor={item.id} style={ Style.label }>{item.label}</label>
+                        <input
+                            type="text"
+                            id={item.id}
+                            name={item.id}
+                            required={item.required || false}
+                            value={formState[item.id] || ""}
+                            onChange={(event) => handleChange(item.id, event.target.value)}
+                            style = { Style.input }
+                        />
+                    </div>
+                );
+            case "textarea":
+                let value = "";
+                if(formState[item.id] && formState[item.id].length)
+                {
+                    value = formState[item.id].join("\n");
+                }
+                return (
+                    <div key={"form" + index} style={{display:"flex", rowDirection:"row", justifyContent:"space-between"}}>
+                        <label htmlFor={item.id} style={Style.label}>{item.label}</label>
+                        <textarea
+                            id={item.id}
+                            name={item.id}
+                            required={item.required || false}
+                            value={value}
+                            onChange={(event) => handleChange(
+                                item.id, event.target.value
+                                    .split("\n")
+                            )}
+                            style={ Style.textarea }
+                        />
+                    </div>
+                );
+            case "switch":
+                return (
+                    <div key={"form" + index} style={{display: "flex", rowDirection: "row", justifyContent: "space-between"}}>
+                        <label htmlFor={item.id} style={Style.label}>{item.label}</label>
+                        <div style={{width:Style.input.width, flex:'flex', flexDirection:"row-reverse"}}>
+                            <Switch
+                                id={item.id}
+                                name={item.id}
+                                checked={Boolean(formState[item.id]) || false}
+                                onChange={(checked) => handleChange(item.id, checked ? 1 : 0)}
+                                height={Style.switch.height}
+                                width={Style.switch.width}
+                            />
+                        </div>
+                    </div>
+                );
+            case "select":
+                let selectOptions = item.options.map(option => ({value: option.id, label: option.name}));
+                return (
+                    <div key={"form" + index} style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                        <label htmlFor={item.id} style={Style.label}>{item.label}</label>
+                        <Select
+                            id={item.id}
+                            name={item.id}
+                            options={selectOptions}
+                            value={selectOptions.find(option => option.value === formState[item.id]) || null}
+                            onChange={(selected) => handleChange(item.id, selected ? selected.value : "")}
+                            styles = {{
+                                container: (provided, state) => ({
+                                    ...provided,
+                                    width: Style.input.width
+                                }),
+                            }}
+                            isClearable={true}
+                        />
+                    </div>
+                );
+            case "multiselect":
+                let multiSelectOptions = item.options.map(option => ({value: option.id, label: option.name}));
+                let selectedArr = formState[item.id] ? formState[item.id].split(",").map(item => parseInt(item)) : "";
+                let initial = multiSelectOptions.filter(option => selectedArr.includes(option.value));
+                return (
+                    <div key={"form" + index} style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                        <label htmlFor={item.id} style={Style.label}>{item.label}</label>
+                        <Select
+                            id={item.id}
+                            name={item.id}
+                            options={multiSelectOptions}
+                            value={initial.length ? initial : null}
+                            isMulti
+                            onChange={(selected) => handleChange(item.id, selected.map(item => item.value).join(","))}
+                            styles = {{
+                                container: (provided, state) => ({
+                                    ...provided,
+                                    width: Style.input.width
+                                }),
+                            }}
+                        />
+                    </div>
+                );
+            case "files":
+                return (
+                    <div key={"form" + index} style={{display: "flex", flexDirection: "column", justifyContent: "center"}}>
+                        <ExistsImages
+                            formState={formState}
+                            setFormState={setFormState}
+                        />
+                    </div>
+                )
+            case "upload_files":
+                return (
+                    <div key={"form" + index} style={{display:"flex", flexDirection:"column", justifyContent:"center"}}>
+                        <UploadImages
+                            addFilesState={addFilesState}
+                            setAddFilesState={setAddFilesState}
+                        />
+                    </div>
+                );
+        }
+    });
+}
+
+const Form = ({ formConfig, formState, setFormState, addFilesState, setAddFilesState, handleSubmit }) => {
+    const Id = useId();
+
+    const styles = {
+        label: {
+            width: "100px",
+        },
+        input: {
+            width: "200px",
+            height: "30px"
+        },
+        textarea: {
+            width: "200px",
+            height: "150px",
+            resize: 'none',
+            overflowY: 'scroll'
+        },
+        switch: {
+            height: 18,
+            width: 35
+        }
+    }
+
+    const handleChange = (id, value) => {
+        setFormState({
+            ...formState,
+            [id]: value
+        });
+    };
+
+    return (
+        <form style={{display: 'flex', flexDirection: 'column'}} onSubmit={handleSubmit}>
+            {GetFormElements(
+                styles,
+                formConfig,
+                formState,
+                setFormState,
+                handleChange,
+                addFilesState,
+                setAddFilesState
+            )}
+            <button key={Id + "SubmitBtn"} type="submit">Сохранить</button>
         </form>
     )
 }

@@ -28,4 +28,5 @@ yarn-error.log*
 
 /storage/*
 /backend/logs/*
+/backend/storage/*
 /frontend/package-lock.json

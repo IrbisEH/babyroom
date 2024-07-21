@@ -1,6 +1,7 @@
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from colorlog import ColoredFormatter
+from pathlib import Path
 
 
 class LogManager:
@@ -8,7 +9,7 @@ class LogManager:
         self.config_manager = config_manager
 
         self.log_level = self.config_manager.app_config.log_level
-        self.log_file = self.config_manager.paths.log_file
+        self.log_file = Path(self.config_manager.paths.logs, "app.log")
 
         self.log = logging.getLogger(self.config_manager.app_config.app_name)
 
@@ -24,8 +25,6 @@ class LogManager:
         self.log.addHandler(file_handler)
 
         if self.config_manager.app_config.debug:
-
-
             console_handler = logging.StreamHandler()
             console_handler.setLevel(self.log_level)
             console_handler.setFormatter(

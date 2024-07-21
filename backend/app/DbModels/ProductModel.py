@@ -6,6 +6,8 @@ from .CategoryModel import CategoryModel
 from .UnitsModel import UnitsModel
 from .PromotionModel import PromotionModel
 
+import os
+
 class ProductModel(Base):
     __tablename__ = 'products'
 
@@ -18,7 +20,7 @@ class ProductModel(Base):
     promotion_id: Mapped[int] = Column(Integer, ForeignKey('promotion.id'))
     price: Mapped[float] = Column(Float, nullable=False)
     tags: Mapped[str] = Column(String(30), nullable=True)
-    img: Mapped[str] = Column(String(2048), nullable=True)
+    images: Mapped[str] = Column(String(2048), nullable=True)
 
     category: Mapped[CategoryModel] = relationship(CategoryModel, backref='products')
     unit: Mapped[UnitsModel] = relationship(UnitsModel, backref='products')
@@ -35,5 +37,12 @@ class ProductModel(Base):
             "promotion_id": self.promotion_id,
             "price": self.price,
             "tags": self.tags,
-            "img": self.img
+            "images": self.images.split(",") if self.images else self.images
         }
+
+    def add_images(self, files):
+        exist_files = self.images.split(",") if self.images else []
+        for file in files:
+            filename = os.path.basename(file)
+            exist_files.append(filename)
+        self.images = ",".join(exist_files)

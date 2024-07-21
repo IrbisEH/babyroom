@@ -16,9 +16,16 @@ class CategoryManager {
 		this.handleEditBtnClick = null;
 		this.handleDeleteBtnClick = null;
 
-		this.categoriesData = null
-
 		this.columnsConfig = [
+			{
+				id: "edit",
+				width: "50px",
+				cell: row => (
+					<div onClick={(event) => this.handleEditBtnClick && this.handleEditBtnClick(event, row)}>
+						<FaRegEdit className="table__btn" size={16}/>
+					</div>
+				)
+			},
 			{
 				id: "id",
 				name: "id",
@@ -47,15 +54,6 @@ class CategoryManager {
 				)
 			},
 			{
-				id: "edit",
-				width: "50px",
-				cell: row => (
-					<div onClick={(event) => this.handleEditBtnClick && this.handleEditBtnClick(event, row)}>
-						<FaRegEdit className="table__btn" size={16}/>
-					</div>
-				)
-			},
-			{
 				id: "trash",
 				width: "50px",
 				cell: row => (
@@ -74,9 +72,9 @@ class CategoryManager {
 		this.GetModel = (Params) => {
 			let model = {};
 
-			model.id = Params && Params.id ? Params.id : null;
-			model.name = Params && Params.name ? Params.name : "";
-			model.description = Params && Params.description ? Params.description : "";
+			model.id = Params && Params.id ? parseInt(Params.id) : null;
+			model.name = Params && Params.name ? Params.name : null;
+			model.description = Params && Params.description ? Params.description : null;
 
 			return model;
 		};
@@ -100,40 +98,23 @@ class CategoryManager {
 			.catch(error => console.error(error));
 		};
 
-		this.Save = (Model) => {
+		this.Save = (Data) => {
 			this.apiManager.SendRequest({
 				method: "POST",
 				endpoint: "/category",
-				data: Model
+				data: Data
 			})
 			.then(response => {
 				if(response.data)
 				{
 					let model = this.GetModel(response.data);
-					this.dataSetter(prevData => [...prevData, model]);
-				}
-			})
-			.catch(error => {console.error(error)})
-		}
+					let state = [...this.data];
+					let findIdx = this.data.findIndex(item => item.id === model.id)
 
-		this.Update = (Model) => {
-			this.apiManager.SendRequest({
-				method: "PUT",
-				endpoint: "/category",
-				data: Model
-			})
-			.then(response => {
-				if(response.data)
-				{
-					let model = this.GetModel(response.data);
-					this.dataSetter(prevData => {
-						return prevData.map(item => {
-							if (item.id === model.id) {
-								return model;
-							}
-							return item;
-						});
-					});
+					if(findIdx > -1)
+						state.splice(findIdx, 1);
+
+					this.dataSetter(state.concat(model));
 				}
 			})
 			.catch(error => {console.error(error)})

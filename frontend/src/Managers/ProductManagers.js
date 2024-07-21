@@ -24,6 +24,15 @@ class ProductManagers {
 
 		this.columnsConfig = [
 			{
+				id: "edit",
+				width: "50px",
+				cell: row => (
+					<div onClick={(event) => this.handleEditBtnClick && this.handleEditBtnClick(event, row)}>
+						<FaRegEdit className="table__btn" size={16}/>
+					</div>
+				)
+			},
+			{
 				id: "id",
 				name: "id",
 				selector: row => row.id,
@@ -82,7 +91,7 @@ class ProductManagers {
 						<CellTooltip
 							cellEls={find.name}
 							tooltipEls={
-								find.units.split(";").map((item, i) => (
+								find.units.map((item, i) => (
 									<div key={this.Id + "CellTooltip" + i}>{item}</div>
 								))
 							}
@@ -107,7 +116,7 @@ class ProductManagers {
 				id: "tags",
 				name: "теги",
 				cell: row => {
-					let tags_ids = row.tags ? row.tags.split(';') : [];
+					let tags_ids = row.tags ? row.tags.split(',') : [];
 					let tags_names = [];
 					tags_ids.forEach(tag_id => {
 						let find = this.tagData.find(item => parseInt(item.id) === parseInt(tag_id));
@@ -129,15 +138,6 @@ class ProductManagers {
 				name: "карточка",
 			},
 			{
-				id: "edit",
-				width: "50px",
-				cell: row => (
-					<div onClick={(event) => this.handleEditBtnClick && this.handleEditBtnClick(event, row)}>
-						<FaRegEdit className="table__btn" size={16}/>
-					</div>
-				)
-			},
-			{
 				id: "trash",
 				width: "50px",
 				cell: row => (
@@ -157,24 +157,23 @@ class ProductManagers {
 			// {id:"promotion_id", label:"Промо", type:"select", options:this.promoData, with_empty:true, required:false},
 			{id:"tags", label:"Теги", type:"multiselect", options:this.tagData, required:false},
 			{id:"price", label:"Цена", type:"text", required:true},
-			// {id:"img", label:"Изображения", type:"upload_file", required:true},
-			{id:"upload_img", label:"Изображения", type:"upload_file", required:true},
+			{id:"images", label:"загруженные", type:"files"},
+			{id:"files_to_add", label:"Изображения", type:"upload_files", required:true},
 		]
 
 		this.GetModel = (Params) => {
 			let model = {};
 
-			model.id = Params && Params.id ? Params.id : null;
-			model.enable = Params && Params.enable ? Params.enable : 0;
+			model.id = Params && Params.id ? parseInt(Params.id) : null;
+			model.enable = Params && Params.enable ? parseInt(Params.enable) : 0;
 			model.name = Params && Params.name ? Params.name : null;
 			model.description = Params && Params.description ? Params.description : null;
-			model.category_id = Params && Params.category_id ? Params.category_id : null;
-			model.units_id = Params && Params.units_id ? Params.units_id : null;
-			model.promotion_id = Params && Params.promotion_id ? Params.promotion_id : null;
-			model.price = Params && Params.price ? Params.price : null;
+			model.category_id = Params && Params.category_id ? parseInt(Params.category_id) : null;
+			model.units_id = Params && Params.units_id ? parseInt(Params.units_id) : null;
+			model.promotion_id = Params && Params.promotion_id ? parseInt(Params.promotion_id) : null;
+			model.price = Params && Params.price ? parseInt(Params.price) : null;
 			model.tags = Params && Params.tags ? Params.tags : null;
-			model.img = Params && Params.img ? Params.img : null;
-			model.upload_img = Params && Params.upload_img ? Params.upload_img : [];
+			model.images = Params && Params.images ? Params.images : []
 
 			return model;
 		};
@@ -189,34 +188,38 @@ class ProductManagers {
 				endpoint: "/product",
 			})
 			.then(response => {
-				if(response.data)
-				{
-					let data = response.data.map(item => this.GetModel(item));
-					this.dataSetter(prevData => data.concat(prevData));
-				}
+					if(response.data)
+					{
+						let data = response.data.map(item => this.GetModel(item));
+						this.dataSetter(prevData => data.concat(prevData));
+					}
 				})
 			.catch(error => console.error(error));
 		};
 
-		this.Save = (Model) => {
+		this.Save = (Data) => {
 			this.apiManager.SendRequest({
 				method: "POST",
 				endpoint: "/product",
-				data: Model
+				data: Data
 			})
 			.then(response => {
 				if(response.data)
 				{
 					let model = this.GetModel(response.data);
-					this.dataSetter(prevData => [...prevData, model]);
+					let state = [...this.data];
+					let findIdx = this.data.findIndex(item => item.id === model.id)
+
+					if(findIdx > -1)
+						state.splice(findIdx, 1);
+
+					this.dataSetter(state.concat(model));
 				}
 			})
 			.catch(error => {console.error(error)})
 		}
 
 		this.Update = (Model) => {
-			let upload_files = Model.upload_img.length ? Model.upload_img : null;
-			delete Model.upload_img;
 			this.apiManager.SendRequest({
 				method: "PUT",
 				endpoint: "/product",
@@ -226,27 +229,13 @@ class ProductManagers {
 				if(response.data)
 				{
 					let model = this.GetModel(response.data);
+					let state = [...this.data];
+					let findIdx = this.data.findIndex(item => item.id === model.id)
 
-					if(upload_files && upload_files.length)
-					{
-						let formData = new FormData();
-						for (let i = 0; i < upload_files.length; i++)
-						{
-							formData.append('images', upload_files[i]);
-						}
-						formData.append('type', "product")
-						formData.append('id', model.id)
-					}
+					if(findIdx > -1)
+						state.splice(findIdx, 1);
 
-
-					this.dataSetter(prevData => {
-						return prevData.map(item => {
-							if (item.id === model.id) {
-								return model;
-							}
-							return item;
-						});
-					});
+					this.dataSetter(state.concat(model));
 				}
 			})
 			.catch(error => {console.error(error)})
@@ -269,22 +258,10 @@ class ProductManagers {
 			.catch(error => {console.error(error)})
 		}
 
-		this.UploadFiles = (data) => {
-			this.apiManager.SendRequest({
-				method: "POST",
-				endpoint: "/upload_file",
-				data: data
-			})
-			.then(response => {
-				return true;
-			})
-			.catch(error => {console.error(error)})
-		}
-
 		this.HandleEnableToggle = (state, row) =>
 		{
 			let model = this.GetModel(row);
-			model.enable = state;
+			model.enable = state ? 1 : 0;
 			this.Update(model);
 		}
 	}

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import CustomForm from '../components/Form/CustomForm';
+import Form from '../components/Form/Form';
 
 const TestPage = () => {
 
@@ -28,7 +28,7 @@ const TestPage = () => {
 
     return (
         <div style={{ height: "100vh", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <CustomForm formConfig={formConfig} initialState={initialState} handleForm={handleForm} />
+            <Form formConfig={formConfig} initialState={initialState} />
         </div>
     )
 }

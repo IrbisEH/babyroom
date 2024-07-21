@@ -1,4 +1,4 @@
-from ..Models.UnitsModel import UnitsModel
+from ..DbModels.UnitsModel import UnitsModel
 from .TableManager import TableManager
 
 
