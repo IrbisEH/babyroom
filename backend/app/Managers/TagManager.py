@@ -1,4 +1,4 @@
-from ..DbModels.TagModel import TagModel
+from ..Models.TagModel import TagModel
 from .TableManager import TableManager
 
 

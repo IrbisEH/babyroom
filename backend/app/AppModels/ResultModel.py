@@ -10,10 +10,10 @@ class Result:
         self.data = data
         self.status = 200
 
-    def get_error(self, msg=None):
+    def get_error(self, msg=None, status=500):
         self.data = None
         self.msg = msg if msg else None
-        self.status = 500
+        self.status = status
 
     def to_dict(self):
         return vars(self)

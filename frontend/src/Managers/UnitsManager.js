@@ -47,7 +47,6 @@ class UnitsManager {
 			{
 				id: "units",
 				name: "Размеры",
-				grow: 1,
 				cell: row => (
 					<CellTooltip
 						cellEls={

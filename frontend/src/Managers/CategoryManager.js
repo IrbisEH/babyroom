@@ -41,7 +41,6 @@ class CategoryManager {
 			{
 				id: "description",
 				name: "Описание",
-				grow: 1,
 				cell: row => (
 					<CellTooltip
 						cellEls={

@@ -6,8 +6,6 @@ import PromotionManager from "../Managers/PromotionManager";
 import TagManager from "../Managers/TagManager";
 import CategoryManager from "../Managers/CategoryManager"
 import ProductManager from "../Managers/ProductManagers"
-import tagManager from "../Managers/TagManager";
-
 
 const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
     const navigate = useNavigate();
@@ -67,10 +65,10 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
     useEffect(() => {
         if(isLoggedIn)
         {
-            unitsManager.Get();
-            promotionManager.Get();
-            tagManager.Get();
-            categoryManager.Get();
+            // unitsManager.Get();
+            // promotionManager.Get();
+            // tagManager.Get();
+            // categoryManager.Get();
             productManager.Get();
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -85,18 +83,18 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
                             <button onClick={Logout}>Выход</button>
                         </div>
                     </header>
-                    <AdminTable
-                        Manager={unitsManager}
-                    />
-                    <AdminTable
-                        Manager={promotionManager}
-                    />
-                    <AdminTable
-                        Manager={tagManager}
-                    />
-                    <AdminTable
-                        Manager={categoryManager}
-                    />
+                    {/*<AdminTable*/}
+                    {/*    Manager={unitsManager}*/}
+                    {/*/>*/}
+                    {/*<AdminTable*/}
+                    {/*    Manager={promotionManager}*/}
+                    {/*/>*/}
+                    {/*<AdminTable*/}
+                    {/*    Manager={tagManager}*/}
+                    {/*/>*/}
+                    {/*<AdminTable*/}
+                    {/*    Manager={categoryManager}*/}
+                    {/*/>*/}
                     <AdminTable
                         Manager={productManager}
                     />

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import Form from '../components/Form/Form';
 
 const TestPage = () => {
@@ -22,10 +22,6 @@ const TestPage = () => {
 
     const initialState = {};
 
-    const handleForm = (formState) => {
-        console.log(formState)
-    }
-
     return (
         <div style={{ height: "100vh", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <Form formConfig={formConfig} initialState={initialState} />
@@ -34,8 +30,3 @@ const TestPage = () => {
 }
 
 export default TestPage;
-
-
-
-// {id:"img", label:"Изображения", type:"upload_file", required:true},
-// {id:"upload_img", label:"Изображения", type:"upload_file", required:true},

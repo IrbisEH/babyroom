@@ -1,4 +1,4 @@
-from ..DbModels.PromotionModel import PromotionModel
+from ..Models.PromotionModel import PromotionModel
 from .TableManager import TableManager
 
 

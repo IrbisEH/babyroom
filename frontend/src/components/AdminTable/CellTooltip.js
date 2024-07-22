@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { RxEyeOpen } from "react-icons/rx";
-import { RxEyeClosed } from "react-icons/rx";
 
 const CellTooltip = ({ cellEls, tooltipEls }) => {
   const [isHovered, setIsHovered] = useState(false);

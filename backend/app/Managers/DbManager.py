@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from ..DbModels import Base
+from ..Models import Base
 from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 

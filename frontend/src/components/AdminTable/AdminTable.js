@@ -39,8 +39,6 @@ const TableForm = ({ formConfig, formState, setFormState, addFilesState, setAddF
 
 const AdminTable = ({ Manager }) => {
 
-	const Id = Manager.Id ? Manager.Id : "AdminTable";
-
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [formState, setFormState] = useState(Manager.GetFormModel());
 	const [addFilesState, setAddFilesState] = useState({});
@@ -68,7 +66,10 @@ const AdminTable = ({ Manager }) => {
 		const model = Manager.GetModel(formState);
 		const fileList = Object.values(addFilesState)
         const formData = new FormData();
-		console.log(model);
+
+		console.log(model)
+		console.log(fileList)
+
 		Object.keys(model).forEach(key => {
 			formData.append(key, model[key]);
         });
@@ -82,6 +83,10 @@ const AdminTable = ({ Manager }) => {
 		setFormState(Manager.GetFormModel());
 		setAddFilesState({})
 	}
+
+	// useEffect(()=>{
+	// 	console.log(formState)
+	// }, [formState])
 
     return (
 		<section className="table">

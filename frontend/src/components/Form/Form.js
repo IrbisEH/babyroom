@@ -20,7 +20,6 @@ const ExistsImages = ({ formState, setFormState }) => {
     };
 
     useEffect(() => {
-        console.log(formState)
         const initialImages = formState.images.reduce((acc, filename, index) => {
             acc[`file_${index}`] = filename;
             return acc;
@@ -40,7 +39,7 @@ const ExistsImages = ({ formState, setFormState }) => {
     )
 }
 
-const UploadImages = ({ addFilesState, setAddFilesState }) => {
+const UploadImages = ({ formState, addFilesState, setAddFilesState }) => {
 
     const [elementCount, setElementCount] = useState(1);
     const [uploadElements, setUploadElements] = useState({});
@@ -95,7 +94,7 @@ const UploadImages = ({ addFilesState, setAddFilesState }) => {
         <>
             {Object.values(uploadElements)}
             {
-                Object.values(uploadElements).length < 3 &&
+                (Object.values(uploadElements).length + formState.images.length) < 3 &&
                 (<button type="button" onClick={() => addElement()}>Добавить изображение</button>)
             }
         </>
@@ -216,11 +215,14 @@ const GetFormElements = ( Style, formConfig, formState, setFormState, handleChan
                 return (
                     <div key={"form" + index} style={{display:"flex", flexDirection:"column", justifyContent:"center"}}>
                         <UploadImages
+                            formState={formState}
                             addFilesState={addFilesState}
                             setAddFilesState={setAddFilesState}
                         />
                     </div>
                 );
+            default:
+                return null;
         }
     });
 }

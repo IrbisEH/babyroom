@@ -19,7 +19,7 @@ from app.Managers.PromotionManager import PromotionManager
 from app.Managers.TagManager import TagManager
 from app.Managers.CategoryManager import CategoryManager
 from app.Managers.ProductManager import ProductManager
-from app.DbModels.UserModel import UserModel
+from app.Models.UserModel import UserModel
 from app.AppModels.ResultModel import Result
 
 DIR = os.path.dirname(__file__)
@@ -111,24 +111,17 @@ def request_handler(manager, req):
             result = manager.get()
         elif req.method == "POST":
             data = request.form.to_dict() if request.form else {}
-
-            for key, value in data.items():
-                if value == "null" or value == "":
-                    data[key] = None
-
+            data = {key: value for key, value in data.items() if value != "null" and value != ""}
             files = [file for key in request.files for file in request.files.getlist(key)]
-
             result = manager.update(data, files) if "id" in data else manager.create(data, files)
         elif req.method == "PUT":
             data = req.get_json()
-
-            for key, value in data.items():
-                if value == "null" or value == "":
-                    data[key] = None
+            data = {key: value for key, value in data.items() if value != "null" and value != ""}
             result = manager.update(data)
         elif req.method == "DELETE":
             data = req.get_json()
-            manager.delete(data)
+            data = {key: value for key, value in data.items() if value != "null" and value != ""}
+            result = manager.delete(data)
         else:
             pass
 

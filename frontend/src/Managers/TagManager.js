@@ -34,8 +34,7 @@ class TagManager {
 			{
 				id: "name",
 				name: "Имя",
-				selector: row => row.name,
-				grow: 1
+				selector: row => row.name
 			},
 			{
 				id: "trash",

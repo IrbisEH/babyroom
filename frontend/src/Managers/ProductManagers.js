@@ -123,11 +123,18 @@ class ProductManagers {
 						if(find && find.name)
 							tags_names.push(find.name)
 					});
-					let els = tags_names.map((name, idx) => <div key={this.Id + "TagCell" + idx}>{name}</div>)
+					let els = tags_names.map((name, idx) => <div key={this.Id + "TagCell" + idx}>{name}</div>);
+					let cellEls = els;
+
+					if(els.length > 2)
+					{
+						cellEls = els.slice(0, 2);
+						cellEls.push(<div key={this.Id + "TagCell empty"}>...</div>)
+					}
 
 					return (
 						<CellTooltip
-							cellEls={els.length > 2 ? els.slice(0, 2).concat(<div key={this.Id + "TagCell" + "empty"}>...</div>) : els}
+							cellEls={cellEls}
 							tooltipEls={els}
 						/>
 					)
@@ -175,6 +182,9 @@ class ProductManagers {
 			model.tags = Params && Params.tags ? Params.tags : null;
 			model.images = Params && Params.images ? Params.images : []
 
+			if(typeof model.images === "string")
+				model.images = model.images.split(",")
+
 			return model;
 		};
 
@@ -207,6 +217,7 @@ class ProductManagers {
 				if(response.data)
 				{
 					let model = this.GetModel(response.data);
+					console.log(model)
 					let state = [...this.data];
 					let findIdx = this.data.findIndex(item => item.id === model.id)
 

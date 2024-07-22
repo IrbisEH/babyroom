@@ -5,7 +5,7 @@ from app.Managers.DbManager import DbManager
 from app.DbModels import Base
 
 from app.DbModels.TagModel import TagModel
-from app.DbModels.ProductModel import ProductModel
+from app.DbModels.ProductDbModel import ProductDbModel
 from app.DbModels.UserModel import UserModel
 
 DIR = os.path.dirname(__file__)

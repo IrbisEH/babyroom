@@ -34,8 +34,7 @@ class PromotionManager {
 			{
 				id: "rule",
 				name: "Правило",
-				selector: row => row.rule,
-				grow: 1
+				selector: row => row.rule
 			},
 			{
 				id: "trash",

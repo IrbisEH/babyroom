@@ -1,4 +1,4 @@
-from ..DbModels.CategoryModel import CategoryModel
+from ..Models.CategoryModel import CategoryModel
 from .TableManager import TableManager
 
 
