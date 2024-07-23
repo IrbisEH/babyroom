@@ -33,7 +33,7 @@ class ConfigManager:
         self.paths = AppPaths(root_path)
 
         self.app_config = AppConfig()
-        self.app_config.app_name = os.getenv("APP_NAME", "babyroom")
+        self.app_config.app_name = os.getenv("APP_NAME", "nginx.conf")
         self.app_config.debug = bool(int(os.getenv("DEBUG", 0)))
         self.app_config.log_level = os.getenv("LOG_LEVEL", "INFO")
 

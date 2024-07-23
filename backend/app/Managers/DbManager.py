@@ -29,9 +29,7 @@ class DbManager:
             )
 
             self.session = Session(bind=self.engine)
-
             result = self.session.execute(text("SELECT VERSION()")).first()
-
             if len(result):
                 self.log_manager.info(f'Test text execution. version DB: {result[0]}')
                 self.log_manager.info('Connect to DB successfully done.')
@@ -39,7 +37,6 @@ class DbManager:
                 raise Exception()
 
         except Exception as e:
-            print(e)
             self.log_manager.error('Connect to DB failed.')
 
     def create_tables(self):

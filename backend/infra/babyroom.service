@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve babyroom
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/var/www/html/babyroom/backend
+Environment="PATH=/var/www/html/babyroom/backend/venv/bin"
+ExecStart=/var/www/html/babyroom/backend/venv/bin/uwsgi --ini /var/www/html/babyroom/backend/uwsgi.ini
+
+[Install]
+WantedBy=multi-user.target

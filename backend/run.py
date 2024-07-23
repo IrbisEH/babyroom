@@ -1,7 +1,5 @@
 import os
-
 import app.Exceptions as Exceptions
-
 from datetime import timedelta
 
 from flask import Flask, request, jsonify
@@ -26,7 +24,6 @@ DIR = os.path.dirname(__file__)
 
 config = ConfigManager(DIR)
 log = LogManager(config)
-db = DbManager(config, log)
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -51,7 +48,7 @@ def login():
         if not username or not password:
             raise Exception("Missing username and password")
 
-        #TODO: инициализировать db отдельно
+        db = DbManager(config, log)
         user = db.session.query(UserModel).filter_by(username=username).first()
 
         if not user:
@@ -77,7 +74,7 @@ def login():
     except Exception as e:
         msg = str(e)
         log.error(msg)
-        result = Result(msg=msg, status=400)
+        result = Result(msg=msg, status=500)
 
     return jsonify(result.to_dict()), result.status
 
@@ -86,6 +83,7 @@ def login():
 def check_jwt():
     result = Result()
     try:
+        db = DbManager(config, log)
         user = db.session.query(UserModel).filter_by(username=get_jwt_identity()).first()
 
         if not user:
@@ -171,6 +169,10 @@ def handle_product():
     manager = ProductManager(config, log)
     result = request_handler(manager, request)
     return jsonify(result.to_dict()), result.status
+
+@app.route("/test", methods=["POST", "GET", "PUT", "DELETE"])
+def test():
+    return jsonify({"newresult": True}), 200
 
 
 if __name__ == "__main__":

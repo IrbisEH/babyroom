@@ -1,7 +1,6 @@
 from ..AppModels.ResultModel import Result
 from .DbManager import DbManager
-import os
-from pathlib import Path
+
 
 class TableManager:
     def __init__(self, config, log, model):

@@ -25,9 +25,9 @@ class ProductDbModel(Base):
     tags: Mapped[str] = Column(String(30), nullable=True)
     images: Mapped[str] = Column(String(2048), nullable=True)
 
-    category: Mapped[CategoryModel] = relationship(CategoryModel, backref='products')
-    unit: Mapped[UnitsModel] = relationship(UnitsModel, backref='products')
-    promotion: Mapped[PromotionModel] = relationship(PromotionModel, backref='products')
+    category: Mapped[CategoryModel] = relationship(CategoryModel.DB_MODEL, backref='products')
+    unit: Mapped[UnitsModel] = relationship(UnitsModel.DB_MODEL, backref='products')
+    promotion: Mapped[PromotionModel] = relationship(PromotionModel.DB_MODEL, backref='products')
 
 
 class ProductModel:

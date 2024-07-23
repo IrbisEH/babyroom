@@ -2,11 +2,11 @@ import os
 from app.Managers.ConfigManager import ConfigManager
 from app.Managers.LogManager import LogManager
 from app.Managers.DbManager import DbManager
-from app.DbModels import Base
+from app.Models import Base
 
-from app.DbModels.TagModel import TagModel
-from app.DbModels.ProductDbModel import ProductDbModel
-from app.DbModels.UserModel import UserModel
+from app.Models.TagModel import TagModel
+from app.Models.ProductModel import ProductDbModel
+from app.Models.UserModel import UserModel
 
 DIR = os.path.dirname(__file__)
 
@@ -28,4 +28,3 @@ def check_tables():
 
 if __name__ == '__main__':
     create_db()
-    # check_tables()

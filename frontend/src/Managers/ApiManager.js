@@ -1,6 +1,6 @@
 export default function ApiManager()
 {
-    this.api = "http://127.0.0.1:5001/api";
+    this.api = process.env.REACT_APP_API_URL;
     this.headers = {};
 }
 
