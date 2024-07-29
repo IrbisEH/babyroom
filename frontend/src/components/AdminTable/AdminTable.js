@@ -3,6 +3,7 @@ import DataTable from 'react-data-table-component';
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import Form from "../Form/Form"
+import AdminProductModalCard from "../Cards/AdminProductModalCard";
 
 import "./AdminTable.css"
 
@@ -43,10 +44,28 @@ const AdminTable = ({ Manager }) => {
 	const [formState, setFormState] = useState(Manager.GetFormModel());
 	const [addFilesState, setAddFilesState] = useState({});
 
+	const [isProductCardOpen, setIsProductCardOpen] = useState(false);
+	const [productCardState, setProductCardState] = useState({});
+
 	Manager.handleEditBtnClick = (event, row) => {
 		let model = Manager.GetFormModel(row);
 		setFormState(model);
 		setIsFormOpen(true);
+	}
+
+	if(Manager.hasOwnProperty("GetProductCardModel"))
+	{
+		Manager.handleProductCardOpen = (event, row) => {
+			let model = Manager.GetProductCardModel(row);
+			setProductCardState(prevState => {
+				let state = Manager.GetProductCardModel(prevState);
+				Object.keys(model).forEach(key => {
+					state[key] = model[key];
+				})
+				return state;
+			});
+			setIsProductCardOpen(true);
+		}
 	}
 
 	Manager.handleDeleteBtnClick = (event, row) => {
@@ -67,9 +86,6 @@ const AdminTable = ({ Manager }) => {
 		const fileList = Object.values(addFilesState)
         const formData = new FormData();
 
-		console.log(model)
-		console.log(fileList)
-
 		Object.keys(model).forEach(key => {
 			formData.append(key, model[key]);
         });
@@ -83,10 +99,6 @@ const AdminTable = ({ Manager }) => {
 		setFormState(Manager.GetFormModel());
 		setAddFilesState({})
 	}
-
-	// useEffect(()=>{
-	// 	console.log(formState)
-	// }, [formState])
 
     return (
 		<section className="table">
@@ -110,6 +122,13 @@ const AdminTable = ({ Manager }) => {
 					isFormOpen={isFormOpen}
 					setIsFormOpen={setIsFormOpen}
 					handleSubmit={handleSubmit}
+				/>
+			)}
+			{Manager.hasOwnProperty("GetProductCardModel") && (
+				<AdminProductModalCard
+					isProductCardOpen={isProductCardOpen}
+					setIsProductCardOpen={setIsProductCardOpen}
+					productCardState={productCardState}
 				/>
 			)}
 			<dialog>

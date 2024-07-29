@@ -94,7 +94,7 @@ class ProductModel:
                 hash_object.update(f'{filename}{props_str}'.encode('UTF-8'))
                 hex_dig = hash_object.hexdigest()
 
-                new_filepath = Path(app_config.paths.product_img_storage, f"{hex_dig}{idx}{file_extension}")
+                new_filepath = Path(app_config.paths.img_storage, f"{hex_dig}{idx}{file_extension}")
                 file.save(new_filepath)
                 add_files.append(new_filepath)
 

@@ -3,6 +3,7 @@ import {FaRegTrashCan} from "react-icons/fa6";
 import React from "react";
 import Switch from 'react-switch';
 import CellTooltip from "../components/AdminTable/CellTooltip";
+import { TbListSearch } from "react-icons/tb";
 
 class ProductManagers {
 	constructor(Params) {
@@ -21,6 +22,7 @@ class ProductManagers {
 
 		this.handleEditBtnClick = null;
 		this.handleDeleteBtnClick = null;
+		this.handleProductCardOpen = null;
 
 		this.columnsConfig = [
 			{
@@ -142,7 +144,11 @@ class ProductManagers {
 			},
 			{
 				id: "product_card",
-				name: "карточка",
+				cell: row => (
+					<div onClick={(event) => this.handleProductCardOpen && this.handleProductCardOpen(event, row)}>
+						<TbListSearch className="table__btn" size={16}/>
+					</div>
+				)
 			},
 			{
 				id: "trash",
@@ -190,6 +196,14 @@ class ProductManagers {
 
 		this.GetFormModel = (Params) => {
 			return this.GetModel(Params)
+		}
+
+		this.GetProductCardModel = (Params) => {
+			let model = {};
+
+			model.images = Params && Params.images ? Params.images : []
+
+			return model;
 		}
 
 		this.Get = () => {

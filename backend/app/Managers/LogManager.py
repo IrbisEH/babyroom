@@ -2,7 +2,7 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 from colorlog import ColoredFormatter
 from pathlib import Path
-
+import os
 
 class LogManager:
     def __init__(self, config_manager):
@@ -47,6 +47,11 @@ class LogManager:
             self.log.addHandler(console_handler)
 
         self.log.setLevel(getattr(logging, self.log_level))
+
+    def create_logfile(self):
+        if not os.path.isfile(self.log_file):
+            open(self.log_file, 'a').close()
+            os.chmod(self.log_file, 0o777)
 
     def debug(self, string):
         self.log.debug(string)

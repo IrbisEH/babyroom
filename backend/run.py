@@ -170,15 +170,6 @@ def handle_product():
     result = request_handler(manager, request)
     return jsonify(result.to_dict()), result.status
 
-@app.route("/test", methods=["POST", "GET", "PUT", "DELETE"])
+@app.route("/api/test", methods=["POST", "GET", "PUT", "DELETE"])
 def test():
     return jsonify({"newresult": True}), 200
-
-
-if __name__ == "__main__":
-    app.run(
-        debug=True,
-        host="127.0.0.1",
-        port=5001
-    )
-

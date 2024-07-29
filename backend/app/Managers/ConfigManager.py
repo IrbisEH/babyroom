@@ -12,7 +12,6 @@ class AppPaths:
 
         self.storage = Path(self.root_dir, "storage")
         self.img_storage = Path(self.storage, "images")
-        self.product_img_storage = Path(self.img_storage, "products")
 
 
 class AppConfig:
@@ -50,5 +49,6 @@ class ConfigManager:
 
     def create_paths(self):
         for path in vars(self.paths).values():
-            os.makedirs(path, exist_ok=True)
-            os.chmod(path, 0o777)
+            if not os.path.isdir(path):
+                os.makedirs(path, exist_ok=True)
+                os.chmod(path, 0o777)

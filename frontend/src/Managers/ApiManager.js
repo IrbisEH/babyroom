@@ -1,6 +1,6 @@
 export default function ApiManager()
 {
-    this.api = process.env.REACT_APP_API_URL;
+    this.api = process.env.REACT_APP_URL + "/api";
     this.headers = {};
 }
 
