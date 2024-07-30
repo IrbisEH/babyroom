@@ -8,19 +8,22 @@ const AdminProductModalCard = ({ isProductCardOpen, setIsProductCardOpen, produc
 
 	useEffect(() => {
 		const modal = formRef.current;
-		console.log(modal)
 		modal && isProductCardOpen ? modal.showModal() : modal.close();
 	}, [isProductCardOpen]);
 
 	useEffect(() => {
-		console.log(productCardState)
 	}, [productCardState]);
+
+	const style = {width: "300px", height: "400px"};
 
     return (
         <>
-			<dialog ref={formRef} style={{width:"500px", height:"500px"}} >
+			{/*<dialog ref={formRef} style={{width:"500px", height:"800px"}} >*/}
+			<dialog ref={formRef} >
 				<IoIosClose size={32} onClick={() => setIsProductCardOpen(false)} />
-				<Carousel images={productCardState.images} />
+				<div style={style}>
+					<Carousel images={productCardState.images} style={style} />
+				</div>
 			</dialog>
         </>
     )

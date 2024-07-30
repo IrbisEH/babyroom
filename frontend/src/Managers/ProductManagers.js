@@ -144,18 +144,28 @@ class ProductManagers {
 			},
 			{
 				id: "product_card",
-				cell: row => (
-					<div onClick={(event) => this.handleProductCardOpen && this.handleProductCardOpen(event, row)}>
-						<TbListSearch className="table__btn" size={16}/>
-					</div>
-				)
+				cell: row => {
+					let res = "";
+
+					if(row && row.images.length)
+					{
+						res = (
+							<div onClick={(event) => this.handleProductCardOpen && this.handleProductCardOpen(event, row)}>
+								<TbListSearch className="table__btn" size={16}/>
+							</div>
+						)
+					}
+
+					return res;
+				}
+
 			},
 			{
 				id: "trash",
 				width: "50px",
 				cell: row => (
 					<div onClick={(event) => this.handleDeleteBtnClick && this.handleDeleteBtnClick(event, row)}>
-						<FaRegTrashCan className="table__btn"  size={16}/>
+					<FaRegTrashCan className="table__btn"  size={16}/>
 					</div>
 				)
 			}
@@ -231,7 +241,6 @@ class ProductManagers {
 				if(response.data)
 				{
 					let model = this.GetModel(response.data);
-					console.log(model)
 					let state = [...this.data];
 					let findIdx = this.data.findIndex(item => item.id === model.id)
 

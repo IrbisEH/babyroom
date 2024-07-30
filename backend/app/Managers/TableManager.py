@@ -1,5 +1,6 @@
 from ..AppModels.ResultModel import Result
 from .DbManager import DbManager
+from .ImageStoreManager import ImageStoreManager
 
 
 class TableManager:
@@ -24,10 +25,13 @@ class TableManager:
         try:
             model = self.model(**data)
 
-            if hasattr(model, "handle_files") and files is not None:
-                result = model.handle_files(files, self.config)
-                if not result.success:
-                    raise Exception(result.msg)
+            if files is not None:
+                img_manager = ImageStoreManager(self.config, self.log)
+                result = img_manager.save_files(files)
+                if result.success:
+                    model.images = result.data
+                else:
+                    raise Exception(result.msg if hasattr(result, "msg") else "Unknown error")
 
             dbmodel = model.get_dbmodel()
 
@@ -54,10 +58,15 @@ class TableManager:
             if not model.id:
                 raise Exception("Missing entry id")
 
-            if hasattr(model, "handle_files") and files is not None:
-                result = model.handle_files(files, self.config)
-                if not result.success:
-                    raise Exception(result.msg)
+            if files is not None:
+                img_manager = ImageStoreManager(self.config, self.log)
+                result = img_manager.save_files(files)
+                if result.success:
+                    images = model.images.split(",") if model.images else []
+                    images += result.data
+                    model.images = ",".join(images)
+                else:
+                    raise Exception(result.msg if hasattr(result, "msg") else "Unknown error")
 
             self.db.session.query(self.model.DB_MODEL).filter_by(id=model.id).update(vars(model))
             self.db.session.commit()
@@ -66,6 +75,7 @@ class TableManager:
 
         except Exception as e:
             self.db.session.rollback()
+            self.log.error(str(e))
             result.get_error(msg=str(e))
 
         return result

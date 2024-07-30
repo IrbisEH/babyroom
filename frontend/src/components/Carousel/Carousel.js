@@ -1,11 +1,13 @@
-import React from "react";
+import React, {useState, useRef, useEffect} from "react";
 import "./carousel.css";
 
-const Carousel = ({ images }) => {
+const Carousel = ({ images, style }) => {
     const [curIdx, setCurIdx] = React.useState(0);
+    const carouselRef = useRef(null);
 
-    const getImgPath = (fileName) => {
-        return `${process.env.REACT_APP_URL}/img/${fileName}`;
+    const getImgPath = (fileIdentifier) => {
+        let postfix = "large"
+        return `${process.env.REACT_APP_URL}/img/${fileIdentifier}_${postfix}.jpg`;
     }
     const nextImgIdx = () => {
         setCurIdx((prevState) => prevState + 1 < images.length ? prevState + 1 : 0);
@@ -17,8 +19,7 @@ const Carousel = ({ images }) => {
 
     return (
         <>
-            {
-                images && images.length && (
+            {images && images.length ? (
                     <div className="carousel">
                         <button className="carousel__btn carousel__btn--prev" onClick={prevImgIdx}>
                             &lt;
@@ -28,16 +29,17 @@ const Carousel = ({ images }) => {
                         </button>
                         <div className="carousel__img--wrapper">
                             <img
-                                src={getImgPath(images[curIdx])}
-                                alt={`Slide ${curIdx}`}
-                                className="carousel__img"
+                            src={getImgPath(images[curIdx])}
+                            alt={`img ${curIdx}`}
+                            className="carousel__img"
                             />
                         </div>
                     </div>
-                )
-            }
+                ) : (
+                    <div>No images to show</div>
+            )}
         </>
-    )
+    );
 }
 
 export default Carousel;

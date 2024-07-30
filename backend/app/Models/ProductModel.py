@@ -6,9 +6,6 @@ from .CategoryModel import CategoryModel
 from .UnitsModel import UnitsModel
 from .PromotionModel import PromotionModel
 from ..AppModels.ResultModel import Result
-from pathlib import Path
-import hashlib
-import os
 
 
 class ProductDbModel(Base):
@@ -28,7 +25,6 @@ class ProductDbModel(Base):
     category: Mapped[CategoryModel] = relationship(CategoryModel.DB_MODEL, backref='products')
     unit: Mapped[UnitsModel] = relationship(UnitsModel.DB_MODEL, backref='products')
     promotion: Mapped[PromotionModel] = relationship(PromotionModel.DB_MODEL, backref='products')
-
 
 class ProductModel:
     DB_MODEL = ProductDbModel
@@ -50,60 +46,3 @@ class ProductModel:
 
     def get_dbmodel(self):
         return self.DB_MODEL(**vars(self))
-
-    def handle_files(self, files, app_config):
-        result = Result()
-        try:
-            if not isinstance(files, list):
-                raise Exception("Can not handle files list")
-
-            result = self.save_files(files, app_config)
-
-            if not result.success:
-                raise Exception(result.msg)
-
-            exists_filenames = self.images.split(",") if self.images is not None else []
-
-            for filepath in result.data:
-                filename = os.path.basename(filepath)
-                exists_filenames.append(filename)
-
-            self.images = ",".join(exists_filenames)
-
-        except Exception as e:
-            result.get_error(e)
-
-        return result
-
-    def save_files(self, files, app_config):
-        result = Result()
-        add_files = []
-
-        try:
-            for idx, file in enumerate(files):
-                if file.filename == "":
-                    raise Exception("Missing file name")
-
-                filename = file.filename
-                _, file_extension = os.path.splitext(filename)
-
-                props = [str(value) for key, value in vars(self).items() if value is not None]
-                props_str = "".join(props)
-
-                hash_object = hashlib.sha256()
-                hash_object.update(f'{filename}{props_str}'.encode('UTF-8'))
-                hex_dig = hash_object.hexdigest()
-
-                new_filepath = Path(app_config.paths.img_storage, f"{hex_dig}{idx}{file_extension}")
-                file.save(new_filepath)
-                add_files.append(new_filepath)
-
-            result.get_ok(add_files)
-
-        except Exception as e:
-            if len(add_files):
-                for file in add_files:
-                    os.remove(file)
-            result.get_error(e)
-
-        return result
