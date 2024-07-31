@@ -4,42 +4,6 @@ import Select from "react-select";
 import Switch from "react-switch";
 import Carousel from "../Carousel/Carousel";
 
-// const ExistsImages = ({ formState, setFormState }) => {
-//     const [existImageElement, setExistImageElement] = useState({});
-//
-//     const deleteElement = (key, filename) => {
-//         setExistImageElement(prevState => {
-//             const newState = { ...prevState };
-//             delete newState[key];
-//             return newState;
-//         });
-//         setFormState(prevState => {
-//             const newState = { ...prevState };
-//             newState.images = newState.images.filter(item => item !== filename);
-//             return newState;
-//         })
-//     };
-//
-//     useEffect(() => {
-//         const initialImages = formState.images.reduce((acc, filename, index) => {
-//             acc[`file_${index}`] = filename;
-//             return acc;
-//         }, {});
-//         setExistImageElement(initialImages);
-//     }, [formState]);
-//
-//     return (
-//         <>
-//             {Object.entries(existImageElement).map(([key, filename]) => (
-//                 <div key={key} style={{ display: "flex", flexDirection: "row" }}>
-//                     <span>{`...${filename.slice(-30)}`}</span>
-//                     <IoIosClose size={30} onClick={() => deleteElement(key, filename)} />
-//                 </div>
-//             ))}
-//         </>
-//     )
-// }
-
 const ExistsImages = ({ formState, setFormState }) => {
 	const [imageUrlsList, setImageUrlsList] = useState([]);
 
@@ -69,69 +33,68 @@ const ExistsImages = ({ formState, setFormState }) => {
     )
 }
 
-const UploadImages = ({ formState, addFilesState, setAddFilesState }) => {
+const SectionUploadImg = ({ id, onRemove, onFileChange }) => {
+    const handleFileChange = (e) => {
+        onFileChange(id, e.target.files[0]);
+    };
 
-    const [elementCount, setElementCount] = useState(1);
-    const [uploadElements, setUploadElements] = useState({});
+    return (
+        <div style={{display: "flex", flexDirection: "row"}}>
+            <input type="file" onChange={handleFileChange} />
+            <IoIosClose size={30} onClick={() => onRemove(id)} />
+        </div>
+    );
+};
 
-    const getElement = (key) => {
-        return (
-            <div key={key} style={{display: "flex", flexDirection: "row"}}>
-                <input type="file" name="file" onChange={(event) => handleAddFile(key, event.target.files[0])} />
-                <IoIosClose size={30} onClick={() => deleteElement(key)} />
-            </div>
-        )
-    }
+const UploadImages = ({ formState, fileList, setFileList }) => {
+    const [sections, setSections] = useState([]);
 
-    const addElement = () => {
-        setElementCount(prevCount => prevCount + 1);
+    const addSection = () => {
+        const newSectionId = Date.now();
+        setSections([...sections, { id: newSectionId }]);
+        setFileList({ ...fileList, [newSectionId]: null });
+    };
 
-        let newKey = "file_" + elementCount;
+    const removeSection = (id) => {
+        setSections(sections.filter((section) => section.id !== id));
+        const newFiles = { ...fileList };
+        delete newFiles[id];
+        setFileList(newFiles);
+    };
 
-        setUploadElements({
-            ...uploadElements,
-            [newKey]: getElement(newKey),
-        });
-    }
-
-    const deleteElement = (key) => {
-        setUploadElements(prevState => {
-            const state = {...prevState};
-            delete state[key];
-            return state;
-        });
-        setAddFilesState(prevState => {
-            const state = {...prevState};
-            delete state[key];
-            return state;
-        })
-    }
-
-    const handleAddFile = (key, file) => {
-        setAddFilesState(prevState => ({
-            ...prevState,
-            [key]: file
-        }));
+    const handleFileChange = (id, file) => {
+        setFileList({ ...fileList, [id]: file });
     };
 
     useEffect(() => {
-        if(!Object.keys(addFilesState).length > 0){
-            setUploadElements({})
-        }
-    }, [addFilesState]);
+        if(fileList.length === 0)
+            setSections([]);
+    }, [fileList])
 
     return (
         <>
-            {Object.values(uploadElements)}
             {
-                (Object.values(uploadElements).length + formState.images.length) < 3 &&
-                (<button type="button" onClick={() => addElement()}>Добавить изображение</button>)
+                sections.map((section) => (
+                    <SectionUploadImg
+                        key={section.id}
+                        id={section.id}
+                        onRemove={removeSection}
+                        onFileChange={handleFileChange}
+                    />
+                ))
+            }
+            {
+                formState && formState.images && (sections.length + formState.images.length) < 3 && (
+                    <button type="button" onClick={addSection}>
+                        Добавить изображение
+                    </button>
+                )
             }
         </>
-    )
+    );
 }
 
-const GetFormElements = ( Style, formConfig, formState, setFormState, handleChange, addFilesState, setAddFilesState) => {
+const GetFormElements = (Style, formConfig, formState, setFormState, fileList, setFileList, handleChange) => {
     return formConfig.map((item, index) => {
         switch(item.type)
         {
@@ -246,8 +209,8 @@ const GetFormElements = ( Style, formConfig, formState, setFormState, handleChan
                     <div key={"form" + index} style={{display:"flex", flexDirection:"column", justifyContent:"center"}}>
                         <UploadImages
                             formState={formState}
-                            addFilesState={addFilesState}
-                            setAddFilesState={setAddFilesState}
+                            fileList={fileList}
+                            setFileList={setFileList}
                         />
                     </div>
                 );
@@ -257,8 +220,9 @@ const GetFormElements = ( Style, formConfig, formState, setFormState, handleChan
     });
 }
 
-const Form = ({ formConfig, formState, setFormState, addFilesState, setAddFilesState, handleSubmit }) => {
-    const Id = useId();
+const Form = ({ formConfig, formInitialState, onSubmit }) => {
+    const [formState, setFormState] = useState(formInitialState);
+    const [fileList, setFileList] = useState([]);
 
     const styles = {
         label: {
@@ -290,6 +254,30 @@ const Form = ({ formConfig, formState, setFormState, addFilesState, setAddFilesS
         });
     };
 
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        const formData = new FormData();
+
+    	Object.keys(formState).forEach(key => {
+			formData.append(key, formState[key]);
+        });
+
+        Object.values(fileList).forEach((file, idx) => {
+			if(file)
+				formData.append(`file-${idx}`, file);
+		});
+
+        onSubmit(formData);
+
+        setFormState({});
+        setFileList([])
+    };
+
+    useEffect(() => {
+        setFormState(formInitialState);
+    }, [formInitialState]);
+
     return (
         <form style={{display: 'flex', flexDirection: 'column'}} onSubmit={handleSubmit}>
             {GetFormElements(
@@ -297,11 +285,11 @@ const Form = ({ formConfig, formState, setFormState, addFilesState, setAddFilesS
                 formConfig,
                 formState,
                 setFormState,
-                handleChange,
-                addFilesState,
-                setAddFilesState
+                fileList,
+                setFileList,
+                handleChange
             )}
-            <button key={Id + "SubmitBtn"} type="submit">Сохранить</button>
+            <button type="submit">Сохранить</button>
         </form>
     )
 }

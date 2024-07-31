@@ -41,6 +41,7 @@ def before_request():
 
 @app.route("/api/login", methods=['POST'])
 def login():
+    db = None
     result = Result()
     try:
         username, password = request.json["username"], request.json["password"]
@@ -75,12 +76,16 @@ def login():
         msg = str(e)
         log.error(msg)
         result = Result(msg=msg, status=500)
+    finally:
+        if db is not None and db.session:
+            db.session.close()
 
     return jsonify(result.to_dict()), result.status
 
 @app.route("/api/check_jwt", methods=["GET"])
 @jwt_required()
 def check_jwt():
+    db = None
     result = Result()
     try:
         db = DbManager(config, log)
@@ -99,6 +104,9 @@ def check_jwt():
         msg = str(e)
         log.error(msg)
         result = Result(msg=msg, status=400)
+    finally:
+        if db is not None and db.session:
+            db.session.close()
 
     return jsonify(result.to_dict()), result.status
 

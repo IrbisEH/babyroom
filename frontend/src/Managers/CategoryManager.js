@@ -116,7 +116,9 @@ class CategoryManager {
 					this.dataSetter(state.concat(model));
 				}
 			})
-			.catch(error => {console.error(error)})
+			.catch(error => {
+				console.error(error)
+			});
 		}
 
 		this.Delete = (Model) => {

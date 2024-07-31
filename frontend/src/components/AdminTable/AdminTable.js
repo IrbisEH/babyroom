@@ -7,7 +7,7 @@ import AdminProductModalCard from "../Cards/AdminProductModalCard";
 
 import "./AdminTable.css"
 
-const TableForm = ({ formConfig, formState, setFormState, addFilesState, setAddFilesState, isFormOpen, setIsFormOpen, handleSubmit }) => {
+const TableForm = ({ isFormOpen, setIsFormOpen, formConfig, formInitialState, onSubmit }) => {
 	const formRef = useRef(null);
 
 	const handleKeyDown = (event) => {
@@ -17,8 +17,8 @@ const TableForm = ({ formConfig, formState, setFormState, addFilesState, setAddF
 	}
 
 	useEffect(() => {
-		const form = formRef.current;
-		form && isFormOpen ? form.showModal() : form.close();
+		const modal = formRef.current;
+		modal && isFormOpen ? modal.showModal() : modal.close();
 	}, [isFormOpen]);
 
 	return (
@@ -27,11 +27,8 @@ const TableForm = ({ formConfig, formState, setFormState, addFilesState, setAddF
 				<IoClose className="table_form__close_icon" onClick={() => setIsFormOpen(false)} size={20}/>
 				<Form
 					formConfig={formConfig}
-					formState={formState}
-					setFormState={setFormState}
-					addFilesState={addFilesState}
-					setAddFilesState={setAddFilesState}
-					handleSubmit={handleSubmit}
+					formInitialState={formInitialState}
+					onSubmit={onSubmit}
 				/>
 			</div>
 		</dialog>
@@ -42,15 +39,18 @@ const AdminTable = ({ Manager }) => {
 
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [formState, setFormState] = useState(Manager.GetFormModel());
-	const [addFilesState, setAddFilesState] = useState({});
 
 	const [isProductCardOpen, setIsProductCardOpen] = useState(false);
 	const [productCardModel, setProductCardModel] = useState({});
 
 	Manager.handleEditBtnClick = (event, row) => {
-		let model = Manager.GetFormModel(row);
-		setFormState(model);
+		setFormState(Manager.GetFormModel(row));
 		setIsFormOpen(true);
+	}
+
+	Manager.handleDeleteBtnClick = (event, row) => {
+		let model = Manager.GetModel(row);
+		Manager.Delete(model);
 	}
 
 	if(Manager.hasOwnProperty("GetProductCardModel"))
@@ -62,36 +62,20 @@ const AdminTable = ({ Manager }) => {
 		}
 	}
 
-	Manager.handleDeleteBtnClick = (event, row) => {
-		let model = Manager.GetModel(row);
-		Manager.Delete(model);
-	}
-
 	const handleAddBtnClick = () => {
 		let model = Manager.GetFormModel();
 		setFormState(model)
 		setIsFormOpen(true);
 	}
 
-	const handleSubmit = (event) => {
-		event.preventDefault();
+	const handleFormData = (formData) => {
 
-		const model = Manager.GetModel(formState);
-		const fileList = Object.values(addFilesState)
-        const formData = new FormData();
-
-		Object.keys(model).forEach(key => {
-			formData.append(key, model[key]);
-        });
-
-		if(fileList.length)
-			fileList.map(file => formData.append("files", file))
+		for (const [key, value] of formData.entries()) {
+			console.log(`${key}: ${value}`);
+		}
 
 		Manager.Save(formData);
-
 		setIsFormOpen(false);
-		setFormState(Manager.GetFormModel());
-		setAddFilesState({})
 	}
 
     return (
@@ -108,14 +92,11 @@ const AdminTable = ({ Manager }) => {
 			/>
 			{Manager.formConfig && (
 				<TableForm
-					formConfig={Manager.formConfig}
-					formState={formState}
-					setFormState={setFormState}
-					addFilesState={addFilesState}
-					setAddFilesState={setAddFilesState}
 					isFormOpen={isFormOpen}
 					setIsFormOpen={setIsFormOpen}
-					handleSubmit={handleSubmit}
+					formConfig={Manager.formConfig}
+					formInitialState={formState}
+					onSubmit={handleFormData}
 				/>
 			)}
 			{Manager.hasOwnProperty("GetProductCardModel") && (

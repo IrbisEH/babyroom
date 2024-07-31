@@ -17,6 +17,8 @@ class TableManager:
             result.data = [vars(self.model(**vars(item))) for item in data]
         except Exception as e:
             result.get_error(msg=str(e))
+        finally:
+            self.db.session.close()
 
         return result
 
@@ -25,7 +27,7 @@ class TableManager:
         try:
             model = self.model(**data)
 
-            if files is not None:
+            if files is not None and len(files):
                 img_manager = ImageStoreManager(self.config, self.log)
                 result = img_manager.save_files(files)
                 if result.success:
@@ -47,6 +49,8 @@ class TableManager:
         except Exception as e:
             self.db.session.rollback()
             result.get_error(msg=str(e))
+        finally:
+            self.db.session.close()
 
         return result
 
@@ -58,7 +62,7 @@ class TableManager:
             if not model.id:
                 raise Exception("Missing entry id")
 
-            if files is not None:
+            if files is not None and len(files):
                 img_manager = ImageStoreManager(self.config, self.log)
                 result = img_manager.save_files(files)
                 if result.success:
@@ -77,6 +81,8 @@ class TableManager:
             self.db.session.rollback()
             self.log.error(str(e))
             result.get_error(msg=str(e))
+        finally:
+            self.db.session.close()
 
         return result
 
@@ -96,5 +102,7 @@ class TableManager:
         except Exception as e:
             self.db.session.rollback()
             result.get_error(msg=str(e))
+        finally:
+            self.db.session.close()
 
         return result
