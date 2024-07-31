@@ -170,6 +170,15 @@ def handle_product():
     result = request_handler(manager, request)
     return jsonify(result.to_dict()), result.status
 
+@app.route("/api/delete_file", methods=["POST"])
+@jwt_required()
+def handle_delete_file():
+    result = Result()
+    data = request.get_json()
+    log.debug(data)
+    return jsonify(result.to_dict()), result.status
+
+
 @app.route("/api/test", methods=["POST", "GET", "PUT", "DELETE"])
 def test():
     return jsonify({"newresult": True}), 200

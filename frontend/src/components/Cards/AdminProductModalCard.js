@@ -1,10 +1,11 @@
 import React, {useEffect, useRef, useState} from "react";
 import {IoIosClose} from "react-icons/io";
 import Carousel from "../Carousel/Carousel"
+import {MdDeleteOutline} from "react-icons/md";
 
-const AdminProductModalCard = ({ isProductCardOpen, setIsProductCardOpen, productCardState}) => {
+const AdminProductModalCard = ({ isProductCardOpen, setIsProductCardOpen, productCardModel }) => {
 	const formRef = useRef(null);
-	const [imagesEls, setImagesEls] = useState([]);
+	const [imageUrlsList, setImageUrlsList] = useState([]);
 
 	useEffect(() => {
 		const modal = formRef.current;
@@ -12,17 +13,36 @@ const AdminProductModalCard = ({ isProductCardOpen, setIsProductCardOpen, produc
 	}, [isProductCardOpen]);
 
 	useEffect(() => {
-	}, [productCardState]);
+		if(productCardModel && productCardModel.images)
+		{
+			let list = [];
+			productCardModel.images.forEach(identifier => {
+				list.push(`${process.env.REACT_APP_URL}/img/${identifier}_large.jpg`)
+			})
+			setImageUrlsList(list);
+		}
+	}, [productCardModel]);
 
-	const style = {width: "300px", height: "400px"};
+	const handleKeyDown = (event) => {
+		if(event.key === "Escape") {
+			setIsProductCardOpen(false);
+        }
+	}
+
+	const handleDeleteBtn = (ImgIdx) => {
+		setImageUrlsList(prevState => {
+			const newState = [...prevState];
+			newState.splice(ImgIdx, 1);
+			return newState;
+		});
+	};
 
     return (
         <>
-			{/*<dialog ref={formRef} style={{width:"500px", height:"800px"}} >*/}
-			<dialog ref={formRef} >
+			<dialog ref={formRef} onKeyDown={handleKeyDown} >
 				<IoIosClose size={32} onClick={() => setIsProductCardOpen(false)} />
-				<div style={style}>
-					<Carousel images={productCardState.images} style={style} />
+				<div style={{width: "300px", height: "400px"}}>
+					<Carousel imageUrlsList={imageUrlsList} />
 				</div>
 			</dialog>
         </>

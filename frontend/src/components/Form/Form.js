@@ -2,40 +2,70 @@ import React, { useState, useId, useEffect } from "react";
 import { IoIosClose } from "react-icons/io";
 import Select from "react-select";
 import Switch from "react-switch";
+import Carousel from "../Carousel/Carousel";
+
+// const ExistsImages = ({ formState, setFormState }) => {
+//     const [existImageElement, setExistImageElement] = useState({});
+//
+//     const deleteElement = (key, filename) => {
+//         setExistImageElement(prevState => {
+//             const newState = { ...prevState };
+//             delete newState[key];
+//             return newState;
+//         });
+//         setFormState(prevState => {
+//             const newState = { ...prevState };
+//             newState.images = newState.images.filter(item => item !== filename);
+//             return newState;
+//         })
+//     };
+//
+//     useEffect(() => {
+//         const initialImages = formState.images.reduce((acc, filename, index) => {
+//             acc[`file_${index}`] = filename;
+//             return acc;
+//         }, {});
+//         setExistImageElement(initialImages);
+//     }, [formState]);
+//
+//     return (
+//         <>
+//             {Object.entries(existImageElement).map(([key, filename]) => (
+//                 <div key={key} style={{ display: "flex", flexDirection: "row" }}>
+//                     <span>{`...${filename.slice(-30)}`}</span>
+//                     <IoIosClose size={30} onClick={() => deleteElement(key, filename)} />
+//                 </div>
+//             ))}
+//         </>
+//     )
+// }
 
 const ExistsImages = ({ formState, setFormState }) => {
-    const [existImageElement, setExistImageElement] = useState({});
-
-    const deleteElement = (key, filename) => {
-        setExistImageElement(prevState => {
-            const newState = { ...prevState };
-            delete newState[key];
-            return newState;
-        });
-        setFormState(prevState => {
-            const newState = { ...prevState };
-            newState.images = newState.images.filter(item => item !== filename);
-            return newState;
-        })
-    };
+	const [imageUrlsList, setImageUrlsList] = useState([]);
 
     useEffect(() => {
-        const initialImages = formState.images.reduce((acc, filename, index) => {
-            acc[`file_${index}`] = filename;
-            return acc;
-        }, {});
-        setExistImageElement(initialImages);
-    }, [formState]);
+		if(formState && formState.images)
+		{
+			let list = [];
+			formState.images.forEach(identifier => {
+				list.push(`${process.env.REACT_APP_URL}/img/${identifier}_large.jpg`)
+			})
+			setImageUrlsList(list);
+		}
+	}, [formState]);
+
+    const handleDeleteBtn = (event, ImgIdx) => {
+        event.preventDefault();
+
+        setFormState(prevState => {
+            const newState = { ...prevState };
+            newState.images = newState.images.filter((_, index) => index !== ImgIdx);
+            return newState;
+        });
+    };
 
     return (
-        <>
-            {Object.entries(existImageElement).map(([key, filename]) => (
-                <div key={key} style={{ display: "flex", flexDirection: "row" }}>
-                    <span>{`...${filename.slice(-30)}`}</span>
-                    <IoIosClose size={30} onClick={() => deleteElement(key, filename)} />
-                </div>
-            ))}
-        </>
+        <Carousel imageUrlsList={imageUrlsList} handleDeleteBtn={handleDeleteBtn} />
     )
 }
 
@@ -204,7 +234,7 @@ const GetFormElements = ( Style, formConfig, formState, setFormState, handleChan
                 );
             case "files":
                 return (
-                    <div key={"form" + index} style={{display: "flex", flexDirection: "column", justifyContent: "center"}}>
+                    <div key={"form" + index} style={Style.images}>
                         <ExistsImages
                             formState={formState}
                             setFormState={setFormState}
@@ -243,6 +273,9 @@ const Form = ({ formConfig, formState, setFormState, addFilesState, setAddFilesS
             height: "150px",
             resize: 'none',
             overflowY: 'scroll'
+        },
+        images: {
+            width: "300px"
         },
         switch: {
             height: 18,

@@ -45,7 +45,7 @@ const AdminTable = ({ Manager }) => {
 	const [addFilesState, setAddFilesState] = useState({});
 
 	const [isProductCardOpen, setIsProductCardOpen] = useState(false);
-	const [productCardState, setProductCardState] = useState({});
+	const [productCardModel, setProductCardModel] = useState({});
 
 	Manager.handleEditBtnClick = (event, row) => {
 		let model = Manager.GetFormModel(row);
@@ -56,14 +56,8 @@ const AdminTable = ({ Manager }) => {
 	if(Manager.hasOwnProperty("GetProductCardModel"))
 	{
 		Manager.handleProductCardOpen = (event, row) => {
-			let model = Manager.GetProductCardModel(row);
-			setProductCardState(prevState => {
-				let state = Manager.GetProductCardModel(prevState);
-				Object.keys(model).forEach(key => {
-					state[key] = model[key];
-				})
-				return state;
-			});
+			let model = Manager.GetModel(row);
+			setProductCardModel(model);
 			setIsProductCardOpen(true);
 		}
 	}
@@ -128,7 +122,7 @@ const AdminTable = ({ Manager }) => {
 				<AdminProductModalCard
 					isProductCardOpen={isProductCardOpen}
 					setIsProductCardOpen={setIsProductCardOpen}
-					productCardState={productCardState}
+					productCardModel={productCardModel}
 				/>
 			)}
 			<dialog>
