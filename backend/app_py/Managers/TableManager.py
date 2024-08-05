@@ -1,100 +1,135 @@
 from ..AppModels.ResultModel import Result
-from .DbManager import DbManager
-from .ImageStoreManager import ImageStoreManager
 
 
 class TableManager:
-    def __init__(self, config, log, model):
+    def __init__(self, config, log, db, db_model):
         self.config = config
         self.log = log
-        self.db = DbManager(config, log)
+        self.db = db
         self.db.connect()
-        self.model = model
+        self.db_model = db_model
+
+        self.methods = {
+            "GET": self.get,
+            "POST": self.create,
+            "PUT": self.update,
+            "DELETE": self.delete,
+        }
+
+    def handle_request(self, api_request):
+        result = Result().get_error("Invalid Request")
+
+        if api_request.method in self.methods:
+            data = api_request.form.to_dict() if api_request.form else {}
+            data = {key: value for key, value in data.items() if value != "null" and value != ""}
+            files = [file for key in api_request.files for file in api_request.files.getlist(key)]
+
+            params = {"data": data, "files": files}
+
+            result = self.methods[api_request.method](params)
+
+        return result
+
+    def set_filter(self, query, params):
+        return query
 
     def get(self, params=None):
         result = Result()
+        filter_params = params["filter"] if params and "filter" in params else None
         try:
-            data = self.db.session.query(self.model.DB_MODEL).all()
-            result.data = [vars(self.model(**vars(item))) for item in data]
-        except Exception as e:
-            result.get_error(msg=str(e))
-        finally:
-            self.db.disconnect()
+            query = self.db.session.query(self.db_model)
 
-        return result
+            if filter_params is not None:
+                query = self.set_filter(query, params)
 
-    def create(self, data, files=None):
-        result = Result()
-        try:
-            model = self.model(**data)
+            response = query.all()
 
-            dbmodel = model.get_dbmodel()
+            self.log.debug(f"Get {query.count()} rows. Table: {self.db_model.__tablename__}")
 
-            self.db.session.add(dbmodel)
-            self.db.session.commit()
-
-            model.id = dbmodel.id
-
-            self.log.info(f"Add new entry. Table: {self.model.DB_MODEL.__tablename__}")
-
-            result.data = vars(model)
+            result.get_ok([item.serialize() for item in response])
 
         except Exception as e:
             self.db.session.rollback()
-            result.get_error(msg=str(e))
+            msg = str(e)
+            self.log.error(msg)
+            result.get_error(msg)
         finally:
             self.db.disconnect()
 
         return result
 
-    def update(self, data, files=None):
+    def create(self, params=None):
         result = Result()
+        data = params["data"] if "data" in params else {}
         try:
-            model = self.model(**data)
+            model = self.db_model(**data)
 
-            if not model.id:
+            self.db.session.add(model)
+            self.db.session.commit()
+
+            self.log.debug(f"Create model. Table: {self.db_model.__tablename__} Obj: {model.serialize()}")
+
+            result.get_ok(model.serialize())
+
+        except Exception as e:
+            self.db.session.rollback()
+            msg = str(e)
+            self.log.error(msg)
+            result.get_error(msg)
+        finally:
+            self.db.disconnect()
+
+        return result
+
+    def update(self, params=None):
+        result = Result()
+        data = params["data"] if "data" in params else {}
+        try:
+            if "id" not in data or data["id"] is None:
                 raise Exception("Missing entry id")
 
-            if files is not None and len(files):
-                img_manager = ImageStoreManager(self.config, self.log)
-                result = img_manager.save_files(files)
-                if result.success:
-                    images = model.images.split(",") if model.images else []
-                    images += result.data
-                    model.images = ",".join(images)
-                else:
-                    raise Exception(result.msg if hasattr(result, "msg") else "Unknown error")
+            model = self.db.session.query(self.db_model).get(data["id"])
 
-            self.db.session.query(self.model.DB_MODEL).filter_by(id=model.id).update(vars(model))
+            for key, value in data.items():
+                if hasattr(model, key):
+                    setattr(model, key, value)
+
+            self.db.session.add(model)
             self.db.session.commit()
-            self.log.info(f"Update entry. Table: {self.model.DB_MODEL.__tablename__}")
-            result.data = vars(model)
+
+            self.log.debug(f"Update model. Table: {self.db_model.__tablename__} Obj: {model.serialize()}")
 
         except Exception as e:
             self.db.session.rollback()
-            self.log.error(str(e))
-            result.get_error(msg=str(e))
+            msg = str(e)
+            self.log.error(msg)
+            result.get_error(msg)
         finally:
             self.db.disconnect()
 
         return result
 
-    def delete(self, data):
+    def delete(self, params=None):
         result = Result()
+        data = params["data"] if "data" in params else {}
         try:
-            model = self.model(**data)
-
-            if not model.id:
+            if "id" not in data or data["id"] is None:
                 raise Exception("Missing entry id")
 
-            dbmodel = self.db.session.query(self.model.DB_MODEL).get(model.id)
+            model = self.db.session.query(self.db_model).get(data["id"])
 
-            self.db.session.delete(dbmodel)
+            self.db.session.delete(model)
             self.db.session.commit()
+
+            self.log.debug(f"Delete model. Table: {self.db_model.__tablename__} Obj: {model.serialize()}")
+
+            result.get_ok(model.serialize())
 
         except Exception as e:
             self.db.session.rollback()
-            result.get_error(msg=str(e))
+            msg = str(e)
+            self.log.error(msg)
+            result.get_error(msg)
         finally:
             self.db.disconnect()
 

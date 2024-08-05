@@ -69,6 +69,9 @@ class ImageStoreManager:
 
         return result
 
+    def delete_files(self, identifiers):
+        return None
+
 
 
 

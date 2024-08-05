@@ -20,8 +20,8 @@ tag_manager = TagManager(config, log)
 product_manager = ProductManager(config, log)
 
 product_data = {
-    "name": "first product",
-    "price": 100,
+    "name": "third product",
+    "price": 200,
     "tags": [
         {
             "id": 1,
@@ -34,12 +34,30 @@ product_data = {
     ]
 }
 
-db.connect()
-db.drop_tables()
-db.create_tables()
-db.disconnect()
+# db.connect()
+# db.drop_tables()
+# db.create_tables()
+# db.disconnect()
+#
+# for tag in product_data['tags']:
+#     tag_manager.create(tag)
+#
+# product_manager.create(product_data)
 
-for tag in product_data['tags']:
-    tag_manager.create(tag)
 
-product_manager.create(product_data)
+res = product_manager.get({
+    "id": {
+        "prop": "id",
+        "operator": "=",
+        "value": 1
+    }
+})
+
+print(res.data)
+
+# if res.success and len(res.data):
+#     model = res.data[0]
+#     model.price = float(199)
+#     data = model.serialize()
+#     response = product_manager.update(data)
+#     print(response.data)

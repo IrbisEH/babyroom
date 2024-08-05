@@ -11,6 +11,7 @@ class Result:
         self.status = 200
 
     def get_error(self, msg=None, status=500):
+        self.success = False
         self.data = None
         self.msg = msg if msg else None
         self.status = status

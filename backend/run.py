@@ -1,5 +1,4 @@
 import os
-import app.Exceptions as Exceptions
 from datetime import timedelta
 
 from flask import Flask, request, jsonify
@@ -7,23 +6,22 @@ from flask_jwt_extended import (
     JWTManager, jwt_required, get_jwt_identity, create_access_token
 )
 
-from flask_cors import CORS
+from app_py.Managers.ConfigManager import ConfigManager
+from app_py.Managers.LogManager import LogManager
+from app_py.Managers.DbManager import DbManager
+from app_py.Managers.UserManager import UserManager
+from app_py.Managers.TableManager import TableManager
+from app_py.Managers.ProductManager import ProductManager
 
-from app.Managers.ConfigManager import ConfigManager
-from app.Managers.LogManager import LogManager
-from app.Managers.DbManager import DbManager
-from app.Managers.UnitsManager import UnitsManager
-from app.Managers.PromotionManager import PromotionManager
-from app.Managers.TagManager import TagManager
-from app.Managers.CategoryManager import CategoryManager
-from app.Managers.ProductManager import ProductManager
-from app.Models.UserModel import UserModel
-from app.AppModels.ResultModel import Result
+import app_py.DbModels
+
+from flask_cors import CORS
 
 DIR = os.path.dirname(__file__)
 
 config = ConfigManager(DIR)
 log = LogManager(config)
+db = DbManager(config, log)
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -41,152 +39,62 @@ def before_request():
 
 @app.route("/api/login", methods=['POST'])
 def login():
-    db = None
-    result = Result()
-    try:
-        username, password = request.json["username"], request.json["password"]
-
-        if not username or not password:
-            raise Exception("Missing username and password")
-
-        db = DbManager(config, log)
-        user = db.session.query(UserModel).filter_by(username=username).first()
-
-        if not user:
-            raise Exceptions.InvalidCredentialsException("User not found")
-
-        if not user.check_password(password):
-            raise Exceptions.InvalidCredentialsException("Invalid password")
-
-        expires = timedelta(days=config.app_config.user_expire)
-        access_token = create_access_token(identity=username, expires_delta=expires)
-
-        result.data = {
-            "username": user.username,
-            "token": access_token,
-        }
-
-        log.info(f"User: {user.username} logged in successfully.")
-
-    except Exceptions.InvalidCredentialsException as e:
-        msg = str(e)
-        log.error(msg)
-        result = Result(msg=msg, status=401)
-    except Exception as e:
-        msg = str(e)
-        log.error(msg)
-        result = Result(msg=msg, status=500)
-    finally:
-        if db is not None and db.session:
-            db.session.close()
-
+    manager = UserManager(config, log, db)
+    result = manager.login(request.json())
     return jsonify(result.to_dict()), result.status
 
 @app.route("/api/check_jwt", methods=["GET"])
 @jwt_required()
 def check_jwt():
-    db = None
-    result = Result()
-    try:
-        db = DbManager(config, log)
-        user = db.session.query(UserModel).filter_by(username=get_jwt_identity()).first()
-
-        if not user:
-            raise Exception("User not found")
-
-        result.data = {
-            "username": user.username
-        }
-
-        log.info(f"User: {user.username}, checked JWT successfully.")
-
-    except Exception as e:
-        msg = str(e)
-        log.error(msg)
-        result = Result(msg=msg, status=400)
-    finally:
-        if db is not None and db.session:
-            db.session.close()
-
+    manager = UserManager(config, log, db)
+    result = manager.check_jwt(username=get_jwt_identity())
     return jsonify(result.to_dict()), result.status
-
-def request_handler(manager, req):
-    result = Result()
-    try:
-        if req.method == "GET":
-            result = manager.get()
-        elif req.method == "POST":
-            data = request.form.to_dict() if request.form else {}
-            data = {key: value for key, value in data.items() if value != "null" and value != ""}
-            files = [file for key in request.files for file in request.files.getlist(key)]
-            result = manager.update(data, files) if "id" in data else manager.create(data, files)
-        elif req.method == "PUT":
-            data = req.get_json()
-            data = {key: value for key, value in data.items() if value != "null" and value != ""}
-            result = manager.update(data)
-        elif req.method == "DELETE":
-            data = req.get_json()
-            data = {key: value for key, value in data.items() if value != "null" and value != ""}
-            result = manager.delete(data)
-        else:
-            pass
-
-    except Exceptions.InvalidCredentialsException as e:
-        msg = str(e)
-        log.error(msg)
-        result = Result(msg=msg, status=401)
-    except Exception as e:
-        msg = str(e)
-        log.error(msg)
-        result = Result(msg=msg, status=400)
-
-    return result
 
 
 @app.route("/api/units", methods=["POST", "GET", "PUT", "DELETE"])
 @jwt_required()
 def handle_units():
-    manager = UnitsManager(config, log)
-    result = request_handler(manager, request)
+    manager = TableManager(config, log, db, app_py.DbModels.UnitsModel)
+    result = manager.handle_request(request)
     return jsonify(result.to_dict()), result.status
 
 @app.route("/api/promotion", methods=["POST", "GET", "PUT", "DELETE"])
 @jwt_required()
 def handle_promotion():
-    manager = PromotionManager(config, log)
-    result = request_handler(manager, request)
+    manager = TableManager(config, log, db, app_py.DbModels.PromotionModel)
+    result = manager.handle_request(request)
     return jsonify(result.to_dict()), result.status
 
 @app.route("/api/tag", methods=["POST", "GET", "PUT", "DELETE"])
 @jwt_required()
 def handle_tag():
-    manager = TagManager(config, log)
-    result = request_handler(manager, request)
+    manager = TableManager(config, log, db, app_py.DbModels.TagModel)
+    result = manager.handle_request(request)
     return jsonify(result.to_dict()), result.status
 
 @app.route("/api/category", methods=["POST", "GET", "PUT", "DELETE"])
 @jwt_required()
 def handle_category():
-    manager = CategoryManager(config, log)
-    result = request_handler(manager, request)
+    manager = TableManager(config, log, db, app_py.DbModels.CategoryModel)
+    result = manager.handle_request(request)
     return jsonify(result.to_dict()), result.status
 
 @app.route("/api/product", methods=["POST", "GET", "PUT", "DELETE"])
 @jwt_required()
 def handle_product():
-    manager = ProductManager(config, log)
-    result = request_handler(manager, request)
+    manager = ProductManager(config, log, db)
+    result = manager.handle_request(request)
     return jsonify(result.to_dict()), result.status
 
-@app.route("/api/delete_file", methods=["POST"])
-@jwt_required()
-def handle_delete_file():
-    result = Result()
-    data = request.get_json()
-    log.debug(data)
-    return jsonify(result.to_dict()), result.status
+# @app.route("/api/delete_file", methods=["POST"])
+# @jwt_required()
+# def handle_delete_file():
+#     result = Result()
+#     data = request.get_json()
+#     log.debug(data)
+#     return jsonify(result.to_dict()), result.status
 
 
-@app.route("/api/test", methods=["POST", "GET", "PUT", "DELETE"])
-def test():
-    return jsonify({"newresult": True}), 200
+# @app.route("/api/test", methods=["POST", "GET", "PUT", "DELETE"])
+# def test():
+#     return jsonify({"newresult": True}), 200
