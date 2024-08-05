@@ -15,11 +15,15 @@ APP_PATH="/var/www/html/babyroom"
 BACKEND_PATH="$APP_PATH/backend"
 INFRA_PATH="$BACKEND_PATH/infra"
 
-# RENEW APP DIR
-#if [ -d $APP_PATH ]; then
-#  sudo rm -rf $APP_PATH
-#fi
-#sudo mkdir -p $APP_PATH
+if [ ! -d "$BACKEND_PATH/logs" ]; then
+  sudo mkdir "$BACKEND_PATH/logs"
+fi
+if [ ! -d "$BACKEND_PATH/images" ]; then
+  sudo mkdir "$BACKEND_PATH/images"
+fi
+if [ ! -d "$BACKEND_PATH/images/products" ]; then
+  sudo mkdir "$BACKEND_PATH/images/products"
+fi
 
 sudo chmod -R 777 $APP_PATH
 
@@ -34,9 +38,10 @@ sudo apt-get install -y libncursesw5-dev libssl-dev \
 # PYTHON
 sudo apt-get install -y python3-dev
 sudo apt install -y python3-venv
+sudo apt install -y python3-pip
 python3 -m venv "$BACKEND_PATH/venv"
 . "$BACKEND_PATH/venv/bin/activate"
-pip install -r "$BACKEND_PATH/requirements-prod.txt"
+pip install -r "$BACKEND_PATH/requirements.txt"
 deactivate
 
 # NGINX
@@ -45,6 +50,7 @@ sudo ufw allow 'Nginx Full'
 sudo mv "/var/www/html/babyroom/backend/infra/nginx/babyroom" "/etc/nginx/sites-available/babyroom"
 sudo ln -s /etc/nginx/sites-available/babyroom /etc/nginx/sites-enabled/
 sudo nginx -t
+sudo chown -R www-data:www-data /var/www/html/babyroom/backend
 sudo systemctl reload nginx
 sudo systemctl restart nginx
 
@@ -66,18 +72,10 @@ sudo mysql -e "CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASS'
 sudo mysql -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%' WITH GRANT OPTION;"
 sudo mysql -e "FLUSH PRIVILEGES;"
 
-. "$BACKEND_PATH/venv/bin/activate"
-python "$BACKEND_PATH/create_db.py"
-python "$BACKEND_PATH/create_user.py"
-deactivate
-
-
-
-
-
-
-# FOR NGINX
-sudo chown -R www-data:www-data /var/www/html/babyroom/backend
+#. "$BACKEND_PATH/venv/bin/activate"
+#python "$BACKEND_PATH/create_db.py"
+#python "$BACKEND_PATH/create_user.py"
+#deactivate
 
 ## IF DNS SERVER LOST
 ## sudo nano /etc/resolv.conf

@@ -43,11 +43,12 @@ const App = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path={"/"} element={<Home />} />
-                <Route path={"/catalog"} element={<Catalog />} />
-                <Route path={"/looks"} element={<Looks />} />
-                <Route path={"/sales"} element={<Sales />} />
-                <Route path={"/info"} element={<Info />} />
+                {/*<Route path={"/"} element={<Home />} />*/}
+                <Route path={"/"} element={<Catalog isLoggedIn={isLoggedIn} />} />
+                <Route path={"/catalog"} element={<Catalog isLoggedIn={isLoggedIn} />} />
+                {/*<Route path={"/looks"} element={<Looks />} />*/}
+                {/*<Route path={"/sales"} element={<Sales />} />*/}
+                {/*<Route path={"/info"} element={<Info />} />*/}
                 <Route path={"/cart"} element={<Cart />} />
                 <Route path={"/login"} element={<LoginPage apiManager={apiManager} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
                 <Route path={"/admin"} element={<AdminPage apiManager={apiManager} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />

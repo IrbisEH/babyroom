@@ -5,7 +5,7 @@ import { IoChevronBackOutline, IoMenu } from "react-icons/io5";
 import logo from "../../static/media/logo.png"
 import "./Navbar.css";
 
-const Navbar = ({ isMobile }) => {
+const Navbar = ({ isMobile, isLoggedIn }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -22,9 +22,9 @@ const Navbar = ({ isMobile }) => {
     const menuItems = [
         // {id: "main", name: "Главная", to: "/"},
         {id: "catalog", name: "Каталог", to: "/catalog"},
-        {id: "looks", name: "Образы", to: "/looks"},
-        {id: "sales", name: "Скидки", to: "/sales"},
-        {id: "info", name: "Инфо", to: "/info"},
+        // {id: "looks", name: "Образы", to: "/looks"},
+        // {id: "sales", name: "Скидки", to: "/sales"},
+        // {id: "info", name: "Инфо", to: "/info"},
     ]
 
     const renderNavList = () => {
