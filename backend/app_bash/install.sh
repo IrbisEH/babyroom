@@ -72,6 +72,8 @@ sudo mysql -e "CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASS'
 sudo mysql -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%' WITH GRANT OPTION;"
 sudo mysql -e "FLUSH PRIVILEGES;"
 
+sudo chmod -R 777 $APP_PATH
+
 #. "$BACKEND_PATH/venv/bin/activate"
 #python "$BACKEND_PATH/create_db.py"
 #python "$BACKEND_PATH/create_user.py"

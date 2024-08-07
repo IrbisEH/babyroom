@@ -79,17 +79,12 @@ class TagManager {
 			.catch(error => console.error(error));
 		};
 
-		this.Save = (Data) => {
-
-			let method = "POST";
-
-			if(Data instanceof FormData && Data.get("id"))
-				method = "PUT";
-
+		this.Save = (Model) => {
+			let method = Model.id ? "PUT" : "POST";
 			this.apiManager.SendRequest({
 				method: method,
 				endpoint: "/tag",
-				data: Data
+				data: Model
 			})
 			.then(response => {
 				if(response.data)

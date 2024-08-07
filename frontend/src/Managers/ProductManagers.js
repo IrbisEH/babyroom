@@ -16,7 +16,7 @@ class ProductManagers {
 		this.dataSetter = Params.dataSetter;
 
 		this.unitsData = Params.unitsData;
-		this.promoData = Params.promoData;
+		this.ruleData = Params.ruleData;
 		this.tagData = Params.tagData;
 		this.categoryData = Params.categoryData;
 
@@ -101,48 +101,67 @@ class ProductManagers {
 					)
 				}
 			},
-			{
-				id: "promotion_id",
-				name: "Промо",
-				cell: row => {
-					let find = this.promoData.find(item => item.id === row.promotion_id);
-					return find && find.rule ? find.rule : null;
-				}
-			},
+			// {
+			// 	id: "product_rules",
+			// 	name: "правила продуктов",
+			// 	cell: row => {
+			// 		let rules_id = row.product_rules ? row.product_rules : [];
+			// 		let tags_names = [];
+			// 		tags_ids.forEach(tag_id => {
+			// 			let find = this.tagData.find(item => parseInt(item.id) === parseInt(tag_id));
+			// 			if(find && find.name)
+			// 				tags_names.push(find.name)
+			// 		});
+			// 		let els = tags_names.map((name, idx) => <div key={this.Id + "TagCell" + idx}>{name}</div>);
+			// 		let cellEls = els;
+			//
+			// 		if(els.length > 2)
+			// 		{
+			// 			cellEls = els.slice(0, 2);
+			// 			cellEls.push(<div key={this.Id + "TagCell empty"}>...</div>)
+			// 		}
+			//
+			// 		return (
+			// 			<CellTooltip
+			// 				cellEls={cellEls}
+			// 				tooltipEls={els}
+			// 			/>
+			// 		)
+			// 	}
+			// },
 			{
 				id: "price",
 				name: "Цена",
 				selector: row => row.price,
 			},
-			{
-				id: "tags",
-				name: "теги",
-				cell: row => {
-					// let tags_ids = row.tags ? row.tags.split(',') : [];
-					let tags_ids = row.tags ? row.tags : [];
-					let tags_names = [];
-					tags_ids.forEach(tag_id => {
-						let find = this.tagData.find(item => parseInt(item.id) === parseInt(tag_id));
-						if(find && find.name)
-							tags_names.push(find.name)
-					});
-					let els = tags_names.map((name, idx) => <div key={this.Id + "TagCell" + idx}>{name}</div>);
-					let cellEls = els;
-
-					if(els.length > 2)
-					{
-						cellEls = els.slice(0, 2);
-						cellEls.push(<div key={this.Id + "TagCell empty"}>...</div>)
-					}
-
-					return (
-						<CellTooltip
-							cellEls={cellEls}
-							tooltipEls={els}
-						/>
-					)
-				}
-			},
+			// {
+			// 	id: "tags",
+			// 	name: "теги",
+			// 	cell: row => {
+			// 		let tags_ids = row.tags ? row.tags : [];
+			// 		let tags_names = [];
+			// 		tags_ids.forEach(tag_id => {
+			// 			let find = this.tagData.find(item => parseInt(item.id) === parseInt(tag_id));
+			// 			if(find && find.name)
+			// 				tags_names.push(find.name)
+			// 		});
+			// 		let els = tags_names.map((name, idx) => <div key={this.Id + "TagCell" + idx}>{name}</div>);
+			// 		let cellEls = els;
+			//
+			// 		if(els.length > 2)
+			// 		{
+			// 			cellEls = els.slice(0, 2);
+			// 			cellEls.push(<div key={this.Id + "TagCell empty"}>...</div>)
+			// 		}
+			//
+			// 		return (
+			// 			<CellTooltip
+			// 				cellEls={cellEls}
+			// 				tooltipEls={els}
+			// 			/>
+			// 		)
+			// 	}
+			// },
 			{
 				id: "product_card",
 				cell: row => {
@@ -178,7 +197,7 @@ class ProductManagers {
 			{id:"description", label:"Описание", type:"text", required:true},
 			{id:"category_id", label:"Категория", type:"select", options:this.categoryData, with_empty:true, required:false},
 			{id:"units_id", label:"Размеры", type:"select", options:this.unitsData, with_empty:true, required:false},
-			{id:"promotion_id", label:"Промо", type:"select", options:this.promoData, with_empty:true, required:false},
+			{id:"product_rules", label:"Правило", type:"multiselect", options:this.ruleData, required:false},
 			{id:"tags", label:"Теги", type:"multiselect", options:this.tagData, required:false},
 			{id:"price", label:"Цена", type:"text", required:true},
 			{id:"img_identifiers", label:"загруженные", type:"files"},
@@ -194,13 +213,10 @@ class ProductManagers {
 			model.description = Params && Params.description ? Params.description : null;
 			model.category_id = Params && Params.category_id ? parseInt(Params.category_id) : null;
 			model.units_id = Params && Params.units_id ? parseInt(Params.units_id) : null;
-			model.product_rules = Params && Params.product_rules ? parseInt(Params.product_rules) : [];
+			model.product_rules = Params && Params.product_rules ? Params.product_rules : [];
 			model.price = Params && Params.price ? parseInt(Params.price) : null;
-			model.tags = Params && Params.tags ? Params.tags : null;
+			model.tags = Params && Params.tags ? Params.tags : [];
 			model.img_identifiers = Params && Params.img_identifiers ? Params.img_identifiers : []
-
-			if(typeof model.img_identifiers === "string")
-				model.img_identifiers = model.img_identifiers.split(",")
 
 			return model;
 		};
@@ -232,17 +248,12 @@ class ProductManagers {
 			.catch(error => console.error(error));
 		};
 
-		this.Save = (Data) => {
-
-			let method = "POST";
-
-			if(Data instanceof FormData && Data.get("id"))
-				method = "PUT";
-
+		this.Save = (Model) => {
+			let method = Model.id ? "PUT" : "POST";
 			this.apiManager.SendRequest({
 				method: method,
 				endpoint: "/product",
-				data: Data
+				data: Model
 			})
 			.then(response => {
 				if(response.data)
@@ -283,6 +294,7 @@ class ProductManagers {
 		}
 
 		this.Delete = (Model) => {
+			console.log(Model)
 			this.apiManager.SendRequest({
 				method: "DELETE",
 				endpoint: "/product",

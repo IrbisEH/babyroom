@@ -80,7 +80,7 @@ class ProductRuleModel(Base):
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = Column(String(255), unique=True, nullable=False)
 
-    associated_products: Mapped[List["ProductModel"]] = relationship("ProductModel", secondary=product_product_rule_association, back_populates="product_rule")
+    associated_products: Mapped[List["ProductModel"]] = relationship("ProductModel", secondary=product_product_rule_association, back_populates="product_rules")
 
 
 product_tag_association = Table(
@@ -107,19 +107,20 @@ class ProductModel(Base):
     description: Mapped[str] = Column(Text)
     category_id: Mapped[int] = Column(Integer, ForeignKey('categories.id'))
     units_id: Mapped[int] = Column(Integer, ForeignKey('units.id'))
-    product_rules: Mapped[List[TagModel]] = relationship(secondary=product_product_rule_association, back_populates="associated_products")
     price: Mapped[float] = Column(Float, nullable=False)
-    tags: Mapped[List[TagModel]] = relationship(secondary=product_tag_association, back_populates="associated_products")
     img_identifiers: Mapped[str] = Column(String(2048), nullable=True)
 
+    tags: Mapped[List[TagModel]] = relationship(secondary=product_tag_association, back_populates="associated_products")
+    product_rules: Mapped[List[ProductRuleModel]] = relationship(secondary=product_product_rule_association, back_populates="associated_products")
+
     category: Mapped[CategoryModel] = relationship(CategoryModel, backref='products')
-    unit: Mapped[UnitsModel] = relationship(UnitsModel, backref='products')
-    promotion: Mapped[ProductRuleModel] = relationship(ProductRuleModel, backref='products')
+    units: Mapped[UnitsModel] = relationship(UnitsModel, backref='products')
 
     def serialize(self, exclude=None):
-        exclude = exclude or ["associated_products"]
+        exclude = exclude or ["associated_products", "products"]
         data = super().serialize(exclude)
-        data["img_identifiers"] = data["img_identifiers"].split(",") if data["img_identifiers"] else None
+        data["product_rules"] = [item["id"] for item in data["product_rules"]]
+        data["tags"] = [item["id"] for item in data["tags"]]
         return data
 
 

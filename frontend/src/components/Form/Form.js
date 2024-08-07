@@ -257,6 +257,8 @@ const Form = ({ formConfig, formInitialState, onSubmit }) => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
+        onSubmit(formState)
+
         // const formData = new FormData();
         //
     	// Object.keys(formState).forEach(key => {

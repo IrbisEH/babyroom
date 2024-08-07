@@ -68,8 +68,10 @@ const AdminTable = ({ Manager }) => {
 		setIsFormOpen(true);
 	}
 
-	const handleFormData = (formData) => {
-		Manager.Save(formData);
+	const handleFormData = (Data) => {
+		console.log(Data)
+		let model = Manager.GetModel(Data);
+		Manager.Save(model);
 		setIsFormOpen(false);
 	}
 

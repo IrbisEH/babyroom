@@ -78,6 +78,13 @@ def handle_category():
     result = manager.handle_request(request)
     return jsonify(result.to_dict()), result.status
 
+@app.route("/api/product_rule", methods=["POST", "GET", "PUT", "DELETE"])
+@jwt_required()
+def handle_product_rules():
+    manager = TableManager(config, log, db, app_py.DbModels.ProductRuleModel)
+    result = manager.handle_request(request)
+    return jsonify(result.to_dict()), result.status
+
 @app.route("/api/product", methods=["POST", "GET", "PUT", "DELETE"])
 @jwt_required()
 def handle_product():

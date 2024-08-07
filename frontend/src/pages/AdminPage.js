@@ -23,7 +23,7 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
     }
 
     const [unitsData, setUnitsData] = useState([]);
-    const [promoData, setPromoData] = useState([]);
+    const [ruleData, setRuleData] = useState([]);
     const [tagData, setTagData] = useState([]);
     const [categoryData, setCategoryData] = useState([]);
     const [productData, setProductData] = useState([]);
@@ -34,10 +34,10 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
         dataSetter: setUnitsData
     });
 
-    const promotionManager = new ProductRuleManager({
+    const productRuleManager = new ProductRuleManager({
         apiManager: apiManager,
-        data: promoData,
-        dataSetter: setPromoData
+        data: ruleData,
+        dataSetter: setRuleData
     });
 
     const tagManager = new TagManager({
@@ -57,7 +57,7 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
         data: productData,
         dataSetter: setProductData,
         unitsData: unitsData,
-        promoData: promoData,
+        ruleData: ruleData,
         tagData: tagData,
         categoryData: categoryData
     });
@@ -66,7 +66,7 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
         if(isLoggedIn)
         {
             unitsManager.Get();
-            promotionManager.Get();
+            productRuleManager.Get();
             tagManager.Get();
             categoryManager.Get();
             productManager.Get();
@@ -87,7 +87,7 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
                         Manager={unitsManager}
                     />
                     <AdminTable
-                        Manager={promotionManager}
+                        Manager={productRuleManager}
                     />
                     <AdminTable
                         Manager={tagManager}

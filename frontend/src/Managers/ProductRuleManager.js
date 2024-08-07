@@ -9,7 +9,7 @@ class ProductRuleManager {
 		this.tableName = "Правила продуктов";
 
 		this.apiManager = Params.apiManager;
-		this.data = Params.data;
+		this.data = Params.ruleData;
 		this.dataSetter = Params.dataSetter;
 
 		this.handleEditBtnClick = null;
@@ -34,7 +34,7 @@ class ProductRuleManager {
 			{
 				id: "rule",
 				name: "Правило",
-				selector: row => row.rule
+				selector: row => row.name
 			},
 			{
 				id: "trash",
@@ -72,6 +72,7 @@ class ProductRuleManager {
 			.then(response => {
 					if(response.data)
 					{
+						console.log(response.data);
 						let data = response.data.map(item => this.GetModel(item));
 						this.dataSetter(prevData => data.concat(prevData));
 					}
@@ -79,17 +80,13 @@ class ProductRuleManager {
 			.catch(error => console.error(error));
 		};
 
-		this.Save = (Data) => {
-
-			let method = "POST";
-
-			if(Data instanceof FormData && Data.get("id"))
-				method = "PUT";
-
+		this.Save = (Model) => {
+			let method = Model.id ? "PUT" : "POST";
+			Model.img_identifiers = Model.img_identifiers ? Model.img_identifiers.join(",") : null;
 			this.apiManager.SendRequest({
 				method: method,
 				endpoint: "/product_rule",
-				data: Data
+				data: Model
 			})
 			.then(response => {
 				if(response.data)
