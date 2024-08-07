@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import AdminTable from "../components/AdminTable/AdminTable";
 import UnitsManager from "../Managers/UnitsManager";
-import PromotionManager from "../Managers/PromotionManager";
+import ProductRuleManager from "../Managers/ProductRuleManager";
 import TagManager from "../Managers/TagManager";
 import CategoryManager from "../Managers/CategoryManager"
 import ProductManager from "../Managers/ProductManagers"
@@ -34,7 +34,7 @@ const AdminPage = ({ apiManager, isLoggedIn, setIsLoggedIn }) => {
         dataSetter: setUnitsData
     });
 
-    const promotionManager = new PromotionManager({
+    const promotionManager = new ProductRuleManager({
         apiManager: apiManager,
         data: promoData,
         dataSetter: setPromoData

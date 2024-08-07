@@ -68,10 +68,6 @@ class DbManager:
             msg = str(e)
             self.log_manager.error(msg)
 
-    # def check_tables(self):
-    #     defined_tables = app_py.DbModels.Base.metadata.tables.keys()
-    #     print(defined_tables)
-
     def drop_tables(self):
         try:
             if self.session is None:

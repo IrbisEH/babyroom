@@ -1,9 +1,8 @@
 import os
-from datetime import timedelta
 
 from flask import Flask, request, jsonify
 from flask_jwt_extended import (
-    JWTManager, jwt_required, get_jwt_identity, create_access_token
+    JWTManager, jwt_required, get_jwt_identity
 )
 
 from app_py.Managers.ConfigManager import ConfigManager
@@ -40,7 +39,7 @@ def before_request():
 @app.route("/api/login", methods=['POST'])
 def login():
     manager = UserManager(config, log, db)
-    result = manager.login(request.json())
+    result = manager.login(request.get_json())
     return jsonify(result.to_dict()), result.status
 
 @app.route("/api/check_jwt", methods=["GET"])
@@ -61,7 +60,7 @@ def handle_units():
 @app.route("/api/promotion", methods=["POST", "GET", "PUT", "DELETE"])
 @jwt_required()
 def handle_promotion():
-    manager = TableManager(config, log, db, app_py.DbModels.PromotionModel)
+    manager = TableManager(config, log, db, app_py.DbModels.ProductRuleModel)
     result = manager.handle_request(request)
     return jsonify(result.to_dict()), result.status
 
@@ -95,6 +94,6 @@ def handle_product():
 #     return jsonify(result.to_dict()), result.status
 
 
-# @app.route("/api/test", methods=["POST", "GET", "PUT", "DELETE"])
-# def test():
-#     return jsonify({"newresult": True}), 200
+@app.route("/api/test", methods=["POST", "GET", "PUT", "DELETE"])
+def test():
+    return jsonify({"result": True}), 200

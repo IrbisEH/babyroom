@@ -98,8 +98,14 @@ class CategoryManager {
 		};
 
 		this.Save = (Data) => {
+
+			let method = "POST";
+
+			if(Data instanceof FormData && Data.get("id"))
+				method = "PUT";
+
 			this.apiManager.SendRequest({
-				method: "POST",
+				method: method,
 				endpoint: "/category",
 				data: Data
 			})

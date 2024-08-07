@@ -116,8 +116,14 @@ class UnitsManager {
 		};
 
 		this.Save = (Data) => {
+
+			let method = "POST";
+
+			if(Data instanceof FormData && Data.get("id"))
+				method = "PUT";
+
 			this.apiManager.SendRequest({
-				method: "POST",
+				method: method,
 				endpoint: "/units",
 				data: Data
 			})

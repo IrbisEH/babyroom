@@ -19,12 +19,29 @@ class TableManager:
     def handle_request(self, api_request):
         result = Result().get_error("Invalid Request")
 
-        if api_request.method in self.methods:
-            data = api_request.form.to_dict() if api_request.form else {}
-            data = {key: value for key, value in data.items() if value != "null" and value != ""}
-            files = [file for key in api_request.files for file in api_request.files.getlist(key)]
+        params = {
+            "data": None,
+            "files": None
+        }
 
-            params = {"data": data, "files": files}
+        if api_request.method in self.methods.keys():
+
+            if api_request.method in ["GET"]:
+                params["data"] = None
+
+            if api_request.method in ["POST", "PUT"]:
+
+                if api_request.form:
+                    params["data"] = api_request.form.to_dict()
+                else:
+                    params["data"] = api_request.get_json()
+
+                params["data"] = {key: value for key, value in params["data"].items() if
+                                  value != "null" and value != ""}
+                params["file"] = [file for key in api_request.files for file in api_request.files.getlist(key)]
+
+            if api_request.method in ["DELETE"]:
+                params["data"] = api_request.get_json()
 
             result = self.methods[api_request.method](params)
 
@@ -35,7 +52,7 @@ class TableManager:
 
     def get(self, params=None):
         result = Result()
-        filter_params = params["filter"] if params and "filter" in params else None
+        filter_params = params["data"] if params and "data" in params else None
         try:
             query = self.db.session.query(self.db_model)
 
@@ -99,6 +116,8 @@ class TableManager:
 
             self.log.debug(f"Update model. Table: {self.db_model.__tablename__} Obj: {model.serialize()}")
 
+            result.get_ok(model.serialize())
+
         except Exception as e:
             self.db.session.rollback()
             msg = str(e)
@@ -112,6 +131,7 @@ class TableManager:
     def delete(self, params=None):
         result = Result()
         data = params["data"] if "data" in params else {}
+
         try:
             if "id" not in data or data["id"] is None:
                 raise Exception("Missing entry id")

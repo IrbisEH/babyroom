@@ -118,7 +118,8 @@ class ProductManagers {
 				id: "tags",
 				name: "теги",
 				cell: row => {
-					let tags_ids = row.tags ? row.tags.split(',') : [];
+					// let tags_ids = row.tags ? row.tags.split(',') : [];
+					let tags_ids = row.tags ? row.tags : [];
 					let tags_names = [];
 					tags_ids.forEach(tag_id => {
 						let find = this.tagData.find(item => parseInt(item.id) === parseInt(tag_id));
@@ -147,7 +148,7 @@ class ProductManagers {
 				cell: row => {
 					let res = "";
 
-					if(row && row.images.length)
+					if(row && row.img_identifiers.length)
 					{
 						res = (
 							<div onClick={(event) => this.handleProductCardOpen && this.handleProductCardOpen(event, row)}>
@@ -177,10 +178,10 @@ class ProductManagers {
 			{id:"description", label:"Описание", type:"text", required:true},
 			{id:"category_id", label:"Категория", type:"select", options:this.categoryData, with_empty:true, required:false},
 			{id:"units_id", label:"Размеры", type:"select", options:this.unitsData, with_empty:true, required:false},
-			// {id:"promotion_id", label:"Промо", type:"select", options:this.promoData, with_empty:true, required:false},
+			{id:"promotion_id", label:"Промо", type:"select", options:this.promoData, with_empty:true, required:false},
 			{id:"tags", label:"Теги", type:"multiselect", options:this.tagData, required:false},
 			{id:"price", label:"Цена", type:"text", required:true},
-			{id:"images", label:"загруженные", type:"files"},
+			{id:"img_identifiers", label:"загруженные", type:"files"},
 			{id:"files_to_add", label:"Изображения", type:"upload_files", required:true},
 		]
 
@@ -193,13 +194,13 @@ class ProductManagers {
 			model.description = Params && Params.description ? Params.description : null;
 			model.category_id = Params && Params.category_id ? parseInt(Params.category_id) : null;
 			model.units_id = Params && Params.units_id ? parseInt(Params.units_id) : null;
-			model.promotion_id = Params && Params.promotion_id ? parseInt(Params.promotion_id) : null;
+			model.product_rules = Params && Params.product_rules ? parseInt(Params.product_rules) : [];
 			model.price = Params && Params.price ? parseInt(Params.price) : null;
 			model.tags = Params && Params.tags ? Params.tags : null;
-			model.images = Params && Params.images ? Params.images : []
+			model.img_identifiers = Params && Params.img_identifiers ? Params.img_identifiers : []
 
-			if(typeof model.images === "string")
-				model.images = model.images.split(",")
+			if(typeof model.img_identifiers === "string")
+				model.img_identifiers = model.img_identifiers.split(",")
 
 			return model;
 		};
@@ -211,7 +212,7 @@ class ProductManagers {
 		this.GetProductCardModel = (Params) => {
 			let model = {};
 
-			model.images = Params && Params.images ? Params.images : []
+			model.img_identifiers = Params && Params.img_identifiers ? Params.img_identifiers : []
 
 			return model;
 		}
@@ -232,8 +233,14 @@ class ProductManagers {
 		};
 
 		this.Save = (Data) => {
+
+			let method = "POST";
+
+			if(Data instanceof FormData && Data.get("id"))
+				method = "PUT";
+
 			this.apiManager.SendRequest({
-				method: "POST",
+				method: method,
 				endpoint: "/product",
 				data: Data
 			})

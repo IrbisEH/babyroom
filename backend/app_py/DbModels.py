@@ -68,11 +68,19 @@ class CategoryModel(Base):
     description: Mapped[str] = Column(Text, nullable=True)
 
 
-class PromotionModel(Base):
-    __tablename__ = "promotion"
+product_product_rule_association = Table(
+    'product_product_rule_association', Base.metadata,
+    Column('product_id', Integer, ForeignKey('products.id')),
+    Column('product_rule', Integer, ForeignKey('product_rules.id'))
+)
+
+class ProductRuleModel(Base):
+    __tablename__ = "product_rules"
 
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
-    rule: Mapped[str] = Column(String(255), unique=True, nullable=False)
+    name: Mapped[str] = Column(String(255), unique=True, nullable=False)
+
+    associated_products: Mapped[List["ProductModel"]] = relationship("ProductModel", secondary=product_product_rule_association, back_populates="product_rule")
 
 
 product_tag_association = Table(
@@ -99,19 +107,19 @@ class ProductModel(Base):
     description: Mapped[str] = Column(Text)
     category_id: Mapped[int] = Column(Integer, ForeignKey('categories.id'))
     units_id: Mapped[int] = Column(Integer, ForeignKey('units.id'))
-    promotion_id: Mapped[int] = Column(Integer, ForeignKey('promotion.id'))
+    product_rules: Mapped[List[TagModel]] = relationship(secondary=product_product_rule_association, back_populates="associated_products")
     price: Mapped[float] = Column(Float, nullable=False)
     tags: Mapped[List[TagModel]] = relationship(secondary=product_tag_association, back_populates="associated_products")
-    images: Mapped[str] = Column(String(2048), nullable=True)
+    img_identifiers: Mapped[str] = Column(String(2048), nullable=True)
 
     category: Mapped[CategoryModel] = relationship(CategoryModel, backref='products')
     unit: Mapped[UnitsModel] = relationship(UnitsModel, backref='products')
-    promotion: Mapped[PromotionModel] = relationship(PromotionModel, backref='products')
+    promotion: Mapped[ProductRuleModel] = relationship(ProductRuleModel, backref='products')
 
     def serialize(self, exclude=None):
         exclude = exclude or ["associated_products"]
         data = super().serialize(exclude)
-        data["images"] = data["images"].split(",") if data["images"] else None
+        data["img_identifiers"] = data["img_identifiers"].split(",") if data["img_identifiers"] else None
         return data
 
 

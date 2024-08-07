@@ -69,11 +69,6 @@ const AdminTable = ({ Manager }) => {
 	}
 
 	const handleFormData = (formData) => {
-
-		for (const [key, value] of formData.entries()) {
-			console.log(`${key}: ${value}`);
-		}
-
 		Manager.Save(formData);
 		setIsFormOpen(false);
 	}

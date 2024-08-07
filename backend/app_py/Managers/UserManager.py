@@ -1,9 +1,11 @@
+from datetime import timedelta
+from flask_jwt_extended import create_access_token
+
 from ..AppModels.ResultModel import Result
 from ..DbModels import UserModel
 
-from flask_jwt_extended import (
-    JWTManager, jwt_required, get_jwt_identity, create_access_token
-)
+from ..Exceptions import InvalidCredentialsException
+
 
 class UserManager:
     def __init__(self, config, log, db):
@@ -14,71 +16,67 @@ class UserManager:
 
         self.db.connect()
 
-    def login(self, request):
+    def login(self, data):
         result = Result()
-        username, password = request.json["username"], request.json["password"]
-
-        if not username or not password:
-            raise Exception("Missing username and password")
-
-        db = DbManager(config, log)
-        user = db.session.query(UserModel).filter_by(username=username).first()
-
         try:
-            result = UserManager.login(request)
+            username, password = data["username"], data["password"]
 
-            if not user:
-                raise Exceptions.InvalidCredentialsException("User not found")
+            if not username or not password:
+                raise Exception("Missing username and password")
+
+            user = self.db.session.query(UserModel).filter_by(username=username).first()
+
+            if user is None:
+                raise InvalidCredentialsException(f"Username: {username} not found")
 
             if not user.check_password(password):
-                raise Exceptions.InvalidCredentialsException("Invalid password")
+                raise InvalidCredentialsException("Invalid password")
 
-            expires = timedelta(days=config.app_config.user_expire)
+            expires = timedelta(days=self.config.app_config.user_expire)
             access_token = create_access_token(identity=username, expires_delta=expires)
 
-            result.data = {
+            self.log.debug(f"For user: {user.username} created access token.")
+
+            result.get_ok({
                 "username": user.username,
                 "token": access_token,
-            }
+            })
 
-            log.info(f"User: {user.username} logged in successfully.")
-
-        except Exceptions.InvalidCredentialsException as e:
+        except InvalidCredentialsException as e:
             msg = str(e)
-            log.error(msg)
-            result = Result(msg=msg, status=401)
+            self.log.error(msg)
+            result.get_error(msg=msg, status=401)
         except Exception as e:
             msg = str(e)
-            log.error(msg)
-            result = Result(msg=msg, status=500)
+            self.log.error(msg)
+            result.get_error(msg=msg, status=500)
         finally:
-            if db is not None and db.session:
-                db.session.close()
+            self.db.disconnect()
 
         return result
 
     def check_jwt(self, username=None):
-        db = None
         result = Result()
         try:
-            db = DbManager(config, log)
-            user = db.session.query(UserModel).filter_by(username=get_jwt_identity()).first()
+            if username is None:
+                raise Exception("Missing username")
 
-            if not user:
+            user = self.db.session.query(UserModel).filter_by(username=username).first()
+
+            if user is None:
                 raise Exception("User not found")
 
-            result.data = {
-                "username": user.username
-            }
+            self.log.debug(f"User: {user.username}, checked JWT successfully.")
 
-            log.info(f"User: {user.username}, checked JWT successfully.")
+            result.get_ok({
+                "username": user.username
+            })
 
         except Exception as e:
             msg = str(e)
-            log.error(msg)
-            result = Result(msg=msg, status=400)
+            self.log.error(msg)
+            result.get_error(msg=msg, status=400)
         finally:
-            if db is not None and db.session:
-                db.session.close()
+            self.db.disconnect()
 
-        return jsonify(result.to_dict()), result.status
+        return result

@@ -2,11 +2,11 @@ import {FaRegEdit} from "react-icons/fa";
 import {FaRegTrashCan} from "react-icons/fa6";
 import React from "react";
 
-class PromotionManager {
+class ProductRuleManager {
 	constructor(Params) {
 		this.Id = Params && Params.Id ? Params.Id : "Promotions"
 
-		this.tableName = "Промо";
+		this.tableName = "Правила продуктов";
 
 		this.apiManager = Params.apiManager;
 		this.data = Params.data;
@@ -48,14 +48,14 @@ class PromotionManager {
 		];
 
 		this.formConfig = [
-			{id:"rule", label:"правило", type:"text", required:true}
+			{id:"name", label:"правило", type:"text", required:true}
 		];
 
 		this.GetModel = (Params) => {
 			let model = {};
 
 			model.id = Params && Params.id ? parseInt(Params.id) : null;
-			model.rule = Params && Params.rule ? Params.rule : null;
+			model.name = Params && Params.name ? Params.name : null;
 
 			return model;
 		};
@@ -67,7 +67,7 @@ class PromotionManager {
 		this.Get = () => {
 			this.apiManager.SendRequest({
 				method: "GET",
-				endpoint: "/promotion",
+				endpoint: "/product_rule",
 			})
 			.then(response => {
 					if(response.data)
@@ -80,9 +80,15 @@ class PromotionManager {
 		};
 
 		this.Save = (Data) => {
+
+			let method = "POST";
+
+			if(Data instanceof FormData && Data.get("id"))
+				method = "PUT";
+
 			this.apiManager.SendRequest({
-				method: "POST",
-				endpoint: "/promotion",
+				method: method,
+				endpoint: "/product_rule",
 				data: Data
 			})
 			.then(response => {
@@ -104,7 +110,7 @@ class PromotionManager {
 		this.Delete = (Model) => {
 			this.apiManager.SendRequest({
 				method: "DELETE",
-				endpoint: "/promotion",
+				endpoint: "/product_rule",
 				data: Model
 			})
 			.then(response => {
@@ -120,4 +126,4 @@ class PromotionManager {
 	}
 }
 
-export default PromotionManager;
+export default ProductRuleManager;

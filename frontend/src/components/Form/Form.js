@@ -174,7 +174,7 @@ const GetFormElements = (Style, formConfig, formState, setFormState, fileList, s
                 );
             case "multiselect":
                 let multiSelectOptions = item.options.map(option => ({value: option.id, label: option.name}));
-                let selectedArr = formState[item.id] ? formState[item.id].split(",").map(item => parseInt(item)) : "";
+                let selectedArr = formState[item.id] ? formState[item.id].map(item => parseInt(item)) : "";
                 let initial = multiSelectOptions.filter(option => selectedArr.includes(option.value));
                 return (
                     <div key={"form" + index} style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
@@ -185,7 +185,7 @@ const GetFormElements = (Style, formConfig, formState, setFormState, fileList, s
                             options={multiSelectOptions}
                             value={initial.length ? initial : null}
                             isMulti
-                            onChange={(selected) => handleChange(item.id, selected.map(item => item.value).join(","))}
+                            onChange={(selected) => handleChange(item.id, selected.map(item => item.value))}
                             styles = {{
                                 container: (provided, state) => ({
                                     ...provided,
@@ -257,18 +257,24 @@ const Form = ({ formConfig, formInitialState, onSubmit }) => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        const formData = new FormData();
-
-    	Object.keys(formState).forEach(key => {
-			formData.append(key, formState[key]);
-        });
-
-        Object.values(fileList).forEach((file, idx) => {
-			if(file)
-				formData.append(`file-${idx}`, file);
-		});
-
-        onSubmit(formData);
+        // const formData = new FormData();
+        //
+    	// Object.keys(formState).forEach(key => {
+        //     let value = formState[key];
+        //
+        //     if(value === null || value === "null")
+        //         value = ""
+        //
+        //
+		// 	formData.append(key, value);
+        // });
+        //
+        // Object.values(fileList).forEach((file, idx) => {
+		// 	if(file)
+		// 		formData.append(`file-${idx}`, file);
+		// });
+        //
+        // onSubmit(formData);
 
         setFormState({});
         setFileList([])

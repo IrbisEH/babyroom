@@ -33,7 +33,7 @@ class ProductManager(TableManager):
 
     def get(self, params=None):
         result = Result()
-        filter_params = params["filter"] if params and "filter" in params else None
+        filter_params = params["data"] if params and "data" in params else None
         try:
             query = self.db.session.query(self.model)
 
@@ -65,15 +65,16 @@ class ProductManager(TableManager):
                 img_manager = ImageStoreManager(self.config, self.log)
                 result = img_manager.save_files(files)
                 if result.success:
-                    data["images"] = result.data
+                    data["img_identifiers"] = result.data
                 else:
                     raise Exception(result.msg if hasattr(result, "msg") else "Unknown error")
 
-            data["images"] = ",".join(data["images"]) if data["images"] else None
+            if "img_identifiers" in data:
+                data["img_identifiers"] = ",".join(data["img_identifiers"])
 
-            data["tags"] = self.db.session.query(TagModel).filter(
-                TagModel.id.in_([tag["id"] for tag in data["tags"]])
-            ).all()
+            if "tags" in data:
+                data["tags"] = [int(tag_id) for tag_id in data["tags"].split(",")]
+                data["tags"] = self.db.session.query(TagModel).filter(TagModel.id.in_(data["tags"])).all()
 
             model = self.model(**data)
 
@@ -109,21 +110,23 @@ class ProductManager(TableManager):
 
             model = self.db.session.query(self.model).get(data["id"])
 
-            if model.images is not None:
-                identifiers_to_remove = [identifier not in data["images"] for identifier in model.images.split(",")]
-
             if files is not None and len(files):
                 result = img_manager.save_files(files)
                 if result.success:
-                    data["images"] += result.data
+                    data["img_identifiers"] += result.data
                 else:
                     raise Exception(result.msg if hasattr(result, "msg") else "Unknown error")
 
-            data["images"] = ",".join(data["images"]) if data["images"] else None
+            if "img_identifiers" in data:
+                if model.img_identifiers is not None:
+                    identifiers_to_remove = [identifier not in data["img_identifiers"] for identifier in
+                                             model.img_identifiers.split(",")]
 
-            data["tags"] = self.db.session.query(TagModel).filter(
-                TagModel.id.in_([tag["id"] for tag in data["tags"]])
-            ).all()
+                data["img_identifiers"] = ",".join(data["img_identifiers"])
+
+            if "tags" in data:
+                data["tags"] = [int(tag_id) for tag_id in data["tags"].split(",")]
+                data["tags"] = self.db.session.query(TagModel).filter(TagModel.id.in_(data["tags"])).all()
 
             for key, value in data.items():
                 if hasattr(model, key):
@@ -163,8 +166,8 @@ class ProductManager(TableManager):
 
             model = self.db.session.query(self.model).get(data["id"])
 
-            if model.images is not None:
-                identifiers_to_remove = model.images.split(",")
+            if model.img_identifiers is not None:
+                identifiers_to_remove = model.img_identifiers.split(",")
 
             self.db.session.delete(model)
             self.db.session.commit()

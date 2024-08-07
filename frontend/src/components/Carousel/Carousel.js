@@ -16,7 +16,6 @@ const Carousel = ({ imageUrlsList, handleDeleteBtn }) => {
     }
 
     useEffect(() => {
-        console.log(imageUrlsList)
         if(curIdx >= imageUrlsList.length)
         {
             setCurIdx(0);
