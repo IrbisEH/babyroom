@@ -11,7 +11,7 @@ class TableManager:
         self.config = config
         self.log = log
         self.db = db
-        self.db.connect()
+        # self.db.connect()
         self.db_model = db_model
 
         self.methods = {
@@ -36,6 +36,8 @@ class TableManager:
     def get(self, data=None):
         result = Result()
         try:
+            self.db.connect()
+
             query = self.db.session.query(self.db_model)
 
             if data is not None:
@@ -43,9 +45,8 @@ class TableManager:
 
             response = query.all()
 
-            self.log.debug(f"Get {query.count()} rows. Table: {self.db_model.__tablename__}")
-
             result.get_ok([item.serialize() for item in response])
+            self.log.debug(f"Get {query.count()} rows. Table: {self.db_model.__tablename__}")
 
         except Exception as e:
             msg = str(e)
@@ -59,13 +60,14 @@ class TableManager:
     def create(self, data=None):
         result = Result()
         try:
+            self.db.connect()
+
             model = self.db_model(**data)
-
             self.db.session.add(model)
-
-            self.log.debug(f"Create model. Table: {self.db_model.__tablename__} Obj: {model.serialize()}")
+            self.db.session.commit()
 
             result.get_ok(model.serialize())
+            self.log.debug(f"Create model. Table: {self.db_model.__tablename__} Obj: {model.serialize()}")
 
         except Exception as e:
             self.db.session.rollback()
@@ -73,7 +75,6 @@ class TableManager:
             self.log.error(msg)
             result.get_error(msg)
         finally:
-            self.db.session.commit()
             self.db.disconnect()
 
         return result
@@ -84,6 +85,8 @@ class TableManager:
             if "id" not in data or data["id"] is None or data["id"] == "":
                 raise Exception("Missing entry id")
 
+            self.db.connect()
+
             model = self.db.session.query(self.db_model).get(data["id"])
 
             for key, value in data.items():
@@ -91,10 +94,10 @@ class TableManager:
                     setattr(model, key, value)
 
             self.db.session.add(model)
-
-            self.log.debug(f"Update model. Table: {self.db_model.__tablename__} Obj: {model.serialize()}")
+            self.db.session.commit()
 
             result.get_ok(model.serialize())
+            self.log.debug(f"Update model. Table: {self.db_model.__tablename__} Obj: {model.serialize()}")
 
         except Exception as e:
             self.db.session.rollback()
@@ -102,7 +105,6 @@ class TableManager:
             self.log.error(msg)
             result.get_error(msg)
         finally:
-            self.db.session.commit()
             self.db.disconnect()
 
         return result
@@ -113,13 +115,15 @@ class TableManager:
             if "id" not in data or data["id"] is None or data["id"] == "":
                 raise Exception("Missing entry id")
 
+            self.db.connect()
+
             model = self.db.session.query(self.db_model).get(data["id"])
 
             self.db.session.delete(model)
-
-            self.log.debug(f"Delete model. Table: {self.db_model.__tablename__} Obj: {model.serialize()}")
+            self.db.session.commit()
 
             result.get_ok(model.serialize())
+            self.log.debug(f"Delete model. Table: {self.db_model.__tablename__} Obj: {model.serialize()}")
 
         except Exception as e:
             self.db.session.rollback()
@@ -127,7 +131,6 @@ class TableManager:
             self.log.error(msg)
             result.get_error(msg)
         finally:
-            self.db.session.commit()
             self.db.disconnect()
 
         return result

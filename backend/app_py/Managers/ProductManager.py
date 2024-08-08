@@ -41,6 +41,8 @@ class ProductManager(TableManager):
     def get(self, data=None):
         result = Result()
         try:
+            self.db.connect()
+
             query = self.db.session.query(self.model)
 
             if data is not None:
@@ -48,9 +50,8 @@ class ProductManager(TableManager):
 
             response = query.all()
 
-            self.log.debug(f"Get {query.count()} rows. Table: {self.model.__tablename__}")
-
             result.get_ok([item.serialize() for item in response])
+            self.log.debug(f"Get {query.count()} rows. Table: {self.model.__tablename__}")
 
         except Exception as e:
             msg = str(e)
@@ -64,6 +65,8 @@ class ProductManager(TableManager):
     def create(self, data=None):
         result = Result()
         try:
+            self.db.connect()
+
             if "product_rules" in data and len(data["product_rules"]):
                 # id_list = [rule["id"] for rule in data["product_rules"] if "id" in rule]
                 id_list = [int(rule_id) for rule_id in data["product_rules"]]
@@ -84,8 +87,6 @@ class ProductManager(TableManager):
             result.get_ok(model.serialize())
             self.log.debug(f"Create model. Table: {self.model.__tablename__} Obj: {model.serialize()}")
 
-            result.get_ok(model.serialize())
-
         except Exception as e:
             self.db.session.rollback()
             msg = str(e)
@@ -103,6 +104,8 @@ class ProductManager(TableManager):
         try:
             if "id" not in data or data["id"] is None:
                 raise Exception("Missing entry id")
+
+            self.db.connect()
 
             model = self.db.session.query(self.model).get(data["id"])
 
@@ -145,11 +148,13 @@ class ProductManager(TableManager):
             if "id" not in data or data["id"] is None:
                 raise Exception("Missing entry id")
 
+            self.db.connect()
+
             model = self.db.session.query(self.model).get(data["id"])
             self.db.session.delete(model)
             self.db.session.commit()
 
-            result.get_ok(model.serialize())
+            result.get_ok()
             self.log.debug(f"Delete model. Table: {self.model.__tablename__} Obj: {model.serialize()}")
 
         except Exception as e:

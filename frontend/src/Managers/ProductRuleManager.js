@@ -9,7 +9,7 @@ class ProductRuleManager {
 		this.tableName = "Правила продуктов";
 
 		this.apiManager = Params.apiManager;
-		this.data = Params.ruleData;
+		this.data = Params.data;
 		this.dataSetter = Params.dataSetter;
 
 		this.handleEditBtnClick = null;

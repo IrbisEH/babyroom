@@ -123,14 +123,14 @@ class ProductModel(Base):
     img_identifiers: Mapped[str] = Column(String(2048), nullable=True)
 
     tags: Mapped[List[TagModel]] = relationship(
-        secondary=product_tag_association, back_populates="associated_products",
+        secondary=product_tag_association, back_populates="associated_products", lazy='subquery'
     )
     product_rules: Mapped[List[ProductRuleModel]] = relationship(
-        secondary=product_product_rule_association, back_populates="associated_products"
+        secondary=product_product_rule_association, back_populates="associated_products", lazy='subquery'
     )
 
-    category: Mapped[CategoryModel] = relationship(CategoryModel, backref='products')
-    units: Mapped[UnitsModel] = relationship(UnitsModel, backref='products')
+    category: Mapped[CategoryModel] = relationship(CategoryModel, backref='products', lazy='subquery')
+    units: Mapped[UnitsModel] = relationship(UnitsModel, backref='products', lazy='subquery')
 
     def serialize(self, exclude=None):
         exclude = exclude or ["associated_products", "products"]
