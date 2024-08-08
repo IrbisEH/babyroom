@@ -59,6 +59,10 @@ class UnitsModel(Base):
     description: Mapped[str] = Column(Text, nullable=True)
     units: Mapped[str] = Column(Text, nullable=False)
 
+    # products: Mapped[List["ProductModel"]] = relationship(
+    #     "ProductModel", back_populates="units", passive_deletes=True
+    # )
+
 
 class CategoryModel(Base):
     __tablename__ = "categories"
@@ -67,11 +71,15 @@ class CategoryModel(Base):
     name: Mapped[str] = Column(String(255), unique=True, nullable=False)
     description: Mapped[str] = Column(Text, nullable=True)
 
+    # products: Mapped[List["ProductModel"]] = relationship(
+    #     "ProductModel", back_populates="category", passive_deletes=True
+    # )
+
 
 product_product_rule_association = Table(
     'product_product_rule_association', Base.metadata,
-    Column('product_id', Integer, ForeignKey('products.id')),
-    Column('product_rule', Integer, ForeignKey('product_rules.id'))
+    Column('product_id', Integer, ForeignKey('products.id', ondelete="CASCADE")),
+    Column('product_rule', Integer, ForeignKey('product_rules.id', ondelete="CASCADE"))
 )
 
 class ProductRuleModel(Base):
@@ -80,13 +88,15 @@ class ProductRuleModel(Base):
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = Column(String(255), unique=True, nullable=False)
 
-    associated_products: Mapped[List["ProductModel"]] = relationship("ProductModel", secondary=product_product_rule_association, back_populates="product_rules")
+    associated_products: Mapped[List["ProductModel"]] = relationship(
+        "ProductModel", secondary=product_product_rule_association, back_populates="product_rules"
+    )
 
 
 product_tag_association = Table(
     'product_tag_association', Base.metadata,
-    Column('product_id', Integer, ForeignKey('products.id')),
-    Column('tag_id', Integer, ForeignKey('tags.id'))
+    Column('product_id', Integer, ForeignKey('products.id', ondelete="CASCADE")),
+    Column('tag_id', Integer, ForeignKey('tags.id', ondelete="CASCADE"))
 )
 
 class TagModel(Base):
@@ -95,7 +105,9 @@ class TagModel(Base):
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = Column(String(255), unique=True, nullable=False)
 
-    associated_products: Mapped[List["ProductModel"]] = relationship("ProductModel", secondary=product_tag_association, back_populates="tags")
+    associated_products: Mapped[List["ProductModel"]] = relationship(
+        "ProductModel", secondary=product_tag_association, back_populates="tags"
+    )
 
 
 class ProductModel(Base):
@@ -105,13 +117,17 @@ class ProductModel(Base):
     enable: Mapped[int] = Column(Integer, nullable=False, default=0)
     name: Mapped[str] = Column(String(30), nullable=False)
     description: Mapped[str] = Column(Text)
-    category_id: Mapped[int] = Column(Integer, ForeignKey('categories.id'))
-    units_id: Mapped[int] = Column(Integer, ForeignKey('units.id'))
+    category_id: Mapped[int] = Column(Integer, ForeignKey('categories.id', ondelete="SET NULL"))
+    units_id: Mapped[int] = Column(Integer, ForeignKey('units.id', ondelete="SET NULL"))
     price: Mapped[float] = Column(Float, nullable=False)
     img_identifiers: Mapped[str] = Column(String(2048), nullable=True)
 
-    tags: Mapped[List[TagModel]] = relationship(secondary=product_tag_association, back_populates="associated_products")
-    product_rules: Mapped[List[ProductRuleModel]] = relationship(secondary=product_product_rule_association, back_populates="associated_products")
+    tags: Mapped[List[TagModel]] = relationship(
+        secondary=product_tag_association, back_populates="associated_products",
+    )
+    product_rules: Mapped[List[ProductRuleModel]] = relationship(
+        secondary=product_product_rule_association, back_populates="associated_products"
+    )
 
     category: Mapped[CategoryModel] = relationship(CategoryModel, backref='products')
     units: Mapped[UnitsModel] = relationship(UnitsModel, backref='products')

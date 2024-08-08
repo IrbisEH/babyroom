@@ -1,4 +1,9 @@
-from ..AppModels.ResultModel import Result
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+from AppModels.ResultModel import Result
 
 
 class TableManager:

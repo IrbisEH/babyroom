@@ -1,8 +1,12 @@
+import sys
+from pathlib import Path
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 
-from ..DbModels import Base
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+from DbModels import Base
 
 
 class DbManager:
@@ -74,6 +78,7 @@ class DbManager:
                 raise Exception('Session was not initialized')
 
             Base.metadata.drop_all(self.engine, checkfirst=True)
+            self.log_manager.debug(f'Drop DB successfully.')
         except Exception as e:
             msg = str(e)
             self.log_manager.error(msg)

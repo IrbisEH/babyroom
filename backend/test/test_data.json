@@ -1,0 +1,105 @@
+[{
+  "units": [
+    {
+      "id": null,
+      "name": "Обувь",
+      "description": "Размеры детской обуви",
+      "units": "21-12 см,21-12cм,21/12 см,22- 13 см,22- 14 см"
+    },
+    {
+      "id": null,
+      "name": "Платья",
+      "description": "Размеры детских платьев",
+      "units": "1,2,3,4,5"
+    },
+    {
+      "id": null,
+      "name": "Брюки",
+      "description": "Размеры детских брюк",
+      "units": "1,2,3,4,5"
+    }
+  ],
+  "categories": [
+    {
+      "id": null,
+      "name": "Обувь",
+      "description": "Категория: обувь"
+    },
+    {
+      "id": null,
+      "name": "Платья",
+      "description": "Категория: платья"
+    },
+        {
+      "id": null,
+      "name": "Брюки",
+      "description": "Категория: брюки"
+    }
+  ],
+  "product_rules": [
+    {
+      "id": null,
+      "name": "правило 1"
+    },
+    {
+      "id": null,
+      "name": "правило 2"
+    },
+    {
+      "id": null,
+      "name": "правило 3"
+    }
+  ],
+  "tags": [
+    {
+      "id": null,
+      "name": "скидка"
+    },
+    {
+      "id": null,
+      "name": "красный"
+    },
+        {
+      "id": null,
+      "name": "белый"
+    }
+  ],
+  "products": [
+    {
+      "id": null,
+      "enable": "1",
+      "name": "продукт 1",
+      "description": "описание продукта 1",
+      "category_id": "1",
+      "units_id": "1",
+      "price": 100,
+      "img_identifiers": "",
+      "tags": ["1", "2"],
+      "product_rules": ["2"]
+    },
+    {
+      "id": null,
+      "enable": "1",
+      "name": "продукт 2",
+      "description": "описание продукта 2",
+      "category_id": "2",
+      "units_id": "2",
+      "price": 200,
+      "img_identifiers": "",
+      "tags": ["2"],
+      "product_rules": []
+    },
+    {
+      "id": null,
+      "enable": "3",
+      "name": "продукт 3",
+      "description": "описание продукта 3",
+      "category_id": "3",
+      "units_id": "3",
+      "price": 300,
+      "img_identifiers": "",
+      "tags": ["1", "2", "3"],
+      "product_rules": ["2", "3"]
+    }
+  ]
+}]

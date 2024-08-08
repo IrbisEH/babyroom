@@ -1,12 +1,19 @@
-from .TableManager import TableManager
-from ..DbModels import ProductModel, TagModel, ProductRuleModel
-from ..AppModels.ResultModel import Result
-from ..Managers.ImageStoreManager import ImageStoreManager
-from ..AppModels.FilterModel import FilterModel
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+from AppModels.ResultModel import Result
+from AppModels.FilterModel import FilterModel
+
+from DbModels import ProductModel, TagModel, ProductRuleModel
+
+from Managers.TableManager import TableManager
+from Managers.ImageStoreManager import ImageStoreManager
 
 
 class ProductManager(TableManager):
-    def __init__(self, config, log, db):
+    def __init__(self, config, log, db, *args, **kwargs):
         self.model = ProductModel
         super().__init__(config, log, db, self.model)
 

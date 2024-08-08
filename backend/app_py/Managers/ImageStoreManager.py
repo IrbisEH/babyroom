@@ -1,9 +1,12 @@
-from pathlib import Path
-import hashlib
 import os
+import sys
+import hashlib
+from pathlib import Path
 from PIL import Image
 
-from ..AppModels.ResultModel import Result
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+from AppModels.ResultModel import Result
 
 
 class ImageStoreManager:
